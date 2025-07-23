@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>障害年金申請一覧 - 障害年金管理システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/application-api.js"></script>
+    <script src="js/projects-list.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -144,6 +146,31 @@
                         </div>
                     </div>
 
+                    <!-- Search Bar -->
+                    <div class="search-container flex items-center space-x-4 mb-6">
+                        <div class="flex-1 max-w-md">
+                            <div class="relative">
+                                <input id="search-input" type="text" placeholder="申請者名で検索..." class="w-full pl-10 pr-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-notion-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <select id="status-filter" class="px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
+                                <option value="">すべてのステータス</option>
+                                <option value="draft">下書き</option>
+                                <option value="submitted">提出済み</option>
+                                <option value="under_review">審査中</option>
+                                <option value="approved">承認済み</option>
+                                <option value="rejected">却下</option>
+                                <option value="withdrawn">取下げ</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <!-- Filter Tabs -->
                     <div class="flex items-center space-x-1 bg-white/70 backdrop-blur-sm rounded-xl p-1 border border-notion-gray-200/60 shadow-notion w-fit">
                         <button class="px-4 py-2 text-sm font-medium rounded-lg bg-linear-blue-500 text-white shadow-sm transition-all duration-200">
@@ -161,7 +188,7 @@
                     </div>
 
                     <!-- Applications List -->
-                    <div class="space-y-4">
+                    <div id="projects-container" class="space-y-4">
                         <!-- Application 1 -->
                         <a href="project-unified.html?edit=001" class="block bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion hover:shadow-notion-hover transition-all duration-300 p-6 group cursor-pointer">
                             <div class="flex items-start justify-between">

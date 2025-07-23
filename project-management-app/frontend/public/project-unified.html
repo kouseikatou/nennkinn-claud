@@ -597,9 +597,19 @@
             }
         });
 
-        // 既存データの読み込み（サンプルデータ）
-        function loadExistingData(editId) {
-            // サンプルデータ（実際のシステムではAPIから取得）
+        // 既存データの読み込み
+        async function loadExistingData(editId) {
+            try {
+                // APIから実際のデータを取得
+                if (typeof loadApplication === 'function') {
+                    await loadApplication(editId);
+                    return;
+                }
+            } catch (error) {
+                console.error('Failed to load data from API, falling back to sample data:', error);
+            }
+            
+            // フォールバック用サンプルデータ
             const sampleData = {
                 '001': {
                     name: '田中太郎',
