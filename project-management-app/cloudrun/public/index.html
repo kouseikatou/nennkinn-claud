@@ -5,342 +5,519 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>障害年金管理システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; }
+        .sidebar-shadow { box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar-mobile-hidden { transform: translateX(-100%); }
+            .sidebar-mobile-overlay { backdrop-filter: blur(4px); }
+        }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div id="app">
-        <nav class="bg-blue-600 text-white p-4">
-            <div class="container mx-auto flex justify-between items-center">
-                <h1 class="text-xl font-bold">障害年金管理システム</h1>
-            </div>
-        </nav>
-
-        <!-- Dashboard -->
-        <div id="dashboard" class="container mx-auto mt-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-bold text-gray-700">総申請数</h3>
-                    <p id="total-applications" class="text-3xl font-bold text-blue-600">-</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-bold text-gray-700">審査中</h3>
-                    <p id="under-review" class="text-3xl font-bold text-yellow-600">-</p>
-                </div>
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-lg font-bold text-gray-700">承認済み</h3>
-                    <p id="approved" class="text-3xl font-bold text-green-600">-</p>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Mobile Menu Button -->
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+        
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed lg:static w-64 bg-white sidebar-shadow flex flex-col z-40 transform transition-transform lg:transform-none sidebar-mobile-hidden lg:sidebar-mobile-hidden-none h-full">
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900">障害年金</h1>
+                        <p class="text-sm text-gray-500">管理システム</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-md">
-                <div class="p-6 border-b">
-                    <h2 class="text-xl font-bold">申請一覧</h2>
+            <!-- Navigation -->
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="nav-link active flex items-center space-x-3 px-4 py-3 rounded-lg bg-indigo-50 text-indigo-700 font-medium">
+                            <i data-lucide="home" class="w-5 h-5"></i>
+                            <span>ダッシュボード</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                            <span>申請一覧</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                            <span>新規申請</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            <span>顧客管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            <span>レポート</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Settings Section -->
+                <div class="mt-auto pt-4 border-t border-gray-200">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                                <span>設定</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                <i data-lucide="help-circle" class="w-5 h-5"></i>
+                                <span>ヘルプ</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請番号</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請者名</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">障害種別</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">等級</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">作成日</th>
-                            </tr>
-                        </thead>
-                        <tbody id="applications-table" class="bg-white divide-y divide-gray-200">
-                        </tbody>
-                    </table>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+                        <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">管理者</p>
+                        <p class="text-xs text-gray-500 truncate">admin@example.com</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Application Detail Modal -->
-        <div id="application-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-            <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 id="modal-title" class="text-xl font-bold text-gray-800">申請詳細</h3>
-                    <button onclick="hideApplicationDetail()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden lg:ml-0">
+            <!-- Top Header -->
+            <header class="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <!-- Mobile Menu Button -->
+                        <button id="mobile-menu-btn" class="lg:hidden p-2 text-gray-600 hover:text-gray-900">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
+                        </button>
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">ダッシュボード</h2>
+                            <p class="text-gray-600 hidden sm:block">障害年金申請の管理と追跡</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="relative p-2 text-gray-400 hover:text-gray-600">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">3</span>
+                        </button>
+                        <button class="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">新規申請</span>
+                        </button>
+                    </div>
                 </div>
-                <div id="application-detail-content">
-                    <!-- Content will be populated dynamically -->
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 overflow-auto p-4 sm:p-6">
+                <div id="dashboard">
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">総申請数</p>
+                                    <p id="total-applications" class="text-3xl font-bold text-gray-900 mt-2">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="file-text" class="w-6 h-6 text-blue-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-green-600 font-medium">+12%</span>
+                                <span class="text-sm text-gray-500 ml-2">前月比</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">審査中</p>
+                                    <p id="under-review" class="text-3xl font-bold text-gray-900 mt-2">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="clock" class="w-6 h-6 text-yellow-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-yellow-600 font-medium">進行中</span>
+                                <span class="text-sm text-gray-500 ml-2">平均 15日</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">承認済み</p>
+                                    <p id="approved" class="text-3xl font-bold text-gray-900 mt-2">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-green-600 font-medium">+8%</span>
+                                <span class="text-sm text-gray-500 ml-2">今月</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">却下</p>
+                                    <p class="text-3xl font-bold text-gray-900 mt-2">5</p>
+                                </div>
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-red-600 font-medium">-3%</span>
+                                <span class="text-sm text-gray-500 ml-2">前月比</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Applications Table -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">最近の申請</h3>
+                                <p class="text-sm text-gray-600">新しい申請と進行状況</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <i data-lucide="filter" class="w-4 h-4 inline mr-2"></i>
+                                    フィルター
+                                </button>
+                                <button class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
+                                    エクスポート
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請番号</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請者</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">障害種別</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">等級</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">更新日</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">アクション</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="applications-table" class="bg-white divide-y divide-gray-200">
+                                    <!-- Dynamic content will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                            <p class="text-sm text-gray-700">
+                                <span class="font-medium">1-10</span> of <span class="font-medium">97</span> 件を表示
+                            </p>
+                            <nav class="flex items-center space-x-2">
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700 disabled:opacity-50">
+                                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                </button>
+                                <button class="px-3 py-2 bg-indigo-600 text-white rounded">1</button>
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700">2</button>
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700">3</button>
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700">
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Login Form (Hidden by default) -->
+                <div id="loginForm" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center z-50">
+                    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="shield-check" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-gray-900">ログイン</h2>
+                            <p class="text-gray-600 mt-2">システムにアクセスしてください</p>
+                        </div>
+                        
+                        <form onsubmit="login(event)">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
+                                    <input type="email" id="email" required 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="admin@disability-pension.jp">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">パスワード</label>
+                                    <input type="password" id="password" required
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                           placeholder="••••••••">
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="w-full mt-6 px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium">
+                                ログイン
+                            </button>
+                        </form>
+                        
+                        <p class="text-sm text-gray-500 text-center mt-4">
+                            デモ用: admin@disability-pension.jp / admin123
+                        </p>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
     <script>
-        let authToken = null;
+        // Initialize Lucide icons
+        lucide.createIcons();
 
-        // Initialize app without authentication
-        window.onload = function() {
-            loadApplications();
-            loadStatistics();
-        };
+        const API_BASE = '';
+        let currentUser = null;
 
-        async function loadApplications() {
+        // Check if user is logged in
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showLogin();
+                return false;
+            }
+            return true;
+        }
+
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function hideLogin() {
+            document.getElementById('loginForm').classList.add('hidden');
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
             try {
-                // Get API token for backend access
-                let apiToken = null;
-                const mockResponse = await fetch('/api/auth/login', {
+                const response = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        email: 'admin@disability-pension.jp', 
-                        password: 'admin123' 
-                    })
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
                 });
-                if (mockResponse.ok) {
-                    const mockData = await mockResponse.json();
-                    apiToken = mockData.token;
-                }
 
-                if (!apiToken) {
-                    console.error('Could not get API token');
-                    return;
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    currentUser = data.user;
+                    hideLogin();
+                    loadDashboard();
+                } else {
+                    alert('ログインに失敗しました: ' + data.error);
                 }
+            } catch (error) {
+                alert('エラーが発生しました: ' + error.message);
+            }
+        }
 
+        async function loadDashboard() {
+            if (!checkAuth()) return;
+
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Load applications
                 const response = await fetch('/api/applications', {
                     headers: {
-                        'Authorization': `Bearer ${apiToken}`
-                    }
+                        'Authorization': `Bearer ${token}`,
+                    },
                 });
 
-                const data = await response.json();
-
                 if (response.ok) {
-                    const tbody = document.getElementById('applications-table');
-                    tbody.innerHTML = '';
-
-                    data.applications.forEach(app => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${app.application_number}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${app.applicant_name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${getDisabilityTypeText(app.disability_type)}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${app.disability_grade || '－'}級</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(app.status)}">
-                                    ${getStatusText(app.status)}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(app.created_at)}</td>
-                        `;
-                        
-                        // Add click event to show details
-                        row.addEventListener('click', () => showApplicationDetail(app.id, apiToken));
-                        row.style.cursor = 'pointer';
-                        row.classList.add('hover:bg-gray-50');
-                        
-                        tbody.appendChild(row);
-                    });
-
-                    document.getElementById('total-applications').textContent = data.applications.length;
+                    const data = await response.json();
+                    displayApplications(data.applications);
+                    updateStats(data.applications);
+                } else {
+                    console.error('Failed to load applications');
                 }
             } catch (error) {
-                console.error('Error loading applications:', error);
+                console.error('Error loading dashboard:', error);
             }
         }
 
-        async function loadStatistics() {
-            try {
-                // Get API token for backend access
-                let apiToken = null;
-                const mockResponse = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        email: 'admin@disability-pension.jp', 
-                        password: 'admin123' 
-                    })
-                });
-                if (mockResponse.ok) {
-                    const mockData = await mockResponse.json();
-                    apiToken = mockData.token;
-                }
-
-                if (!apiToken) {
-                    console.error('Could not get API token');
-                    return;
-                }
-
-                const response = await fetch('/api/applications/statistics/overview', {
-                    headers: {
-                        'Authorization': `Bearer ${apiToken}`
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    const underReview = data.statusStats.find(s => s.status === 'under_review');
-                    const approved = data.statusStats.find(s => s.status === 'approved');
-
-                    document.getElementById('under-review').textContent = underReview ? underReview.count : 0;
-                    document.getElementById('approved').textContent = approved ? approved.count : 0;
-                }
-            } catch (error) {
-                console.error('Error loading statistics:', error);
-            }
-        }
-
-        async function showApplicationDetail(id, apiToken = null) {
-            try {
-                // Get API token if not provided
-                if (!apiToken) {
-                    const mockResponse = await fetch('/api/auth/login', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            email: 'admin@disability-pension.jp', 
-                            password: 'admin123' 
-                        })
-                    });
-                    if (mockResponse.ok) {
-                        const mockData = await mockResponse.json();
-                        apiToken = mockData.token;
-                    }
-                }
-
-                if (!apiToken) {
-                    alert('API接続に失敗しました');
-                    return;
-                }
-
-                const response = await fetch(`/api/applications/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${apiToken}`
-                    }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    const app = data.application;
-                    let detailHtml = `
-                        <div class="space-y-6">
-                            <div class="border-b pb-4">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-3">申請者情報</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <p><strong>申請番号:</strong> ${app.application_number}</p>
-                                    <p><strong>氏名:</strong> ${app.applicant_name} (${app.applicant_name_kana})</p>
-                                    <p><strong>生年月日:</strong> ${app.birth_date}</p>
-                                    <p><strong>性別:</strong> ${app.gender === 'male' ? '男性' : '女性'}</p>
-                                    <p><strong>電話番号:</strong> ${app.phone_number || '－'}</p>
-                                    <p><strong>メールアドレス:</strong> ${app.email || '－'}</p>
-                                    <p><strong>障害種別:</strong> ${getDisabilityTypeText(app.disability_type)}</p>
-                                    <p><strong>等級:</strong> ${app.disability_grade || '－'}級</p>
-                                </div>
+        function displayApplications(applications) {
+            const tbody = document.getElementById('applications-table');
+            tbody.innerHTML = applications.map(app => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${app.application_number}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                <i data-lucide="user" class="w-4 h-4 text-gray-600"></i>
                             </div>
-                    `;
-
-                    // Show spouse information if available
-                    if (app.spouse_name) {
-                        detailHtml += `
-                            <div class="border-b pb-4">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-3">配偶者情報</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <p><strong>氏名:</strong> ${app.spouse_name} (${app.spouse_name_kana || '－'})</p>
-                                    <p><strong>生年月日:</strong> ${app.spouse_birth_date || '－'}</p>
-                                    <p><strong>マイナンバー:</strong> ${app.spouse_mynumber || '－'}</p>
-                                    <p><strong>基礎年金番号:</strong> ${app.spouse_pension_number || '－'}</p>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    // Show children information if available
-                    if (app.children && app.children.length > 0) {
-                        detailHtml += `
-                            <div class="border-b pb-4">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-3">子供情報 (${app.children.length}人)</h4>
-                                <div class="space-y-4">
-                        `;
-                        
-                        app.children.forEach((child, index) => {
-                            detailHtml += `
-                                <div class="bg-gray-50 p-3 rounded">
-                                    <h5 class="font-semibold mb-2">子供 ${index + 1}</h5>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                        <p><strong>氏名:</strong> ${child.name} (${child.name_kana})</p>
-                                        <p><strong>生年月日:</strong> ${child.birth_date}</p>
-                                        <p><strong>マイナンバー:</strong> ${child.mynumber || '－'}</p>
-                                    </div>
-                                </div>
-                            `;
-                        });
-
-                        detailHtml += `
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    detailHtml += `
-                            <div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <p><strong>ステータス:</strong> <span class="px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(app.status)}">${getStatusText(app.status)}</span></p>
-                                    <p><strong>作成日:</strong> ${formatDate(app.created_at)}</p>
-                                    <p><strong>更新日:</strong> ${formatDate(app.updated_at)}</p>
-                                    <p><strong>作成者:</strong> ${app.created_by_name || '－'}</p>
-                                </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-gray-900">${app.applicant_name}</div>
+                                <div class="text-sm text-gray-500">${app.applicant_name_kana}</div>
                             </div>
                         </div>
-                    `;
-
-                    document.getElementById('application-detail-content').innerHTML = detailHtml;
-                    document.getElementById('application-modal').classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error('Error loading application detail:', error);
-                alert('申請詳細の読み込みに失敗しました');
-            }
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${getDisabilityTypeStyle(app.disability_type)}">
+                            ${getDisabilityTypeLabel(app.disability_type)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-gray-900">${app.disability_grade || '-'}級</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusStyle(app.status)}">
+                            ${getStatusLabel(app.status)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(app.created_at).toLocaleDateString('ja-JP')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center justify-end space-x-2">
+                            <button class="text-indigo-600 hover:text-indigo-900" title="詳細">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                            <button class="text-gray-600 hover:text-gray-900" title="編集">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
+                            <button class="text-red-600 hover:text-red-900" title="削除">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Re-initialize icons for new content
+            lucide.createIcons();
         }
 
-        function hideApplicationDetail() {
-            document.getElementById('application-modal').classList.add('hidden');
+        function updateStats(applications) {
+            document.getElementById('total-applications').textContent = applications.length;
+            document.getElementById('under-review').textContent = applications.filter(app => app.status === 'under_review').length;
+            document.getElementById('approved').textContent = applications.filter(app => app.status === 'approved').length;
         }
 
-        function getDisabilityTypeText(type) {
-            const types = {
-                'physical': '身体障害',
-                'mental': '精神障害',
-                'intellectual': '知的障害',
-                'multiple': '重複障害'
-            };
-            return types[type] || type;
-        }
-
-        function getStatusText(status) {
-            const statuses = {
-                'draft': '下書き',
-                'submitted': '提出済み',
-                'under_review': '審査中',
-                'approved': '承認済み',
-                'rejected': '却下',
-                'withdrawn': '取り下げ'
-            };
-            return statuses[status] || status;
-        }
-
-        function getStatusColor(status) {
-            const colors = {
+        function getStatusStyle(status) {
+            const styles = {
                 'draft': 'bg-gray-100 text-gray-800',
                 'submitted': 'bg-blue-100 text-blue-800',
                 'under_review': 'bg-yellow-100 text-yellow-800',
                 'approved': 'bg-green-100 text-green-800',
-                'rejected': 'bg-red-100 text-red-800',
-                'withdrawn': 'bg-gray-100 text-gray-800'
+                'rejected': 'bg-red-100 text-red-800'
             };
-            return colors[status] || 'bg-gray-100 text-gray-800';
+            return styles[status] || 'bg-gray-100 text-gray-800';
         }
 
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('ja-JP');
+        function getStatusLabel(status) {
+            const labels = {
+                'draft': '下書き',
+                'submitted': '提出済み',
+                'under_review': '審査中',
+                'approved': '承認',
+                'rejected': '却下'
+            };
+            return labels[status] || status;
         }
+
+        function getDisabilityTypeStyle(type) {
+            const styles = {
+                'physical': 'bg-blue-100 text-blue-800',
+                'mental': 'bg-purple-100 text-purple-800',
+                'intellectual': 'bg-green-100 text-green-800'
+            };
+            return styles[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getDisabilityTypeLabel(type) {
+            const labels = {
+                'physical': '身体障害',
+                'mental': '精神障害',
+                'intellectual': '知的障害'
+            };
+            return labels[type] || type;
+        }
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            
+            if (sidebar.classList.contains('sidebar-mobile-hidden')) {
+                sidebar.classList.remove('sidebar-mobile-hidden');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('sidebar-mobile-hidden');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            
+            sidebar.classList.add('sidebar-mobile-hidden');
+            overlay.classList.add('hidden');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu event listeners
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+            document.getElementById('mobile-menu-overlay').addEventListener('click', closeMobileMenu);
+            
+            // Close mobile menu when clicking on sidebar links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+            
+            if (checkAuth()) {
+                loadDashboard();
+            }
+        });
     </script>
 </body>
 </html>
