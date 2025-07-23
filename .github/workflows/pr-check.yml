@@ -1,4 +1,4 @@
-name: PR Check (Non-Production)
+name: PR Check & Staging Build
 
 on:
   pull_request:
@@ -8,10 +8,16 @@ on:
     branches-ignore: [ main ]               # mainブランチは除外（Pages用ワークフローに任せる）
   workflow_dispatch:                        # 手動実行も可能
 
+# GitHub Pagesのステージング環境用の権限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  lint-and-test:
+  # コード品質チェック
+  code-quality:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v4
     
@@ -23,27 +29,129 @@ jobs:
     - name: Install dependencies
       run: npm install --no-package-lock || echo "No package.json found, skipping npm install"
     
-    - name: Lint HTML files
-      run: |
-        echo "Checking HTML files..."
-        find . -name "*.html" -type f | head -5
-    
-    - name: Lint JavaScript files
-      run: |
-        echo "Checking JavaScript files..."
-        find . -name "*.js" -type f | head -5
-    
-    - name: Check file structure
-      run: |
-        echo "Project structure:"
-        ls -la
-        echo "JavaScript files:"
-        find . -name "*.js" -not -path "./node_modules/*" | head -10
-    
     - name: Validate JavaScript syntax
       run: |
-        echo "Validating JavaScript syntax..."
+        echo "🔍 Validating JavaScript syntax..."
+        has_error=false
         for file in $(find . -name "*.js" -not -path "./node_modules/*"); do
           echo "Checking $file"
-          node -c "$file" || echo "Syntax error in $file"
+          if ! node -c "$file"; then
+            echo "❌ Syntax error in $file"
+            has_error=true
+          else
+            echo "✅ $file is valid"
+          fi
         done
+        if [ "$has_error" = true ]; then
+          echo "❌ JavaScript validation failed"
+          exit 1
+        else
+          echo "✅ All JavaScript files are valid"
+        fi
+    
+    - name: Check HTML files
+      run: |
+        echo "🔍 Checking HTML files..."
+        html_files=$(find . -name "*.html" -type f | head -10)
+        if [ -z "$html_files" ]; then
+          echo "⚠️ No HTML files found"
+        else
+          echo "✅ Found HTML files:"
+          echo "$html_files"
+        fi
+    
+    - name: Verify required files
+      run: |
+        echo "🔍 Verifying required files..."
+        required_files=("index.html" "projects.html" "js/projects-list.js")
+        for file in "${required_files[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file exists"
+          else
+            echo "❌ $file is missing"
+            exit 1
+          fi
+        done
+
+  # ステージング環境でのビルドテスト
+  staging-build:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    environment:
+      name: staging
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+    
+    - name: Build staging site
+      run: |
+        echo "🚀 Building staging environment..."
+        
+        # ステージング用の設定を追加
+        echo "<!-- STAGING ENVIRONMENT -->" >> index.html
+        echo "<!-- Built from branch: ${{ github.head_ref || github.ref_name }} -->" >> index.html
+        echo "<!-- Commit: ${{ github.sha }} -->" >> index.html
+        
+        # ビルド確認
+        echo "✅ Staging build completed"
+        echo "📁 Site contents:"
+        ls -la
+    
+    - name: Test site functionality
+      run: |
+        echo "🧪 Testing site functionality..."
+        
+        # HTMLファイルの基本構造チェック
+        if grep -q "<html" index.html && grep -q "</html>" index.html; then
+          echo "✅ index.html has valid HTML structure"
+        else
+          echo "❌ index.html has invalid HTML structure"
+          exit 1
+        fi
+        
+        if grep -q "<html" projects.html && grep -q "</html>" projects.html; then
+          echo "✅ projects.html has valid HTML structure"
+        else
+          echo "❌ projects.html has invalid HTML structure"
+          exit 1
+        fi
+        
+        # JavaScriptファイルの存在確認
+        if [ -f "js/projects-list.js" ]; then
+          echo "✅ Required JavaScript files present"
+        else
+          echo "❌ Missing required JavaScript files"
+          exit 1
+        fi
+        
+        echo "✅ All functionality tests passed"
+    
+    - name: Upload staging artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        name: staging-site
+    
+    # ステージング環境へのデプロイ（オプション）
+    # - name: Deploy to staging
+    #   id: deployment
+    #   uses: actions/deploy-pages@v4
+    #   with:
+    #     artifact_name: staging-site
+
+  # 最終確認
+  final-check:
+    runs-on: ubuntu-latest
+    needs: [code-quality, staging-build]
+    steps:
+    - name: PR Ready for Main
+      run: |
+        echo "🎉 All checks passed!"
+        echo "✅ Code quality check: PASSED"
+        echo "✅ Staging build: PASSED"
+        echo "✅ Site functionality: PASSED"
+        echo ""
+        echo "🚀 This PR is ready to be merged to main branch"
+        echo "📝 After merge, the changes will be automatically deployed to production"
