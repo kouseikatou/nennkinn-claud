@@ -152,6 +152,7 @@ jobs:
       uses: actions/upload-pages-artifact@v3
       with:
         name: staging-site
+        path: .
     
     # ステージング環境へのデプロイ（オプション）
     # - name: Deploy to staging
