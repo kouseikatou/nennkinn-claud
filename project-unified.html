@@ -542,27 +542,28 @@
     <script>
         // 基本テスト
         console.log('JavaScript loaded successfully');
-        alert('JavaScript is working! URL: ' + window.location.href);
         
         // ページ初期化：編集モードか新規作成モードかを判定
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOMContentLoaded fired');
-            alert('DOM loaded! Current URL: ' + window.location.href);
             
             const urlParams = new URLSearchParams(window.location.search);
             const editId = urlParams.get('edit');
+            const viewId = urlParams.get('view');
             const isEditMode = editId !== null;
+            const isViewMode = viewId !== null;
+            const currentId = editId || viewId;
             
             console.log('URL Parameters:', window.location.search);
             console.log('Edit ID:', editId);
+            console.log('View ID:', viewId);
+            console.log('Current ID:', currentId);
             console.log('Is Edit Mode:', isEditMode);
-            
-            alert('URL Params: ' + window.location.search + ' EditId: ' + editId + ' IsEdit: ' + isEditMode);
+            console.log('Is View Mode:', isViewMode);
             
             if (isEditMode) {
                 // 編集モードの場合
                 console.log('Setting edit mode...');
-                alert('Setting edit mode for ID: ' + editId);
                 
                 const titleElement = document.getElementById('pageTitle');
                 const subtitleElement = document.getElementById('pageSubtitle');
@@ -570,31 +571,75 @@
                 
                 if (titleElement) {
                     titleElement.textContent = '申請情報編集';
-                    alert('Title changed successfully');
-                } else {
-                    alert('Title element not found!');
                 }
                 
                 if (subtitleElement) {
                     subtitleElement.textContent = `申請ID: APP-2024-${String(editId).padStart(3, '0')} の情報を編集しています`;
-                } else {
-                    alert('Subtitle element not found!');
                 }
                 
                 if (buttonElement) {
                     buttonElement.textContent = '変更を保存';
-                } else {
-                    alert('Button element not found!');
                 }
                 
                 // 少し遅延してからデータを読み込み
                 setTimeout(() => {
                     loadExistingData(editId);
                 }, 100);
+            } else if (isViewMode) {
+                // 表示モードの場合
+                console.log('Setting view mode...');
+                
+                const titleElement = document.getElementById('pageTitle');
+                const subtitleElement = document.getElementById('pageSubtitle');
+                const buttonElement = document.getElementById('submitButtonText');
+                
+                if (titleElement) {
+                    titleElement.textContent = '申請情報詳細';
+                }
+                
+                if (subtitleElement) {
+                    subtitleElement.textContent = `申請ID: APP-2024-${String(viewId).padStart(3, '0')} の詳細情報`;
+                }
+                
+                if (buttonElement) {
+                    buttonElement.textContent = '編集モードに切り替え';
+                }
+                
+                // フォームを読み取り専用にする
+                makeFormReadOnly();
+                
+                // データを読み込み
+                setTimeout(() => {
+                    loadExistingData(viewId);
+                }, 100);
             } else {
-                alert('New application mode');
+                console.log('New application mode');
             }
         });
+
+        // フォームを読み取り専用にする関数
+        function makeFormReadOnly() {
+            const form = document.querySelector('form');
+            if (form) {
+                // すべての入力フィールドを無効化
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.style.backgroundColor = '#f7f6f3';
+                    input.style.cursor = 'not-allowed';
+                });
+                
+                // ボタンのクリックイベントを変更
+                const submitBtn = document.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.onclick = function(e) {
+                        e.preventDefault();
+                        const currentId = new URLSearchParams(window.location.search).get('view');
+                        window.location.href = `project-unified.html?edit=${currentId}`;
+                    };
+                }
+            }
+        }
 
         // 既存データの読み込み
         async function loadExistingData(editId) {
