@@ -82,6 +82,10 @@
       "allowedTools": [],
       "history": [
         {
+          "display": "推奨フローで進めます",
+          "pastedContents": {}
+        },
+        {
           "display": "gcpにアップロードして本番環境で開発を進めたい、それともgitの方がいい？",
           "pastedContents": {}
         },
@@ -505,10 +509,6 @@
         },
         {
           "display": "https://storage.googleapis.com/nennkinn-claude-web/logs.htmlこちらに関して実装をして",
-          "pastedContents": {}
-        },
-        {
-          "display": "https://storage.googleapis.com/nennkinn-claude-web/branches/feature-new-feature/index.html",
           "pastedContents": {}
         }
       ],
