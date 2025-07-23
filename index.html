@@ -5,58 +5,444 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>障害年金管理システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <nav class="bg-white shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <h1 class="text-xl font-semibold">障害年金管理システム</h1>
-                    </div>
-                </div>
-            </div>
-        </nav>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; }
+        .sidebar-shadow { box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
         
-        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                    <h2 class="text-2xl font-bold mb-4">システム概要</h2>
-                    <p class="mb-4">このシステムは障害年金申請を管理するためのWebアプリケーションです。</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                        <div class="bg-blue-50 p-6 rounded-lg">
-                            <h3 class="text-lg font-semibold mb-2">主な機能</h3>
-                            <ul class="list-disc list-inside space-y-2">
-                                <li>申請者情報の管理</li>
-                                <li>配偶者・子供情報の登録</li>
-                                <li>申請状況の追跡</li>
-                                <li>ドキュメント管理</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="bg-green-50 p-6 rounded-lg">
-                            <h3 class="text-lg font-semibold mb-2">技術スタック</h3>
-                            <ul class="list-disc list-inside space-y-2">
-                                <li>Frontend: HTML, Tailwind CSS</li>
-                                <li>Backend: Node.js, Express</li>
-                                <li>Database: SQLite</li>
-                                <li>Hosting: GitHub Pages / Cloud Run</li>
-                            </ul>
-                        </div>
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar-mobile-hidden { transform: translateX(-100%); }
+            .sidebar-mobile-overlay { backdrop-filter: blur(4px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Mobile Menu Button -->
+        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
+        
+        <!-- Sidebar -->
+        <div id="sidebar" class="fixed lg:static w-64 bg-white sidebar-shadow flex flex-col z-40 transform transition-transform lg:transform-none sidebar-mobile-hidden lg:sidebar-mobile-hidden-none h-full">
+            <!-- Logo -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
                     </div>
-                    
-                    <div class="mt-8 flex space-x-4">
-                        <a href="https://github.com/kouseikatou/nennkinn-claud" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">
-                            GitHub リポジトリ
-                        </a>
-                        <a href="/project-management-app/cloudrun/public/index.html" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                            アプリケーションを開く
-                        </a>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-900">障害年金</h1>
+                        <p class="text-sm text-gray-500">管理システム</p>
                     </div>
                 </div>
             </div>
-        </main>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="#" class="nav-link active flex items-center space-x-3 px-4 py-3 rounded-lg bg-indigo-50 text-indigo-700 font-medium">
+                            <i data-lucide="home" class="w-5 h-5"></i>
+                            <span>ダッシュボード</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="file-text" class="w-5 h-5"></i>
+                            <span>申請一覧</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                            <span>新規申請</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            <span>顧客管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            <span>レポート</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Settings Section -->
+                <div class="mt-auto pt-4 border-t border-gray-200">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                <i data-lucide="settings" class="w-5 h-5"></i>
+                                <span>設定</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                                <i data-lucide="help-circle" class="w-5 h-5"></i>
+                                <span>ヘルプ</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
+                        <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">管理者</p>
+                        <p class="text-xs text-gray-500 truncate">admin@example.com</p>
+                    </div>
+                    <button class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden lg:ml-0">
+            <!-- Top Header -->
+            <header class="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <!-- Mobile Menu Button -->
+                        <button id="mobile-menu-btn" class="lg:hidden p-2 text-gray-600 hover:text-gray-900">
+                            <i data-lucide="menu" class="w-6 h-6"></i>
+                        </button>
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-bold text-gray-900">ダッシュボード</h2>
+                            <p class="text-gray-600 hidden sm:block">障害年金申請の管理と追跡</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="relative p-2 text-gray-400 hover:text-gray-600">
+                            <i data-lucide="bell" class="w-5 h-5"></i>
+                            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">3</span>
+                        </button>
+                        <button class="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">新規申請</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="flex-1 overflow-auto p-4 sm:p-6">
+                <div id="dashboard">
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">総申請数</p>
+                                    <p id="total-applications" class="text-3xl font-bold text-gray-900 mt-2">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="file-text" class="w-6 h-6 text-blue-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-green-600 font-medium">+12%</span>
+                                <span class="text-sm text-gray-500 ml-2">前月比</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">審査中</p>
+                                    <p id="under-review" class="text-3xl font-bold text-gray-900 mt-2">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="clock" class="w-6 h-6 text-yellow-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-yellow-600 font-medium">進行中</span>
+                                <span class="text-sm text-gray-500 ml-2">平均 15日</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">承認済み</p>
+                                    <p id="approved" class="text-3xl font-bold text-gray-900 mt-2">-</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-green-600 font-medium">+8%</span>
+                                <span class="text-sm text-gray-500 ml-2">今月</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">却下</p>
+                                    <p class="text-3xl font-bold text-gray-900 mt-2">5</p>
+                                </div>
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-center">
+                                <span class="text-sm text-red-600 font-medium">-3%</span>
+                                <span class="text-sm text-gray-500 ml-2">前月比</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Applications Table -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">最近の申請</h3>
+                                <p class="text-sm text-gray-600">新しい申請と進行状況</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <i data-lucide="filter" class="w-4 h-4 inline mr-2"></i>
+                                    フィルター
+                                </button>
+                                <button class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
+                                    エクスポート
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請番号</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請者</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">障害種別</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">等級</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">更新日</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">アクション</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="applications-table" class="bg-white divide-y divide-gray-200">
+                                    <!-- Dynamic content will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                            <p class="text-sm text-gray-700">
+                                <span class="font-medium">1-10</span> of <span class="font-medium">97</span> 件を表示
+                            </p>
+                            <nav class="flex items-center space-x-2">
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700 disabled:opacity-50">
+                                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                </button>
+                                <button class="px-3 py-2 bg-indigo-600 text-white rounded">1</button>
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700">2</button>
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700">3</button>
+                                <button class="px-3 py-2 text-gray-500 hover:text-gray-700">
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
     </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mock data for demo
+        const mockApplications = [
+            {
+                id: 1,
+                application_number: 'A001',
+                applicant_name: '田中太郎',
+                applicant_name_kana: 'たなかたろう',
+                disability_type: 'physical',
+                disability_grade: 2,
+                status: 'under_review',
+                created_at: '2024-01-15T10:00:00Z'
+            },
+            {
+                id: 2,
+                application_number: 'A002',
+                applicant_name: '佐藤花子',
+                applicant_name_kana: 'さとうはなこ',
+                disability_type: 'mental',
+                disability_grade: 3,
+                status: 'approved',
+                created_at: '2024-01-10T14:30:00Z'
+            },
+            {
+                id: 3,
+                application_number: 'A003',
+                applicant_name: '山田次郎',
+                applicant_name_kana: 'やまだじろう',
+                disability_type: 'intellectual',
+                disability_grade: 1,
+                status: 'submitted',
+                created_at: '2024-01-20T09:15:00Z'
+            }
+        ];
+
+        function loadDashboard() {
+            displayApplications(mockApplications);
+            updateStats(mockApplications);
+        }
+
+        function displayApplications(applications) {
+            const tbody = document.getElementById('applications-table');
+            tbody.innerHTML = applications.map(app => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${app.application_number}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                <i data-lucide="user" class="w-4 h-4 text-gray-600"></i>
+                            </div>
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-gray-900">${app.applicant_name}</div>
+                                <div class="text-sm text-gray-500">${app.applicant_name_kana}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${getDisabilityTypeStyle(app.disability_type)}">
+                            ${getDisabilityTypeLabel(app.disability_type)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-sm text-gray-900">${app.disability_grade || '-'}級</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusStyle(app.status)}">
+                            ${getStatusLabel(app.status)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(app.created_at).toLocaleDateString('ja-JP')}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center justify-end space-x-2">
+                            <button class="text-indigo-600 hover:text-indigo-900" title="詳細">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                            <button class="text-gray-600 hover:text-gray-900" title="編集">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
+                            <button class="text-red-600 hover:text-red-900" title="削除">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Re-initialize icons for new content
+            lucide.createIcons();
+        }
+
+        function updateStats(applications) {
+            document.getElementById('total-applications').textContent = applications.length;
+            document.getElementById('under-review').textContent = applications.filter(app => app.status === 'under_review').length;
+            document.getElementById('approved').textContent = applications.filter(app => app.status === 'approved').length;
+        }
+
+        function getStatusStyle(status) {
+            const styles = {
+                'draft': 'bg-gray-100 text-gray-800',
+                'submitted': 'bg-blue-100 text-blue-800',
+                'under_review': 'bg-yellow-100 text-yellow-800',
+                'approved': 'bg-green-100 text-green-800',
+                'rejected': 'bg-red-100 text-red-800'
+            };
+            return styles[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'draft': '下書き',
+                'submitted': '提出済み',
+                'under_review': '審査中',
+                'approved': '承認',
+                'rejected': '却下'
+            };
+            return labels[status] || status;
+        }
+
+        function getDisabilityTypeStyle(type) {
+            const styles = {
+                'physical': 'bg-blue-100 text-blue-800',
+                'mental': 'bg-purple-100 text-purple-800',
+                'intellectual': 'bg-green-100 text-green-800'
+            };
+            return styles[type] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getDisabilityTypeLabel(type) {
+            const labels = {
+                'physical': '身体障害',
+                'mental': '精神障害',
+                'intellectual': '知的障害'
+            };
+            return labels[type] || type;
+        }
+
+        // Mobile menu functionality
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            
+            if (sidebar.classList.contains('sidebar-mobile-hidden')) {
+                sidebar.classList.remove('sidebar-mobile-hidden');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('sidebar-mobile-hidden');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function closeMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            
+            sidebar.classList.add('sidebar-mobile-hidden');
+            overlay.classList.add('hidden');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu event listeners
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+            document.getElementById('mobile-menu-overlay').addEventListener('click', closeMobileMenu);
+            
+            // Close mobile menu when clicking on sidebar links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+            
+            loadDashboard();
+        });
+    </script>
 </body>
 </html>
