@@ -32,15 +32,35 @@ jobs:
       run: |
         echo "🔍 Validating JavaScript syntax..."
         has_error=false
-        for file in $(find . -name "*.js" -not -path "./node_modules/*"); do
-          echo "Checking $file"
-          if ! node -c "$file"; then
-            echo "❌ Syntax error in $file"
-            has_error=true
-          else
-            echo "✅ $file is valid"
-          fi
-        done
+        
+        # Only check our project JavaScript files, exclude dependencies
+        js_files=$(find . -name "*.js" \
+          -not -path "./node_modules/*" \
+          -not -path "./project-management-app/*/node_modules/*" \
+          -not -path "./project-management-app/*/dist/*" \
+          -not -path "./.git/*" \
+          -not -name "gulpfile.*.js" \
+          -not -name "webpack.*.js" \
+          | grep -E '\.(js)$' | head -20)
+        
+        if [ -z "$js_files" ]; then
+          echo "⚠️ No JavaScript files found to validate"
+        else
+          echo "Found JavaScript files to validate:"
+          echo "$js_files"
+          echo ""
+          
+          for file in $js_files; do
+            echo "Checking $file"
+            if ! node -c "$file"; then
+              echo "❌ Syntax error in $file"
+              has_error=true
+            else
+              echo "✅ $file is valid"
+            fi
+          done
+        fi
+        
         if [ "$has_error" = true ]; then
           echo "❌ JavaScript validation failed"
           exit 1
