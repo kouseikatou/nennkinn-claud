@@ -127,7 +127,7 @@ const ProjectsList = {
     // Create project card element
     createProjectCard(application) {
         const card = document.createElement('div');
-        card.className = 'block bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion hover:shadow-notion-hover transition-all duration-300 p-6 group cursor-pointer';
+        card.className = 'bg-white rounded-xl border border-saas-200 shadow-saas hover:shadow-saas-lg transition-all duration-300 p-6 group cursor-pointer';
 
         // Get family composition
         const familyComposition = this.getFamilyComposition(application.familyMembers || []);
@@ -141,52 +141,63 @@ const ProjectsList = {
         card.innerHTML = `
             <div class="flex items-start justify-between">
                 <div class="flex items-start space-x-4 flex-1">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-white font-semibold text-lg">
+                    <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-saas">
                         ${initials}
                     </div>
                     <div class="flex-1">
-                        <div class="flex items-center space-x-3 mb-2">
-                            <h3 class="text-lg font-semibold text-notion-gray-800">${application.applicantName || '未設定'}</h3>
+                        <div class="flex items-center space-x-3 mb-3">
+                            <h3 class="text-lg font-semibold text-saas-900">${application.applicantName || '未設定'}</h3>
                             ${statusBadge}
                         </div>
-                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm text-notion-gray-600">
-                            <div>
-                                <div class="text-xs text-notion-gray-500 mb-1">傷病名</div>
-                                <div class="font-medium">${application.disabilityDescription || '未設定'}</div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 text-sm">
+                            <div class="space-y-1">
+                                <div class="text-xs font-medium text-saas-500 uppercase tracking-wide">傷病名</div>
+                                <div class="font-semibold text-saas-800">${application.disabilityDescription || '未設定'}</div>
                             </div>
-                            <div>
-                                <div class="text-xs text-notion-gray-500 mb-1">年金種類</div>
-                                <div class="font-medium">${this.getPensionType(application.applicationType)}</div>
+                            <div class="space-y-1">
+                                <div class="text-xs font-medium text-saas-500 uppercase tracking-wide">種類</div>
+                                <div class="font-semibold text-saas-800">${this.getPensionType(application.applicationType)}</div>
                             </div>
-                            <div>
-                                <div class="text-xs text-notion-gray-500 mb-1">初診日</div>
-                                <div class="font-medium">${this.formatDate(application.onsetDate)}</div>
+                            <div class="space-y-1">
+                                <div class="text-xs font-medium text-saas-500 uppercase tracking-wide">初診日</div>
+                                <div class="font-semibold text-saas-800">${this.formatDate(application.onsetDate)}</div>
                             </div>
-                            <div>
-                                <div class="text-xs text-notion-gray-500 mb-1">家族構成</div>
-                                <div class="font-medium">${familyComposition}</div>
+                            <div class="space-y-1">
+                                <div class="text-xs font-medium text-saas-500 uppercase tracking-wide">家族構成</div>
+                                <div class="font-semibold text-saas-800">${familyComposition}</div>
                             </div>
-                            <div>
-                                <div class="text-xs text-notion-gray-500 mb-1">見込み収益</div>
-                                <div class="font-medium">${this.formatCurrency(application.monthlyAmount)}</div>
+                            <div class="space-y-1">
+                                <div class="text-xs font-medium text-saas-500 uppercase tracking-wide">見込み収益</div>
+                                <div class="font-semibold text-saas-800">${this.formatCurrency(application.monthlyAmount)}</div>
                             </div>
                         </div>
-                        <div class="flex items-center mt-3 text-xs text-notion-gray-500">
-                            <span>申請日: ${this.formatDate(application.createdAt)}</span>
-                            <span class="mx-2">•</span>
-                            <span>担当: ${application.assignee?.name || '未割当'}</span>
+                        <div class="flex items-center mt-4 pt-4 border-t border-saas-200">
+                            <div class="flex items-center text-xs text-saas-500 space-x-4">
+                                <div class="flex items-center space-x-1">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span>${this.formatDate(application.createdAt)}</span>
+                                </div>
+                                <div class="flex items-center space-x-1">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span>${application.assignee?.name || '未割当'}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    <button class="p-2 text-notion-gray-500 hover:text-notion-gray-700 hover:bg-notion-gray-100 rounded-lg transition-all duration-200" onclick="event.preventDefault(); viewApplication(${application.id})">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <div class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <button class="p-2.5 text-saas-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 shadow-saas" onclick="event.preventDefault(); viewApplication(${application.id})" title="詳細表示">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
                         </svg>
                     </button>
-                    <button class="p-2 text-notion-gray-500 hover:text-notion-gray-700 hover:bg-notion-gray-100 rounded-lg transition-all duration-200" onclick="event.preventDefault(); editApplication(${application.id})">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <button class="p-2.5 text-saas-500 hover:text-warning-600 hover:bg-warning-50 rounded-lg transition-all duration-200 shadow-saas" onclick="event.preventDefault(); editApplication(${application.id})" title="編集">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
                         </svg>
                     </button>
@@ -223,17 +234,17 @@ const ProjectsList = {
     // Get status badge HTML
     getStatusBadge(status) {
         const statusMap = {
-            'draft': { text: '下書き', class: 'bg-gray-100 text-gray-800 border-gray-200' },
-            'submitted': { text: '提出済み', class: 'bg-blue-100 text-blue-800 border-blue-200' },
-            'under_review': { text: '審査中', class: 'bg-orange-100 text-orange-800 border-orange-200' },
-            'additional_docs_required': { text: '追加書類要求', class: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-            'approved': { text: '承認済み', class: 'bg-green-100 text-green-800 border-green-200' },
-            'rejected': { text: '却下', class: 'bg-red-100 text-red-800 border-red-200' },
-            'withdrawn': { text: '取下げ', class: 'bg-gray-100 text-gray-800 border-gray-200' }
+            'draft': { text: '下書き', class: 'bg-saas-100 text-saas-700 border border-saas-300' },
+            'submitted': { text: '提出済み', class: 'bg-primary-100 text-primary-700 border border-primary-300' },
+            'under_review': { text: '審査中', class: 'bg-warning-100 text-warning-700 border border-warning-300' },
+            'additional_docs_required': { text: '追加書類要求', class: 'bg-warning-100 text-warning-700 border border-warning-300' },
+            'approved': { text: '承認済み', class: 'bg-success-100 text-success-700 border border-success-300' },
+            'rejected': { text: '却下', class: 'bg-danger-100 text-danger-700 border border-danger-300' },
+            'withdrawn': { text: '取下げ', class: 'bg-saas-100 text-saas-700 border border-saas-300' }
         };
 
         const statusInfo = statusMap[status] || statusMap['draft'];
-        return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusInfo.class}">${statusInfo.text}</span>`;
+        return `<span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold ${statusInfo.class} shadow-saas">${statusInfo.text}</span>`;
     },
 
     // Get pension type display name
