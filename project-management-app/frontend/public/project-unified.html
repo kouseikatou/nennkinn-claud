@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新規申請作成 - 障害年金管理システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="js/application-api.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -376,7 +375,7 @@
                                 <button type="button" onclick="window.history.back()" class="px-6 py-3 border border-notion-gray-300 rounded-lg text-notion-gray-700 font-medium hover:bg-notion-gray-50 transition-all duration-200">
                                     キャンセル
                                 </button>
-                                <button type="button" onclick="saveApplication()" class="px-6 py-3 bg-linear-blue-600 hover:bg-linear-blue-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2">
+                                <button type="button" onclick="saveApplicationDemo()" class="px-6 py-3 bg-linear-blue-600 hover:bg-linear-blue-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
                                     </svg>
@@ -597,19 +596,9 @@
             }
         });
 
-        // 既存データの読み込み
-        async function loadExistingData(editId) {
-            try {
-                // APIから実際のデータを取得
-                if (typeof loadApplication === 'function') {
-                    await loadApplication(editId);
-                    return;
-                }
-            } catch (error) {
-                console.error('Failed to load data from API, falling back to sample data:', error);
-            }
-            
-            // フォールバック用サンプルデータ
+        // 既存データの読み込み（サンプルデータ）
+        function loadExistingData(editId) {
+            // サンプルデータ（実際のシステムではAPIから取得）
             const sampleData = {
                 '001': {
                     name: '田中太郎',
@@ -678,6 +667,102 @@
                     pensionType: 'basic',
                     manager: '田中一郎',
                     revenue: 250000
+                },
+                '3': {
+                    name: '佐藤一郎',
+                    furigana: 'サトウイチロウ',
+                    age: 48,
+                    gender: 'male',
+                    birthday: '1975-08-10',
+                    pensionNumber: '4567-890123',
+                    phone: '03-3456-7890',
+                    email: 'sato@example.com',
+                    address: '東京都品川区五反田3-3-3',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '佐藤美香',
+                        furigana: 'サトウミカ',
+                        mynumber: '345678901234',
+                        pensionNumber: '5678-901234',
+                        birthday: '1978-12-05',
+                        age: 45,
+                        gender: 'female'
+                    },
+                    disease: '腰椎椎間板ヘルニア',
+                    firstVisit: '2021-08-10',
+                    disabilityDate: '2022-02-10',
+                    hospital: '品川整形外科病院',
+                    doctor: '山田医師',
+                    grade: '3級',
+                    symptoms: '腰痛、下肢痛、歩行困難',
+                    treatment: '理学療法、痛み止めの服用',
+                    medication: 'ロキソニン、リリカ',
+                    dailyLife: '長時間の立位、歩行が困難',
+                    work: '在宅勤務に変更',
+                    pensionType: 'employees',
+                    manager: '山田太郎',
+                    revenue: 400000
+                },
+                '4': {
+                    name: '鈴木次郎',
+                    furigana: 'スズキジロウ',
+                    age: 38,
+                    gender: 'male',
+                    birthday: '1985-12-01',
+                    pensionNumber: '6789-012345',
+                    phone: '03-4567-8901',
+                    email: 'suzuki@example.com',
+                    address: '東京都中野区中野4-4-4',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '鈴木恵子',
+                        furigana: 'スズキケイコ',
+                        mynumber: '456789012345',
+                        pensionNumber: '7890-123456',
+                        birthday: '1987-07-15',
+                        age: 36,
+                        gender: 'female'
+                    },
+                    disease: '双極性障害',
+                    firstVisit: '2023-12-01',
+                    disabilityDate: '2024-06-01',
+                    hospital: '中野メンタルクリニック',
+                    doctor: '高橋医師',
+                    grade: '2級',
+                    symptoms: '気分の波が激しく、日常生活に支障',
+                    treatment: '薬物療法、心理療法',
+                    medication: 'リチウム、バルプロ酸',
+                    dailyLife: '体調の波により活動に制限',
+                    work: '療養中',
+                    pensionType: 'employees',
+                    manager: '高橋美里',
+                    revenue: 280000
+                },
+                '5': {
+                    name: '高橋三郎',
+                    furigana: 'タカハシサブロウ',
+                    age: 55,
+                    gender: 'male',
+                    birthday: '1968-11-20',
+                    pensionNumber: '7890-123456',
+                    phone: '03-5678-9012',
+                    email: 'takahashi@example.com',
+                    address: '東京都杉並区荻窪5-5-5',
+                    hasSpouse: 'false',
+                    disease: '関節リウマチ',
+                    firstVisit: '2022-11-20',
+                    disabilityDate: '2023-05-20',
+                    hospital: '杉並リウマチクリニック',
+                    doctor: '佐藤医師',
+                    grade: '3級',
+                    symptoms: '関節痛、関節変形、可動域制限',
+                    treatment: '抗リウマチ薬、理学療法',
+                    medication: 'メトトレキサート、生物学的製剤',
+                    dailyLife: '手指の細かい作業が困難',
+                    work: '職場環境調整により継続勤務',
+                    pensionType: 'employees',
+                    manager: '佐藤花子',
+                    revenue: 0
                 }
             };
             
@@ -1007,6 +1092,50 @@
             if (childCount === 0) {
                 document.getElementById('childrenList').innerHTML = '<div class="text-sm text-notion-gray-500">「子どもを追加」ボタンを押して子ども情報を入力してください</div>';
             }
+        }
+
+        // 保存機能（デモ用）
+        function saveApplicationDemo() {
+            // フォームデータを収集
+            const formData = {
+                name: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
+                furigana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
+                hasSpouse: document.querySelector('input[name="hasSpouse"]:checked')?.value === 'true',
+                children: []
+            };
+
+            // 子供の情報を収集
+            const childCards = document.querySelectorAll('#childrenList .border.border-notion-gray-200');
+            childCards.forEach(card => {
+                const nameInput = card.querySelector('input[placeholder="田中太郎"]');
+                const kanaInput = card.querySelector('input[placeholder="タナカタロウ"]');
+                if (nameInput && nameInput.value) {
+                    formData.children.push({
+                        name: nameInput.value,
+                        kana: kanaInput?.value || ''
+                    });
+                }
+            });
+
+            // 保存完了メッセージを表示
+            showSaveNotification('申請情報を保存しました');
+            
+            console.log('保存されたデータ:', formData);
+        }
+
+        // 保存通知を表示
+        function showSaveNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 3秒後に自動削除
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
     </script>
 </body>
