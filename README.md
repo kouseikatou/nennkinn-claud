@@ -64,3 +64,7 @@ npm run dev
 
 - [開発ガイド](DEVELOPMENT.md) - 開発環境のセットアップと開発フロー
 - [デプロイメントガイド](project-management-app/DEPLOYMENT.md) - 本番環境へのデプロイ手順
+
+## 更新履歴
+
+- 2024-01-23: GitHub Actions自動デプロイ設定完了
