@@ -40,3 +40,6 @@ ENV/
 
 # Gemini
 .gemini/
+
+# Claude config files
+.claude.json*

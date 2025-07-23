@@ -369,11 +369,28 @@
                             <table class="w-full">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">顧客名</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">申請番号</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">障害種別</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ステータス</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">登録日</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">名前</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">申請後日数</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">進捗管理</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">進捗補助</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">請求の種類</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">年金種類</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">申請完了日</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">受給決定日</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">初回入金日</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">証書</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">認定日結果</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">現在結果</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">売上見込み</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">分割残額</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">事務手数料額</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">請求書発行</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">入金チェック</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">次回更新日</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">更新不可者</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">障害者手帳の等級</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">障害者手帳の申請代行希望有無</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">就労支援施設紹介の希望有無</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">アクション</th>
                                     </tr>
                                 </thead>
@@ -390,14 +407,53 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">A-2024-001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">45日</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">身体障害</span>
+                                            <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">審査中</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">書類確認済</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full">障害厚生年金</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">障害厚生年金</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/01/15</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">-</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button class="text-blue-600 hover:text-blue-900 text-sm">未受領</button>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">審査中</span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/01/15</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">継続</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥300,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥150,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥50,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/12/15</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">2級</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">希望有</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">希望無</span>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-2">
                                                 <button class="text-indigo-600 hover:text-indigo-900" title="詳細">
@@ -424,14 +480,53 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">A-2024-002</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">精神障害</span>
-                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">72日</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">承認済み</span>
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">入金確認済</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">障害基礎年金</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">障害基礎年金</span>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/01/10</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/03/10</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/03/25</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <button class="text-green-600 hover:text-green-900 text-sm">受領済</button>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">認定</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">受給中</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥200,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥0</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">¥40,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" checked class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2025/03/25</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <input type="checkbox" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">3級</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">希望無</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">希望有</span>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div class="flex items-center justify-end space-x-2">
                                                 <button class="text-indigo-600 hover:text-indigo-900" title="詳細">
