@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>障害年金管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-semibold">障害年金管理システム</h1>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+                    <h2 class="text-2xl font-bold mb-4">システム概要</h2>
+                    <p class="mb-4">このシステムは障害年金申請を管理するためのWebアプリケーションです。</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-2">主な機能</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>申請者情報の管理</li>
+                                <li>配偶者・子供情報の登録</li>
+                                <li>申請状況の追跡</li>
+                                <li>ドキュメント管理</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold mb-2">技術スタック</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>Frontend: HTML, Tailwind CSS</li>
+                                <li>Backend: Node.js, Express</li>
+                                <li>Database: SQLite</li>
+                                <li>Hosting: GitHub Pages / Cloud Run</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex space-x-4">
+                        <a href="https://github.com/kouseikatou/nennkinn-claud" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">
+                            GitHub リポジトリ
+                        </a>
+                        <a href="/project-management-app/cloudrun/public/index.html" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            アプリケーションを開く
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
