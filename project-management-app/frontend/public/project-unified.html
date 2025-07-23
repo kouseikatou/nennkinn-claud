@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新規申請作成 - 障害年金管理システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/application-api.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -366,6 +367,21 @@
                                         <div class="text-sm text-notion-gray-500">「子どもを追加」ボタンを押して子ども情報を入力してください</div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 保存ボタン -->
+                        <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion p-6">
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" onclick="window.history.back()" class="px-6 py-3 border border-notion-gray-300 rounded-lg text-notion-gray-700 font-medium hover:bg-notion-gray-50 transition-all duration-200">
+                                    キャンセル
+                                </button>
+                                <button type="button" onclick="saveApplication()" class="px-6 py-3 bg-linear-blue-600 hover:bg-linear-blue-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
+                                    </svg>
+                                    <span>保存</span>
+                                </button>
                             </div>
                         </div>
 
