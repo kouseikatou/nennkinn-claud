@@ -5,732 +5,246 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>障害年金管理システム</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-        body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; }
-        .sidebar-shadow { box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
-        .page-content { display: none; }
-        .page-content.active { display: block; }
-        
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-            .sidebar-mobile-hidden { transform: translateX(-100%); }
-            .sidebar-mobile-overlay { backdrop-filter: blur(4px); }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+                    },
+                    colors: {
+                        'notion-gray': {
+                            50: '#fbfbfb',
+                            100: '#f7f6f3',
+                            200: '#ebeae6',
+                            300: '#d1cfc8',
+                            400: '#9b9a97',
+                            500: '#787774',
+                            600: '#5e5d5a',
+                            700: '#37352f',
+                            800: '#25241f',
+                            900: '#1f1e1a'
+                        },
+                        'linear-blue': {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1'
+                        }
+                    },
+                    boxShadow: {
+                        'notion': '0 1px 2px rgba(0, 0, 0, 0.04)',
+                        'notion-hover': '0 2px 8px rgba(0, 0, 0, 0.08)',
+                        'linear': '0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
         }
-
-        /* Form styles */
-        .form-section {
-            background: white;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #374151;
-        }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .btn-primary {
-            background-color: #6366f1;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: #5048e5;
-        }
-
-        .btn-secondary {
-            background-color: #f3f4f6;
-            color: #374151;
-            padding: 12px 24px;
-            border-radius: 8px;
-            border: 1px solid #d1d5db;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn-secondary:hover {
-            background-color: #e5e7eb;
-        }
-    </style>
+    </script>
 </head>
-<body class="bg-gray-50">
-    <div class="flex h-screen">
-        <!-- Mobile Menu Button -->
-        <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"></div>
-        
-        <!-- Sidebar -->
-        <div id="sidebar" class="fixed lg:static w-64 bg-white sidebar-shadow flex flex-col z-40 transform transition-transform lg:transform-none sidebar-mobile-hidden lg:sidebar-mobile-hidden-none h-full">
-            <!-- Logo -->
-            <div class="p-6 border-b border-gray-200">
+<body class="bg-notion-gray-50 font-sans antialiased">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-md border-b border-notion-gray-200/60 px-6 py-4 sticky top-0 z-40">
+            <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-                        <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+                    <div class="w-8 h-8 bg-gradient-to-br from-linear-blue-500 to-linear-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/>
+                        </svg>
                     </div>
-                    <div>
-                        <h1 class="text-lg font-bold text-gray-900">障害年金</h1>
-                        <p class="text-sm text-gray-500">管理システム</p>
-                    </div>
+                    <h1 class="text-xl font-semibold text-notion-gray-800">障害年金管理システム</h1>
                 </div>
-            </div>
-
-            <!-- Navigation -->
-            <nav class="flex-1 p-4">
-                <ul class="space-y-2">
-                    <li>
-                        <a href="#" onclick="showPage('dashboard')" class="nav-link active flex items-center space-x-3 px-4 py-3 rounded-lg bg-indigo-50 text-indigo-700 font-medium" data-page="dashboard">
-                            <i data-lucide="home" class="w-5 h-5"></i>
-                            <span>ダッシュボード</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showPage('customers')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" data-page="customers">
-                            <i data-lucide="users" class="w-5 h-5"></i>
-                            <span>顧客管理</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showPage('documents')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" data-page="documents">
-                            <i data-lucide="file-plus" class="w-5 h-5"></i>
-                            <span>書類作成システム</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" onclick="showPage('ai-petition')" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" data-page="ai-petition">
-                            <i data-lucide="bot" class="w-5 h-5"></i>
-                            <span>AI申立書システム</span>
-                        </a>
-                    </li>
-                </ul>
-
-                <!-- Settings Section -->
-                <div class="mt-auto pt-4 border-t border-gray-200">
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                                <i data-lucide="settings" class="w-5 h-5"></i>
-                                <span>設定</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                                <i data-lucide="help-circle" class="w-5 h-5"></i>
-                                <span>ヘルプ</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- User Profile -->
-            <div class="p-4 border-t border-gray-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
-                        <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 px-3 py-2 bg-notion-gray-100 rounded-lg">
+                        <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-xs font-medium text-white">田</div>
+                        <span class="text-sm font-medium text-notion-gray-700">田中太郎</span>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate">管理者</p>
-                        <p class="text-xs text-gray-500 truncate">admin@example.com</p>
-                    </div>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <button class="p-2 text-notion-gray-500 hover:text-notion-gray-700 hover:bg-notion-gray-100 rounded-lg transition-all duration-200">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                        </svg>
                     </button>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden lg:ml-0">
-            <!-- Top Header -->
-            <header class="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <!-- Mobile Menu Button -->
-                        <button id="mobile-menu-btn" class="lg:hidden p-2 text-gray-600 hover:text-gray-900">
-                            <i data-lucide="menu" class="w-6 h-6"></i>
-                        </button>
+        <div class="flex">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white/50 backdrop-blur-sm border-r border-notion-gray-200/60 min-h-screen">
+                <nav class="p-4 space-y-1">
+                    <div class="mb-8">
+                        <div class="text-xs font-semibold text-notion-gray-400 uppercase tracking-wider mb-3">メニュー</div>
+                        <ul class="space-y-1">
+                            <li>
+                                <a href="#" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg bg-linear-blue-50 text-linear-blue-700 border border-linear-blue-200 shadow-sm">
+                                    <div class="mr-3 p-1.5 bg-linear-blue-100 rounded-md">
+                                        <svg class="h-4 w-4 text-linear-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                        </svg>
+                                    </div>
+                                    ダッシュボード
+                                </a>
+                            </li>
+                            <li>
+                                <a href="projects.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-notion-gray-600 hover:bg-notion-gray-100 hover:text-notion-gray-800 transition-all duration-200">
+                                    <div class="mr-3 p-1.5">
+                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    年金申請一覧
+                                </a>
+                            </li>
+                            <li>
+                                <a href="logs.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-notion-gray-600 hover:bg-notion-gray-100 hover:text-notion-gray-800 transition-all duration-200">
+                                    <div class="mr-3 p-1.5">
+                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    変更履歴
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-8 max-w-7xl">
+                <div class="space-y-8">
+                    <!-- Page Header -->
+                    <div class="flex items-center justify-between">
                         <div>
-                            <h2 id="page-title" class="text-xl sm:text-2xl font-bold text-gray-900">ダッシュボード</h2>
-                            <p id="page-subtitle" class="text-gray-600 hidden sm:block">障害年金申請の管理と追跡</p>
+                            <h1 class="text-2xl font-semibold text-notion-gray-800">ダッシュボード</h1>
+                            <p class="text-notion-gray-500 mt-1">障害年金申請の概要を確認できます</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="px-4 py-2.5 text-sm font-medium text-notion-gray-600 border border-notion-gray-300 rounded-lg hover:bg-notion-gray-50 transition-all duration-200 flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>エクスポート</span>
+                            </button>
+                            <a href="project-unified.html" class="px-4 py-2.5 bg-linear-blue-600 hover:bg-linear-blue-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-linear flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                                </svg>
+                                <span>新規申請</span>
+                            </a>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <button class="relative p-2 text-gray-400 hover:text-gray-600">
-                            <i data-lucide="bell" class="w-5 h-5"></i>
-                            <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-xs text-white">3</span>
-                        </button>
-                        <button class="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span class="hidden sm:inline">新規申請</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
 
-            <!-- Page Content -->
-            <main class="flex-1 overflow-auto p-4 sm:p-6">
-                <!-- Dashboard Page -->
-                <div id="dashboard-page" class="page-content active">
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <!-- 統計カード -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion hover:shadow-notion-hover transition-all duration-300 p-6 group">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-600">総申請数</p>
-                                    <p class="text-3xl font-bold text-gray-900 mt-2">127</p>
+                                    <p class="text-sm font-medium text-notion-gray-500 mb-1">総申請数</p>
+                                    <p class="text-3xl font-bold text-notion-gray-800">42</p>
+                                    <div class="flex items-center mt-2">
+                                        <span class="text-xs text-green-600 font-medium">+8.2%</span>
+                                        <span class="text-xs text-notion-gray-400 ml-1">vs 先月</span>
+                                    </div>
                                 </div>
-                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="file-text" class="w-6 h-6 text-blue-600"></i>
+                                <div class="p-3 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                    </svg>
                                 </div>
-                            </div>
-                            <div class="mt-4 flex items-center">
-                                <span class="text-sm text-green-600 font-medium">+12%</span>
-                                <span class="text-sm text-gray-500 ml-2">前月比</span>
                             </div>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion hover:shadow-notion-hover transition-all duration-300 p-6 group">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-600">審査中</p>
-                                    <p class="text-3xl font-bold text-gray-900 mt-2">23</p>
+                                    <p class="text-sm font-medium text-notion-gray-500 mb-1">審査中</p>
+                                    <p class="text-3xl font-bold text-notion-gray-800">18</p>
+                                    <div class="flex items-center mt-2">
+                                        <span class="text-xs text-orange-600 font-medium">+2件</span>
+                                        <span class="text-xs text-notion-gray-400 ml-1">今週</span>
+                                    </div>
                                 </div>
-                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="clock" class="w-6 h-6 text-yellow-600"></i>
+                                <div class="p-3 bg-gradient-to-br from-orange-50 to-amber-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                    </svg>
                                 </div>
-                            </div>
-                            <div class="mt-4 flex items-center">
-                                <span class="text-sm text-yellow-600 font-medium">進行中</span>
-                                <span class="text-sm text-gray-500 ml-2">平均 15日</span>
                             </div>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion hover:shadow-notion-hover transition-all duration-300 p-6 group">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-600">承認済み</p>
-                                    <p class="text-3xl font-bold text-gray-900 mt-2">89</p>
+                                    <p class="text-sm font-medium text-notion-gray-500 mb-1">承認済み</p>
+                                    <p class="text-3xl font-bold text-notion-gray-800">16</p>
+                                    <div class="flex items-center mt-2">
+                                        <span class="text-xs text-green-600 font-medium">95.2%</span>
+                                        <span class="text-xs text-notion-gray-400 ml-1">成功率</span>
+                                    </div>
                                 </div>
-                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                                <div class="p-3 bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                    </svg>
                                 </div>
-                            </div>
-                            <div class="mt-4 flex items-center">
-                                <span class="text-sm text-green-600 font-medium">+8%</span>
-                                <span class="text-sm text-gray-500 ml-2">今月</span>
                             </div>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion hover:shadow-notion-hover transition-all duration-300 p-6 group">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-600">却下</p>
-                                    <p class="text-3xl font-bold text-gray-900 mt-2">15</p>
-                                </div>
-                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="x-circle" class="w-6 h-6 text-red-600"></i>
-                                </div>
-                            </div>
-                            <div class="mt-4 flex items-center">
-                                <span class="text-sm text-red-600 font-medium">-3%</span>
-                                <span class="text-sm text-gray-500 ml-2">前月比</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Applications -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                            <div>
-                                <h3 class="text-lg font-semibold text-gray-900">最近の申請</h3>
-                                <p class="text-sm text-gray-600">新しい申請と進行状況</p>
-                            </div>
-                            <div class="flex items-center space-x-3">
-                                <button class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                    <i data-lucide="filter" class="w-4 h-4 inline mr-2"></i>
-                                    フィルター
-                                </button>
-                                <button class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                    <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
-                                    エクスポート
-                                </button>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <i data-lucide="user" class="w-5 h-5 text-blue-600"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">田中太郎</p>
-                                            <p class="text-sm text-gray-500">申請番号: A-2024-001</p>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">審査中</span>
-                                        <p class="text-sm text-gray-500 mt-1">2024/01/15</p>
+                                    <p class="text-sm font-medium text-notion-gray-500 mb-1">平均処理期間</p>
+                                    <p class="text-3xl font-bold text-notion-gray-800">45<span class="text-lg text-notion-gray-500">日</span></p>
+                                    <div class="flex items-center mt-2">
+                                        <span class="text-xs text-green-600 font-medium">-3日</span>
+                                        <span class="text-xs text-notion-gray-400 ml-1">改善</span>
                                     </div>
                                 </div>
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                            <i data-lucide="user" class="w-5 h-5 text-green-600"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">佐藤花子</p>
-                                            <p class="text-sm text-gray-500">申請番号: A-2024-002</p>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">承認済み</span>
-                                        <p class="text-sm text-gray-500 mt-1">2024/01/10</p>
-                                    </div>
+                                <div class="p-3 bg-gradient-to-br from-purple-50 to-violet-100 rounded-xl group-hover:scale-110 transition-transform duration-300">
+                                    <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                    </svg>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Customer Management Page -->
-                <div id="customers-page" class="page-content">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">顧客一覧</h3>
-                            <p class="text-sm text-gray-600">申請者の情報管理</p>
-                        </div>
-                        <button class="btn-primary flex items-center space-x-2">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span>新規顧客登録</span>
-                        </button>
-                    </div>
-
-                    <!-- Search and Filters -->
-                    <div class="bg-white p-4 rounded-lg border border-gray-200 mb-6">
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex-1 min-w-64">
-                                <input type="text" placeholder="顧客名、申請番号で検索..." class="form-input">
+                    <!-- システムステータス -->
+                    <div class="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border border-green-200/60 rounded-xl p-6 shadow-linear">
+                        <div class="flex items-start space-x-4">
+                            <div class="p-2 bg-green-100 rounded-xl">
+                                <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
                             </div>
-                            <div>
-                                <select class="form-select">
-                                    <option>ステータス選択</option>
-                                    <option>申請中</option>
-                                    <option>審査中</option>
-                                    <option>承認済み</option>
-                                    <option>却下</option>
-                                </select>
-                            </div>
-                            <div>
-                                <select class="form-select">
-                                    <option>障害種別</option>
-                                    <option>身体障害</option>
-                                    <option>精神障害</option>
-                                    <option>知的障害</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Customer List -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">顧客名</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">申請番号</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">障害種別</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ステータス</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">登録日</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">アクション</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                                    <span class="text-sm font-medium text-blue-600">田</span>
-                                                </div>
-                                                <div class="ml-3">
-                                                    <div class="text-sm font-medium text-gray-900">田中太郎</div>
-                                                    <div class="text-sm text-gray-500">たなかたろう</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">A-2024-001</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">身体障害</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">審査中</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/01/15</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <div class="flex items-center justify-end space-x-2">
-                                                <button class="text-indigo-600 hover:text-indigo-900" title="詳細">
-                                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                                </button>
-                                                <button class="text-gray-600 hover:text-gray-900" title="編集">
-                                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                                </button>
-                                                <button class="text-red-600 hover:text-red-900" title="削除">
-                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                                    <span class="text-sm font-medium text-green-600">佐</span>
-                                                </div>
-                                                <div class="ml-3">
-                                                    <div class="text-sm font-medium text-gray-900">佐藤花子</div>
-                                                    <div class="text-sm text-gray-500">さとうはなこ</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">A-2024-002</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">精神障害</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">承認済み</span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2024/01/10</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <div class="flex items-center justify-end space-x-2">
-                                                <button class="text-indigo-600 hover:text-indigo-900" title="詳細">
-                                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                                </button>
-                                                <button class="text-gray-600 hover:text-gray-900" title="編集">
-                                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                                </button>
-                                                <button class="text-red-600 hover:text-red-900" title="削除">
-                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Document Creation System Page -->
-                <div id="documents-page" class="page-content">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">書類作成システム</h3>
-                            <p class="text-sm text-gray-600">申請書類の作成と管理</p>
-                        </div>
-                    </div>
-
-                    <!-- Document Templates -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
-                            <div class="flex items-center space-x-4 mb-4">
-                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="file-text" class="w-6 h-6 text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900">障害基礎年金請求書</h4>
-                                    <p class="text-sm text-gray-500">20歳前障害用</p>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-4">20歳前に初診日がある場合の障害基礎年金請求書を作成します。</p>
-                            <button class="w-full btn-primary">
-                                <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
-                                作成開始
-                            </button>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
-                            <div class="flex items-center space-x-4 mb-4">
-                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="clipboard-list" class="w-6 h-6 text-green-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900">障害厚生年金請求書</h4>
-                                    <p class="text-sm text-gray-500">初回請求用</p>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-4">厚生年金加入中に初診日がある場合の障害厚生年金請求書を作成します。</p>
-                            <button class="w-full btn-primary">
-                                <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
-                                作成開始
-                            </button>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer">
-                            <div class="flex items-center space-x-4 mb-4">
-                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="heart-pulse" class="w-6 h-6 text-purple-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900">診断書</h4>
-                                    <p class="text-sm text-gray-500">各種診断書</p>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-4">精神・知的障害、眼・聴覚・言語機能障害等の診断書を作成します。</p>
-                            <button class="w-full btn-primary">
-                                <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
-                                作成開始
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Recent Documents -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h4 class="font-semibold text-gray-900">最近の書類</h4>
-                        </div>
-                        <div class="p-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">障害基礎年金請求書 - 田中太郎</p>
-                                            <p class="text-sm text-gray-500">2024/01/20 作成</p>
-                                        </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-green-800">システム正常稼働中</h3>
+                                <p class="text-green-700 mt-1">障害年金管理システムは正常に動作しています</p>
+                                <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-green-700">データベース接続</span>
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <span class="px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">完成</span>
-                                        <button class="btn-secondary text-sm py-1 px-3">
-                                            <i data-lucide="download" class="w-4 h-4 inline mr-1"></i>
-                                            PDF
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                                            <i data-lucide="clock" class="w-5 h-5 text-yellow-600"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">診断書 - 佐藤花子</p>
-                                            <p class="text-sm text-gray-500">2024/01/18 作成中</p>
-                                        </div>
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-green-700">認証サービス</span>
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">作成中</span>
-                                        <button class="btn-secondary text-sm py-1 px-3">
-                                            <i data-lucide="edit" class="w-4 h-4 inline mr-1"></i>
-                                            編集
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Petition System Page -->
-                <div id="ai-petition-page" class="page-content">
-                    <div class="flex items-center justify-between mb-6">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900">AI申立書システム</h3>
-                            <p class="text-sm text-gray-600">AIを活用した申立書の自動生成</p>
-                        </div>
-                        <button class="btn-primary flex items-center space-x-2">
-                            <i data-lucide="bot" class="w-4 h-4"></i>
-                            <span>新規申立書作成</span>
-                        </button>
-                    </div>
-
-                    <!-- AI Features -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                            <div class="flex items-center space-x-4 mb-4">
-                                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="message-square-text" class="w-6 h-6 text-indigo-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900">症状・日常生活状況の記述</h4>
-                                    <p class="text-sm text-gray-500">AIが症状を詳しく記述</p>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-4">患者の症状や日常生活への影響を詳細に記述し、審査に有利な申立書を生成します。</p>
-                            <button class="btn-secondary w-full">
-                                <i data-lucide="play" class="w-4 h-4 inline mr-2"></i>
-                                開始する
-                            </button>
-                        </div>
-
-                        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                            <div class="flex items-center space-x-4 mb-4">
-                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="brain" class="w-6 h-6 text-green-600"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-gray-900">医学的根拠の整理</h4>
-                                    <p class="text-sm text-gray-500">医療情報を整理・分析</p>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-600 mb-4">医師の診断書や検査結果を分析し、医学的根拠を明確に整理します。</p>
-                            <button class="btn-secondary w-full">
-                                <i data-lucide="play" class="w-4 h-4 inline mr-2"></i>
-                                開始する
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- AI Petition Form -->
-                    <div class="form-section">
-                        <div class="flex items-center space-x-3 mb-6">
-                            <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                                <i data-lucide="bot" class="w-4 h-4 text-indigo-600"></i>
-                            </div>
-                            <h4 class="text-lg font-semibold text-gray-900">AI申立書作成</h4>
-                        </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="form-group">
-                                <label class="form-label">申請者名</label>
-                                <input type="text" class="form-input" placeholder="申請者の氏名を入力">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">障害種別</label>
-                                <select class="form-select">
-                                    <option>選択してください</option>
-                                    <option>身体障害</option>
-                                    <option>精神障害</option>
-                                    <option>知的障害</option>
-                                    <option>発達障害</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">主な症状・困りごと</label>
-                            <textarea class="form-textarea" rows="4" placeholder="日常生活で困っていることや主な症状を詳しく記入してください"></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">発病から現在までの状況</label>
-                            <textarea class="form-textarea" rows="4" placeholder="発病の経緯、治療歴、現在の状況などを時系列で記入してください"></textarea>
-                        </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="form-group">
-                                <label class="form-label">就労状況</label>
-                                <select class="form-select">
-                                    <option>選択してください</option>
-                                    <option>就労していない</option>
-                                    <option>一般就労（フルタイム）</option>
-                                    <option>一般就労（パートタイム）</option>
-                                    <option>福祉的就労</option>
-                                    <option>その他</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">希望する年金の種類</label>
-                                <select class="form-select">
-                                    <option>選択してください</option>
-                                    <option>障害基礎年金</option>
-                                    <option>障害厚生年金</option>
-                                    <option>障害共済年金</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center space-x-4 pt-6">
-                            <button class="btn-primary flex items-center space-x-2">
-                                <i data-lucide="bot" class="w-4 h-4"></i>
-                                <span>AI申立書を生成</span>
-                            </button>
-                            <button class="btn-secondary">
-                                <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
-                                下書き保存
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Generated Petitions -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                        <div class="px-6 py-4 border-b border-gray-200">
-                            <h4 class="font-semibold text-gray-900">生成された申立書</h4>
-                        </div>
-                        <div class="p-6">
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg border border-indigo-100">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                            <i data-lucide="bot" class="w-5 h-5 text-indigo-600"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">AI申立書 - 田中太郎様</p>
-                                            <p class="text-sm text-gray-500">精神障害 • 2024/01/21 生成</p>
-                                        </div>
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-green-700">ファイルストレージ</span>
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <span class="px-3 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full">AI生成完了</span>
-                                        <button class="btn-secondary text-sm py-1 px-3">
-                                            <i data-lucide="eye" class="w-4 h-4 inline mr-1"></i>
-                                            確認
-                                        </button>
-                                        <button class="btn-primary text-sm py-1 px-3">
-                                            <i data-lucide="download" class="w-4 h-4 inline mr-1"></i>
-                                            PDF
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                                            <i data-lucide="clock" class="w-5 h-5 text-yellow-600"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-medium text-gray-900">AI申立書 - 佐藤花子様</p>
-                                            <p class="text-sm text-gray-500">身体障害 • 2024/01/19 生成中</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">生成中</span>
-                                        <button class="btn-secondary text-sm py-1 px-3" disabled>
-                                            <i data-lucide="loader" class="w-4 h-4 inline mr-1 animate-spin"></i>
-                                            処理中
-                                        </button>
+                                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span class="text-green-700">通知システム</span>
                                     </div>
                                 </div>
                             </div>
@@ -740,95 +254,5 @@
             </main>
         </div>
     </div>
-
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-
-        // Page management
-        const pages = {
-            'dashboard': {
-                title: 'ダッシュボード',
-                subtitle: '障害年金申請の管理と追跡'
-            },
-            'customers': {
-                title: '顧客管理',
-                subtitle: '申請者の情報管理'
-            },
-            'documents': {
-                title: '書類作成システム',
-                subtitle: '申請書類の作成と管理'
-            },
-            'ai-petition': {
-                title: 'AI申立書システム',
-                subtitle: 'AIを活用した申立書の自動生成'
-            }
-        };
-
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page-content').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Show selected page
-            document.getElementById(pageId + '-page').classList.add('active');
-            
-            // Update navigation
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active', 'bg-indigo-50', 'text-indigo-700', 'font-medium');
-                link.classList.add('text-gray-700');
-            });
-            
-            // Activate selected nav item
-            const activeNav = document.querySelector(`[data-page="${pageId}"]`);
-            if (activeNav) {
-                activeNav.classList.add('active', 'bg-indigo-50', 'text-indigo-700', 'font-medium');
-                activeNav.classList.remove('text-gray-700');
-            }
-            
-            // Update page title and subtitle
-            const pageInfo = pages[pageId];
-            if (pageInfo) {
-                document.getElementById('page-title').textContent = pageInfo.title;
-                document.getElementById('page-subtitle').textContent = pageInfo.subtitle;
-            }
-            
-            // Close mobile menu
-            closeMobileMenu();
-        }
-
-        // Mobile menu functionality
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            
-            if (sidebar.classList.contains('sidebar-mobile-hidden')) {
-                sidebar.classList.remove('sidebar-mobile-hidden');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('sidebar-mobile-hidden');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        function closeMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            
-            sidebar.classList.add('sidebar-mobile-hidden');
-            overlay.classList.add('hidden');
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu event listeners
-            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
-            document.getElementById('mobile-menu-overlay').addEventListener('click', closeMobileMenu);
-            
-            // Re-initialize Lucide icons
-            lucide.createIcons();
-        });
-    </script>
 </body>
 </html>
