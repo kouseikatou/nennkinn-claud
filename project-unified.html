@@ -655,6 +655,253 @@
             
             // フォールバック用サンプルデータ
             const sampleData = {
+                '1': {
+                    name: '田中太郎',
+                    furigana: 'タナカタロウ',
+                    age: 42,
+                    gender: 'male',
+                    birthday: '1982-05-15',
+                    pensionNumber: '1234-567890',
+                    phone: '03-1234-5678',
+                    email: 'tanaka@example.com',
+                    address: '東京都新宿区西新宿1-1-1',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '田中花子',
+                        furigana: 'タナカハナコ',
+                        mynumber: '123456789012',
+                        pensionNumber: '2345-678901',
+                        birthday: '1985-03-20',
+                        age: 39,
+                        gender: 'female',
+                        income1: 2800000,
+                        income2: 2900000,
+                        spouseAddition: 'yes',
+                        transferAddition: 'no',
+                        address: '東京都新宿区西新宿1-1-1',
+                        phone: '03-1234-5679',
+                        email: 'hanako@example.com'
+                    },
+                    disease: 'うつ病',
+                    firstVisit: '2023-05-10',
+                    disabilityDate: '2023-11-10',
+                    hospital: '新宿病院',
+                    doctor: '山田医師',
+                    grade: '2級',
+                    symptoms: '気分の落ち込み、集中力低下、睡眠障害が継続している',
+                    treatment: '週1回の通院、抗うつ薬の服用、カウンセリング',
+                    medication: 'セルトラリン50mg、ロラゼパム0.5mg',
+                    hasChildren: 'true',
+                    childrenData: [
+                        {
+                            name: '田中一郎',
+                            furigana: 'タナカイチロウ',
+                            birthday: '2010-04-01',
+                            age: 14,
+                            gender: 'male',
+                            mynumber: '345678901234',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '新宿中学校',
+                            schoolYear: '2年'
+                        },
+                        {
+                            name: '田中次郎',
+                            furigana: 'タナカジロウ',
+                            birthday: '2012-07-15',
+                            age: 12,
+                            gender: 'male',
+                            mynumber: '456789012345',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '新宿小学校',
+                            schoolYear: '6年'
+                        }
+                    ]
+                },
+                '2': {
+                    name: '山田花子',
+                    furigana: 'ヤマダハナコ',
+                    age: 35,
+                    gender: 'female',
+                    birthday: '1989-08-22',
+                    pensionNumber: '3456-789012',
+                    phone: '03-2345-6789',
+                    email: 'yamada@example.com',
+                    address: '東京都渋谷区神南1-2-3',
+                    hasSpouse: 'false',
+                    disease: '統合失調症',
+                    firstVisit: '2022-03-15',
+                    disabilityDate: '2022-09-15',
+                    hospital: '渋谷メンタルクリニック',
+                    doctor: '佐藤医師',
+                    grade: '1級',
+                    symptoms: '幻聴、妄想、思考の混乱が見られる',
+                    treatment: '月2回の通院、抗精神病薬の服用、デイケア参加',
+                    medication: 'リスペリドン2mg、ロラゼパム1mg',
+                    hasChildren: 'false'
+                },
+                '3': {
+                    name: '佐藤一郎',
+                    furigana: 'サトウイチロウ',
+                    age: 58,
+                    gender: 'male',
+                    birthday: '1966-12-03',
+                    pensionNumber: '4567-890123',
+                    phone: '03-3456-7890',
+                    email: 'sato@example.com', 
+                    address: '東京都世田谷区三軒茶屋2-3-4',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '佐藤美香',
+                        furigana: 'サトウミカ',
+                        mynumber: '567890123456',
+                        pensionNumber: '5678-901234',
+                        birthday: '1970-01-10',
+                        age: 54,
+                        gender: 'female',
+                        income1: 3200000,
+                        income2: 3300000,
+                        spouseAddition: 'yes',
+                        transferAddition: 'no',
+                        address: '東京都世田谷区三軒茶屋2-3-4',
+                        phone: '03-3456-7891',
+                        email: 'mika@example.com'
+                    },
+                    disease: '腰椎椎間板ヘルニア',
+                    firstVisit: '2021-08-10',
+                    disabilityDate: '2022-02-10',
+                    hospital: '世田谷整形外科',
+                    doctor: '鈴木医師',
+                    grade: '3級',
+                    symptoms: '腰部の激痛、下肢のしびれ、歩行困難',
+                    treatment: '理学療法、痛み止めの服用、週1回のリハビリ',
+                    medication: 'ロキソニン60mg、リリカ75mg',
+                    hasChildren: 'true',
+                    childrenData: [
+                        {
+                            name: '佐藤健太',
+                            furigana: 'サトウケンタ',
+                            birthday: '2005-09-12',
+                            age: 19,
+                            gender: 'male',
+                            mynumber: '678901234567',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '東京大学',
+                            schoolYear: '1年'
+                        },
+                        {
+                            name: '佐藤美穂',
+                            furigana: 'サトウミホ',
+                            birthday: '2007-11-25',
+                            age: 17,
+                            gender: 'female',
+                            mynumber: '789012345678',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '都立高校',
+                            schoolYear: '2年'
+                        },
+                        {
+                            name: '佐藤大輔',
+                            furigana: 'サトウダイスケ',
+                            birthday: '2009-03-08',
+                            age: 15,
+                            gender: 'male',
+                            mynumber: '890123456789',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '世田谷中学校',
+                            schoolYear: '3年'
+                        }
+                    ]
+                },
+                '4': {
+                    name: '鈴木次郎',
+                    furigana: 'スズキジロウ',
+                    age: 29,
+                    gender: 'male',
+                    birthday: '1995-06-18',
+                    pensionNumber: '6789-012345',
+                    phone: '03-4567-8901',
+                    email: 'suzuki@example.com',
+                    address: '東京都練馬区石神井町4-5-6',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '鈴木恵子',
+                        furigana: 'スズキケイコ',
+                        mynumber: '901234567890',
+                        pensionNumber: '7890-123456',
+                        birthday: '1997-02-14',
+                        age: 27,
+                        gender: 'female',
+                        income1: 2500000,
+                        income2: 2600000,
+                        spouseAddition: 'yes',
+                        transferAddition: 'no',
+                        address: '東京都練馬区石神井町4-5-6',
+                        phone: '03-4567-8902',
+                        email: 'keiko@example.com'
+                    },
+                    disease: '双極性障害',
+                    firstVisit: '2023-12-01',
+                    disabilityDate: '2024-06-01',
+                    hospital: '練馬心療内科',
+                    doctor: '高橋医師',
+                    grade: '2級',
+                    symptoms: '躁状態とうつ状態の繰り返し、気分の激しい変動',
+                    treatment: '月1回の通院、気分安定薬の服用、心理療法',
+                    medication: 'リチウム300mg、ラモトリギン100mg',
+                    hasChildren: 'false'
+                },
+                '5': {
+                    name: '高橋三郎',
+                    furigana: 'タカハシサブロウ',
+                    age: 52,
+                    gender: 'male',
+                    birthday: '1972-04-05',
+                    pensionNumber: '8901-234567',
+                    phone: '03-5678-9012',
+                    email: 'takahashi@example.com',
+                    address: '東京都中野区中野5-6-7',
+                    hasSpouse: 'false',
+                    disease: '関節リウマチ',
+                    firstVisit: '2022-11-20',
+                    disabilityDate: '2023-05-20',
+                    hospital: '中野リウマチクリニック',
+                    doctor: '伊藤医師',
+                    grade: '3級',
+                    symptoms: '全身の関節痛、朝のこわばり、関節の腫れ',
+                    treatment: '月2回の通院、抗リウマチ薬の服用、理学療法',
+                    medication: 'メトトレキサート10mg、プレドニゾロン5mg',
+                    hasChildren: 'true',
+                    childrenData: [
+                        {
+                            name: '高橋優子',
+                            furigana: 'タカハシユウコ',
+                            birthday: '2000-12-10',
+                            age: 24,
+                            gender: 'female',
+                            mynumber: '012345678901',
+                            pensionNumber: '',
+                            isStudent: 'no',
+                            occupation: '会社員'
+                        },
+                        {
+                            name: '高橋健一',
+                            furigana: 'タカハシケンイチ',
+                            birthday: '2003-08-15',
+                            age: 21,
+                            gender: 'male',
+                            mynumber: '123456789012',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '専門学校',
+                            schoolYear: '2年'
+                        }
+                    ]
+                },
                 '001': {
                     name: '田中太郎',
                     furigana: 'タナカタロウ',
@@ -725,35 +972,37 @@
                 }
             };
             
-            const data = sampleData[editId] || sampleData['001'];
+            const data = sampleData[editId] || sampleData['1'];
             
             console.log('Loading data for editId:', editId);
+            console.log('Sample data keys:', Object.keys(sampleData));
+            console.log('Found data:', data);
             console.log('Data:', data);
             
-            // フォームにデータを入力 - より信頼性の高い方法
+            // フォームにデータを入力 - より確実な方法
             try {
-                // 申請者基本情報
-                const nameInput = document.querySelector('input[placeholder="田中太郎"]');
-                const furiganaInput = document.querySelector('input[placeholder="タナカタロウ"]');
-                const ageInput = document.querySelector('input[placeholder="42"]');
-                const genderSelect = document.querySelectorAll('select')[0];
-                const birthdayInput = document.querySelectorAll('input[type="date"]')[0];
-                const pensionInput = document.querySelector('input[placeholder="1234-567890"]');
-                const phoneInput = document.querySelector('input[placeholder="03-1234-5678"]');
-                const emailInput = document.querySelector('input[placeholder="example@example.com"]');
-                const addressInput = document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]');
+                // 申請者基本情報 - より確実なセレクタを使用
+                const inputs = document.querySelectorAll('input, select');
+                console.log('Found inputs:', inputs.length);
                 
-                if (nameInput) nameInput.value = data.name;
-                if (furiganaInput) furiganaInput.value = data.furigana;
-                if (ageInput) ageInput.value = data.age;
-                if (genderSelect) genderSelect.value = data.gender;
-                if (birthdayInput) birthdayInput.value = data.birthday;
-                if (pensionInput) pensionInput.value = data.pensionNumber;
-                if (phoneInput) phoneInput.value = data.phone;
-                if (emailInput) emailInput.value = data.email;
-                if (addressInput) addressInput.value = data.address;
+                // 基本情報フィールドを位置で特定（より確実）
+                if (inputs.length >= 9) {
+                    if (inputs[0] && inputs[0].type === 'text') inputs[0].value = data.name || '';
+                    if (inputs[1] && inputs[1].type === 'text') inputs[1].value = data.furigana || '';
+                    if (inputs[2] && inputs[2].type === 'number') inputs[2].value = data.age || '';
+                    if (inputs[3] && inputs[3].tagName === 'SELECT') inputs[3].value = data.gender || '';
+                    if (inputs[4] && inputs[4].type === 'date') inputs[4].value = data.birthday || '';
+                    if (inputs[5] && inputs[5].type === 'text') inputs[5].value = data.pensionNumber || '';
+                    if (inputs[6] && inputs[6].type === 'tel') inputs[6].value = data.phone || '';
+                    if (inputs[7] && inputs[7].type === 'email') inputs[7].value = data.email || '';
+                    if (inputs[8] && inputs[8].type === 'text') inputs[8].value = data.address || '';
+                }
                 
-                console.log('Basic info loaded successfully');
+                console.log('Basic info loaded successfully:', {
+                    name: data.name,
+                    furigana: data.furigana,
+                    age: data.age
+                });
             } catch (error) {
                 console.error('Error loading basic info:', error);
             }
