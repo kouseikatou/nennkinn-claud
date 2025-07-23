@@ -16,7 +16,7 @@
     "double-esc": 15,
     "continue": 16
   },
-  "promptQueueUseCount": 26,
+  "promptQueueUseCount": 27,
   "firstStartTime": "2025-07-17T06:51:58.646Z",
   "userID": "f12b283062711cdf4b4062479c7ff42d5b13b3efe3a8025ce8a3200dcf509ca2",
   "projects": {
@@ -81,6 +81,26 @@
     "/home/kouse1113sp": {
       "allowedTools": [],
       "history": [
+        {
+          "display": "gcpにアップロードして本番環境で開発を進めたい、それともgitの方がいい？",
+          "pastedContents": {}
+        },
+        {
+          "display": "gcoにアップロードして",
+          "pastedContents": {}
+        },
+        {
+          "display": "デプロイを最優先で行って",
+          "pastedContents": {}
+        },
+        {
+          "display": "これを本番環境にデプロして",
+          "pastedContents": {}
+        },
+        {
+          "display": "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",
+          "pastedContents": {}
+        },
         {
           "display": "https://github.com/kouseikatou/nennkinn-claud",
           "pastedContents": {}
@@ -489,26 +509,6 @@
         },
         {
           "display": "https://storage.googleapis.com/nennkinn-claude-web/branches/feature-new-feature/index.html",
-          "pastedContents": {}
-        },
-        {
-          "display": "テストを本番環境でできないの？例えばサブブランチでを本番環境でできるてきな",
-          "pastedContents": {}
-        },
-        {
-          "display": "demoでさくせしてもいいよ",
-          "pastedContents": {}
-        },
-        {
-          "display": "This XML file does not appear to have any style information associated with it. The document tree is shown below.\n<Error>\n<Code>NoSuchKey</Code>\n<Message>The specified key does not exist.</Message>\n<Details>No such object: nennkinn-claude-web/logs.html</Details>\n</Error>",
-          "pastedContents": {}
-        },
-        {
-          "display": "https://storage.googleapis.com/nennkinn-claude-web/logs.htmlのThis XML file does not appear to have any style information associated with it. The document tree is shown below.\n<Error>\n<Code>NoSuchKey</Code>\n<Message>The specified key does not exist.</Message>\n<Details>No such object: nennkinn-claude-web/logs.html</Details>\n</Error>を解消して",
-          "pastedContents": {}
-        },
-        {
-          "display": "どのような手順で開発していけばいい？コレに関してはaiがあるので全て少しずつ試して構築したい",
           "pastedContents": {}
         }
       ],
