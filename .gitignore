@@ -1,0 +1,42 @@
+# Cache and temporary files
+.cache/
+.local/
+
+# Terraform
+project-management-app/terraform/.terraform/
+*.tfstate
+*.tfstate.*
+
+# Node modules
+node_modules/
+
+# Log files
+*.log
+.npm/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Claude specific
+.claude/
+.codeoss/
+
+# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Gemini
+.gemini/

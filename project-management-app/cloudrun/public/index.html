@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>障害年金管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="app">
+        <nav class="bg-blue-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-xl font-bold">障害年金管理システム</h1>
+            </div>
+        </nav>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="container mx-auto mt-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-bold text-gray-700">総申請数</h3>
+                    <p id="total-applications" class="text-3xl font-bold text-blue-600">-</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-bold text-gray-700">審査中</h3>
+                    <p id="under-review" class="text-3xl font-bold text-yellow-600">-</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-bold text-gray-700">承認済み</h3>
+                    <p id="approved" class="text-3xl font-bold text-green-600">-</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md">
+                <div class="p-6 border-b">
+                    <h2 class="text-xl font-bold">申請一覧</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請番号</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">申請者名</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">障害種別</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">等級</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">作成日</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applications-table" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Detail Modal -->
+        <div id="application-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+            <div class="relative top-10 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 id="modal-title" class="text-xl font-bold text-gray-800">申請詳細</h3>
+                    <button onclick="hideApplicationDetail()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                <div id="application-detail-content">
+                    <!-- Content will be populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        // Initialize app without authentication
+        window.onload = function() {
+            loadApplications();
+            loadStatistics();
+        };
+
+        async function loadApplications() {
+            try {
+                // Get API token for backend access
+                let apiToken = null;
+                const mockResponse = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: 'admin@disability-pension.jp', 
+                        password: 'admin123' 
+                    })
+                });
+                if (mockResponse.ok) {
+                    const mockData = await mockResponse.json();
+                    apiToken = mockData.token;
+                }
+
+                if (!apiToken) {
+                    console.error('Could not get API token');
+                    return;
+                }
+
+                const response = await fetch('/api/applications', {
+                    headers: {
+                        'Authorization': `Bearer ${apiToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const tbody = document.getElementById('applications-table');
+                    tbody.innerHTML = '';
+
+                    data.applications.forEach(app => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${app.application_number}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${app.applicant_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${getDisabilityTypeText(app.disability_type)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${app.disability_grade || '－'}級</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(app.status)}">
+                                    ${getStatusText(app.status)}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(app.created_at)}</td>
+                        `;
+                        
+                        // Add click event to show details
+                        row.addEventListener('click', () => showApplicationDetail(app.id, apiToken));
+                        row.style.cursor = 'pointer';
+                        row.classList.add('hover:bg-gray-50');
+                        
+                        tbody.appendChild(row);
+                    });
+
+                    document.getElementById('total-applications').textContent = data.applications.length;
+                }
+            } catch (error) {
+                console.error('Error loading applications:', error);
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                // Get API token for backend access
+                let apiToken = null;
+                const mockResponse = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: 'admin@disability-pension.jp', 
+                        password: 'admin123' 
+                    })
+                });
+                if (mockResponse.ok) {
+                    const mockData = await mockResponse.json();
+                    apiToken = mockData.token;
+                }
+
+                if (!apiToken) {
+                    console.error('Could not get API token');
+                    return;
+                }
+
+                const response = await fetch('/api/applications/statistics/overview', {
+                    headers: {
+                        'Authorization': `Bearer ${apiToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const underReview = data.statusStats.find(s => s.status === 'under_review');
+                    const approved = data.statusStats.find(s => s.status === 'approved');
+
+                    document.getElementById('under-review').textContent = underReview ? underReview.count : 0;
+                    document.getElementById('approved').textContent = approved ? approved.count : 0;
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        async function showApplicationDetail(id, apiToken = null) {
+            try {
+                // Get API token if not provided
+                if (!apiToken) {
+                    const mockResponse = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            email: 'admin@disability-pension.jp', 
+                            password: 'admin123' 
+                        })
+                    });
+                    if (mockResponse.ok) {
+                        const mockData = await mockResponse.json();
+                        apiToken = mockData.token;
+                    }
+                }
+
+                if (!apiToken) {
+                    alert('API接続に失敗しました');
+                    return;
+                }
+
+                const response = await fetch(`/api/applications/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${apiToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const app = data.application;
+                    let detailHtml = `
+                        <div class="space-y-6">
+                            <div class="border-b pb-4">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">申請者情報</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <p><strong>申請番号:</strong> ${app.application_number}</p>
+                                    <p><strong>氏名:</strong> ${app.applicant_name} (${app.applicant_name_kana})</p>
+                                    <p><strong>生年月日:</strong> ${app.birth_date}</p>
+                                    <p><strong>性別:</strong> ${app.gender === 'male' ? '男性' : '女性'}</p>
+                                    <p><strong>電話番号:</strong> ${app.phone_number || '－'}</p>
+                                    <p><strong>メールアドレス:</strong> ${app.email || '－'}</p>
+                                    <p><strong>障害種別:</strong> ${getDisabilityTypeText(app.disability_type)}</p>
+                                    <p><strong>等級:</strong> ${app.disability_grade || '－'}級</p>
+                                </div>
+                            </div>
+                    `;
+
+                    // Show spouse information if available
+                    if (app.spouse_name) {
+                        detailHtml += `
+                            <div class="border-b pb-4">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">配偶者情報</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <p><strong>氏名:</strong> ${app.spouse_name} (${app.spouse_name_kana || '－'})</p>
+                                    <p><strong>生年月日:</strong> ${app.spouse_birth_date || '－'}</p>
+                                    <p><strong>マイナンバー:</strong> ${app.spouse_mynumber || '－'}</p>
+                                    <p><strong>基礎年金番号:</strong> ${app.spouse_pension_number || '－'}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    // Show children information if available
+                    if (app.children && app.children.length > 0) {
+                        detailHtml += `
+                            <div class="border-b pb-4">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-3">子供情報 (${app.children.length}人)</h4>
+                                <div class="space-y-4">
+                        `;
+                        
+                        app.children.forEach((child, index) => {
+                            detailHtml += `
+                                <div class="bg-gray-50 p-3 rounded">
+                                    <h5 class="font-semibold mb-2">子供 ${index + 1}</h5>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        <p><strong>氏名:</strong> ${child.name} (${child.name_kana})</p>
+                                        <p><strong>生年月日:</strong> ${child.birth_date}</p>
+                                        <p><strong>マイナンバー:</strong> ${child.mynumber || '－'}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        detailHtml += `
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    detailHtml += `
+                            <div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <p><strong>ステータス:</strong> <span class="px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(app.status)}">${getStatusText(app.status)}</span></p>
+                                    <p><strong>作成日:</strong> ${formatDate(app.created_at)}</p>
+                                    <p><strong>更新日:</strong> ${formatDate(app.updated_at)}</p>
+                                    <p><strong>作成者:</strong> ${app.created_by_name || '－'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('application-detail-content').innerHTML = detailHtml;
+                    document.getElementById('application-modal').classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error loading application detail:', error);
+                alert('申請詳細の読み込みに失敗しました');
+            }
+        }
+
+        function hideApplicationDetail() {
+            document.getElementById('application-modal').classList.add('hidden');
+        }
+
+        function getDisabilityTypeText(type) {
+            const types = {
+                'physical': '身体障害',
+                'mental': '精神障害',
+                'intellectual': '知的障害',
+                'multiple': '重複障害'
+            };
+            return types[type] || type;
+        }
+
+        function getStatusText(status) {
+            const statuses = {
+                'draft': '下書き',
+                'submitted': '提出済み',
+                'under_review': '審査中',
+                'approved': '承認済み',
+                'rejected': '却下',
+                'withdrawn': '取り下げ'
+            };
+            return statuses[status] || status;
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'draft': 'bg-gray-100 text-gray-800',
+                'submitted': 'bg-blue-100 text-blue-800',
+                'under_review': 'bg-yellow-100 text-yellow-800',
+                'approved': 'bg-green-100 text-green-800',
+                'rejected': 'bg-red-100 text-red-800',
+                'withdrawn': 'bg-gray-100 text-gray-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ja-JP');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>障害年金申請一覧 - 障害年金管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-900">障害年金管理システム</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-700">デモユーザー</span>
+                    <button class="text-sm text-gray-500 hover:text-gray-700">ログアウト</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white border-r border-gray-200 min-h-screen">
+                <nav class="mt-8">
+                    <div class="px-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="https://storage.googleapis.com/nennkinn-claude-web/index.html" class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50">
+                                    <svg class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                    ダッシュボード
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://storage.googleapis.com/nennkinn-claude-web/projects.html" class="group flex items-center px-3 py-2 text-sm font-medium rounded-md bg-blue-100 text-blue-700">
+                                    <svg class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                                    </svg>
+                                    障害年金申請一覧
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://storage.googleapis.com/nennkinn-claude-web/logs.html" class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50">
+                                    <svg class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    変更履歴
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6">
+                <div class="space-y-6">
+                    <!-- Header -->
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">障害年金申請一覧</h1>
+                            <p class="text-gray-600">障害年金の申請状況を確認・管理できます</p>
+                        </div>
+                        <button onclick="location.href='https://storage.googleapis.com/nennkinn-claude-web/project-unified.html'" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            新規申請
+                        </button>
+                    </div>
+
+                    <!-- 検索・フィルター -->
+                    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1">
+                                <div class="relative">
+                                    <svg class="w-5 h-5 absolute left-3 top-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <input type="text" placeholder="申請者名・傷病名で検索..." class="pl-10 w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <select class="h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">すべての進捗</option>
+                                    <option value="new">申請準備中</option>
+                                    <option value="submitted">申請済み</option>
+                                    <option value="reviewing">審査中</option>
+                                    <option value="decided">決定済み</option>
+                                    <option value="completed">完了</option>
+                                </select>
+                                <select class="h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">すべての年金種類</option>
+                                    <option value="basic">基礎年金</option>
+                                    <option value="employees">厚生年金</option>
+                                    <option value="mutual">共済年金</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 障害年金申請リスト -->
+                    <div class="space-y-4">
+                        <!-- 申請1 -->
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <a href="https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=1" class="text-lg font-semibold text-gray-900 hover:text-blue-600">
+                                            田中太郎（うつ病）
+                                        </a>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800">
+                                            審査中
+                                        </span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800">
+                                            厚生年金
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500 mb-3">
+                                        <span>申請後日数: 45日</span>
+                                        <span>年齢: 42歳</span>
+                                        <span>申請完了日: 2024-01-15</span>
+                                        <span>売上見込み: ¥300,000</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-3">傷病名: うつ病、初診日: 2023-05-10、障害認定日: 2024-05-10</p>
+                                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                                        <span>担当者: 佐藤花子</span>
+                                        <span>基礎年金番号: 1234-567890</span>
+                                        <span>電話: 03-1234-5678</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="location.href='https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=1'" class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                        管理
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 申請2 -->
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <a href="https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=2" class="text-lg font-semibold text-gray-900 hover:text-blue-600">
+                                            山田花子（統合失調症）
+                                        </a>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+                                            決定済み
+                                        </span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-purple-100 text-purple-800">
+                                            基礎年金
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500 mb-3">
+                                        <span>申請後日数: 120日</span>
+                                        <span>年齢: 35歳</span>
+                                        <span>受給決定日: 2024-01-10</span>
+                                        <span>売上見込み: ¥250,000</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-3">傷病名: 統合失調症、初診日: 2022-03-15、障害認定日: 2023-03-15</p>
+                                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                                        <span>担当者: 田中一郎</span>
+                                        <span>基礎年金番号: 5678-123456</span>
+                                        <span>電話: 06-2345-6789</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="location.href='https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=2'" class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                        管理
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 申請3 -->
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <a href="https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=3" class="text-lg font-semibold text-gray-900 hover:text-blue-600">
+                                            佐藤一郎（腰椎椎間板ヘルニア）
+                                        </a>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
+                                            完了
+                                        </span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-orange-100 text-orange-800">
+                                            共済年金
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500 mb-3">
+                                        <span>申請後日数: 180日</span>
+                                        <span>年齢: 58歳</span>
+                                        <span>初回入金日: 2024-01-20</span>
+                                        <span>売上見込み: ¥400,000</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-3">傷病名: 腰椎椎間板ヘルニア、初診日: 2021-08-10、障害認定日: 2022-08-10</p>
+                                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                                        <span>担当者: 山田次郎</span>
+                                        <span>基礎年金番号: 9012-345678</span>
+                                        <span>電話: 052-3456-7890</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="location.href='https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=3'" class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                        管理
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 申請4 -->
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <a href="https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=4" class="text-lg font-semibold text-gray-900 hover:text-blue-600">
+                                            鈴木美智子（双極性障害）
+                                        </a>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800">
+                                            申請準備中
+                                        </span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800">
+                                            厚生年金
+                                        </span>
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500 mb-3">
+                                        <span>申請後日数: 0日</span>
+                                        <span>年齢: 29歳</span>
+                                        <span>次回更新日: 2024-02-28</span>
+                                        <span>売上見込み: ¥350,000</span>
+                                    </div>
+                                    <p class="text-gray-600 mb-3">傷病名: 双極性障害、初診日: 2023-12-01、障害認定日: 2024-12-01</p>
+                                    <div class="flex items-center gap-4 text-sm text-gray-500">
+                                        <span>担当者: 佐藤花子</span>
+                                        <span>基礎年金番号: 3456-789012</span>
+                                        <span>電話: 03-4567-8901</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="location.href='https://storage.googleapis.com/nennkinn-claude-web/project-unified.html?id=4'" class="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                        管理
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ページネーション -->
+                    <div class="flex items-center justify-between bg-white px-4 py-3 border border-gray-200 rounded-md">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                前へ
+                            </button>
+                            <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                次へ
+                            </button>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    <span class="font-medium">1</span> - <span class="font-medium">4</span> 件目を表示
+                                    （全 <span class="font-medium">4</span> 申請中）
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                                    <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        前へ
+                                    </button>
+                                    <button class="bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        1
+                                    </button>
+                                    <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        次へ
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

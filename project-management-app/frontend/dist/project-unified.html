@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>障害年金申請管理 - 障害年金管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-900">障害年金管理システム</h1>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-700">デモユーザー</span>
+                    <button class="text-sm text-gray-500 hover:text-gray-700">ログアウト</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex">
+            <!-- Sidebar -->
+            <div class="w-64 bg-white border-r border-gray-200 min-h-screen">
+                <nav class="mt-8">
+                    <div class="px-4">
+                        <ul class="space-y-2">
+                            <li>
+                                <a href="https://storage.googleapis.com/nennkinn-claude-web/index.html" class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50">
+                                    <svg class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
+                                    </svg>
+                                    ダッシュボード
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://storage.googleapis.com/nennkinn-claude-web/projects.html" class="group flex items-center px-3 py-2 text-sm font-medium rounded-md bg-blue-100 text-blue-700">
+                                    <svg class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
+                                    </svg>
+                                    障害年金申請一覧
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://storage.googleapis.com/nennkinn-claude-web/logs.html" class="group flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-50">
+                                    <svg class="mr-3 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    変更履歴
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6">
+                <div class="space-y-6">
+                    <!-- パンくずリスト -->
+                    <nav class="flex" aria-label="Breadcrumb">
+                        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                            <li class="inline-flex items-center">
+                                <a href="https://storage.googleapis.com/nennkinn-claude-web/index.html" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600">
+                                    <svg class="w-3 h-3 mr-2.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                                    </svg>
+                                    ホーム
+                                </a>
+                            </li>
+                            <li>
+                                <div class="flex items-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <a href="https://storage.googleapis.com/nennkinn-claude-web/projects.html" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2">申請一覧</a>
+                                </div>
+                            </li>
+                            <li aria-current="page">
+                                <div class="flex items-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">申請管理</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <!-- ヘッダー -->
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h1 id="applicant-name" class="text-3xl font-bold text-gray-900">田中太郎</h1>
+                                <span id="disease-badge" class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-gray-100 text-gray-800">
+                                    うつ病
+                                </span>
+                                <span id="progress-status" class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-yellow-100 text-yellow-800">
+                                    審査中
+                                </span>
+                                <span id="pension-type" class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800">
+                                    厚生年金
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-500 mb-3">
+                                <span>申請後日数: <span id="days-since-application" class="font-medium">45日</span></span>
+                                <span>年齢: <span id="applicant-age" class="font-medium">42歳</span></span>
+                                <span>売上見込み: <span id="expected-revenue" class="font-medium">¥300,000</span></span>
+                                <span>基礎年金番号: <span id="pension-number" class="font-medium">1234-567890</span></span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 ml-6">
+                            <button id="edit-btn" onclick="toggleEditMode()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                編集
+                            </button>
+                            <button id="save-btn" onclick="saveChanges()" class="hidden px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                保存
+                            </button>
+                            <button id="cancel-btn" onclick="cancelEdit()" class="hidden px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                キャンセル
+                            </button>
+                            <button onclick="location.href='https://storage.googleapis.com/nennkinn-claude-web/projects.html'" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                                一覧に戻る
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- メインコンテンツ -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 申請者情報 -->
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-medium text-gray-900">申請者情報</h3>
+                                </div>
+                                <div class="p-6">
+                                    <form id="application-form" class="space-y-6">
+                                        <!-- 基本情報 -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">申請者名</label>
+                                                <div class="view-mode">
+                                                    <span id="name-display" class="text-sm text-gray-900">田中太郎</span>
+                                                </div>
+                                                <div class="edit-mode hidden">
+                                                    <input type="text" id="name-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">ふりがな</label>
+                                                <div class="view-mode">
+                                                    <span id="furigana-display" class="text-sm text-gray-900">たなかたろう</span>
+                                                </div>
+                                                <div class="edit-mode hidden">
+                                                    <input type="text" id="furigana-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ひらがなで入力">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">年齢</label>
+                                                <div class="view-mode">
+                                                    <span id="age-display" class="text-sm text-gray-900">42歳（1982年3月15日（昭和57年））</span>
+                                                </div>
+                                                <div class="edit-mode hidden">
+                                                    <input type="date" id="age-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                </div>
+                                            </div>
+                                            <div></div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">電話番号</label>
+                                                <div class="view-mode">
+                                                    <span id="phone-display" class="text-sm text-gray-900">03-1234-5678</span>
+                                                </div>
+                                                <div class="edit-mode hidden">
+                                                    <input type="tel" id="phone-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
+                                                <div class="view-mode">
+                                                    <span id="email-display" class="text-sm text-gray-900">tanaka@example.com</span>
+                                                </div>
+                                                <div class="edit-mode hidden">
+                                                    <input type="email" id="email-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">基礎年金番号</label>
+                                                <div class="view-mode">
+                                                    <span id="pension-number-display" class="text-sm text-gray-900">1234-567890</span>
+                                                </div>
+                                                <div class="edit-mode hidden">
+                                                    <input type="text" id="pension-number-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">マイナンバー</label>
+                                                <div class="view-mode">
+                                                    <span id="mynumber-display" class="text-sm text-gray-900">123456789012</span>
+                                                </div>
+                                                <div class="edit-mode hidden">
+                                                    <input type="text" id="mynumber-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 申請管理情報 -->
+                                        <div class="border-t pt-6">
+                                            <h4 class="text-md font-medium text-gray-900 mb-4">申請管理情報</h4>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">進捗状況</label>
+                                                    <div class="view-mode">
+                                                        <span id="progress-display" class="text-sm text-gray-900">審査中</span>
+                                                    </div>
+                                                    <div class="edit-mode hidden">
+                                                        <select id="progress-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                            <option value="preparation">申請準備中</option>
+                                                            <option value="submitted">申請済み</option>
+                                                            <option value="reviewing">審査中</option>
+                                                            <option value="decided">決定済み</option>
+                                                            <option value="completed">完了</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">年金種類</label>
+                                                    <div class="view-mode">
+                                                        <span id="pension-type-display" class="text-sm text-gray-900">厚生年金</span>
+                                                    </div>
+                                                    <div class="edit-mode hidden">
+                                                        <select id="pension-type-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                            <option value="basic">基礎年金</option>
+                                                            <option value="employees">厚生年金</option>
+                                                            <option value="mutual">共済年金</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 配偶者情報 -->
+                                        <div class="border-t pt-6">
+                                            <div class="flex justify-between items-center mb-4">
+                                                <h4 class="text-md font-medium text-gray-900">配偶者情報</h4>
+                                                <div class="edit-mode hidden flex gap-2">
+                                                    <button type="button" id="add-spouse-btn" onclick="addSpouse()" class="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700">
+                                                        配偶者追加
+                                                    </button>
+                                                    <button type="button" id="remove-spouse-btn" onclick="removeSpouse()" class="px-3 py-1 text-sm bg-red-600 text-white rounded-md hover:bg-red-700">
+                                                        配偶者削除
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div id="spouse-container">
+                                            </div>
+                                        </div>
+
+                                        <!-- 子供情報 -->
+                                        <div class="border-t pt-6">
+                                            <div class="flex justify-between items-center mb-4">
+                                                <h4 class="text-md font-medium text-gray-900">子供情報</h4>
+                                                <div class="edit-mode hidden">
+                                                    <button type="button" onclick="addChild()" class="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700">
+                                                        子供追加
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div id="children-container">
+                                                <!-- 子供1 -->
+                                                <div class="child-entry border border-gray-200 rounded-lg p-4 mb-4" data-child-index="0">
+                                                    <div class="flex justify-between items-center mb-3">
+                                                        <h5 class="text-sm font-medium text-gray-800">子供1</h5>
+                                                        <div class="edit-mode hidden">
+                                                            <button type="button" onclick="removeChild(0)" class="text-red-600 hover:text-red-800 text-sm">
+                                                                削除
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-2">子供名</label>
+                                                            <div class="view-mode">
+                                                                <span class="child-name-display text-sm text-gray-900">田中一郎</span>
+                                                            </div>
+                                                            <div class="edit-mode hidden">
+                                                                <input type="text" class="child-name-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-2">子供年齢</label>
+                                                            <div class="view-mode">
+                                                                <span class="child-age-display text-sm text-gray-900">15歳（2009年4月12日（平成21年））</span>
+                                                            </div>
+                                                            <div class="edit-mode hidden">
+                                                                <input type="date" class="child-birthdate-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-2">子供基礎年金番号</label>
+                                                            <div class="view-mode">
+                                                                <span class="child-pension-number-display text-sm text-gray-900">未取得</span>
+                                                            </div>
+                                                            <div class="edit-mode hidden">
+                                                                <input type="text" class="child-pension-number-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="未取得の場合は空白">
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label class="block text-sm font-medium text-gray-700 mb-2">加算対象</label>
+                                                            <div class="view-mode">
+                                                                <span class="child-addition-status-display text-sm text-gray-900">対象</span>
+                                                            </div>
+                                                            <div class="edit-mode hidden">
+                                                                <select class="child-addition-status-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                    <option value="対象">対象</option>
+                                                                    <option value="対象外">対象外</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- 傷病情報 -->
+                                        <div class="border-t pt-6">
+                                            <h4 class="text-md font-medium text-gray-900 mb-4">傷病情報</h4>
+                                            <div class="space-y-6">
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">傷病名</label>
+                                                        <div class="view-mode">
+                                                            <span id="disease-display" class="text-sm text-gray-900">うつ病</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <input type="text" id="disease-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">診断書の種類</label>
+                                                        <div class="view-mode">
+                                                            <span id="medical-certificate-type-display" class="text-sm text-gray-900">精神の障害用</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <select id="medical-certificate-type-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                <option value="精神の障害用">精神の障害用</option>
+                                                                <option value="肢体の障害用">肢体の障害用</option>
+                                                                <option value="眼の障害用">眼の障害用</option>
+                                                                <option value="聴覚・鼻腔機能・平衡機能・そしゃく・嚥下機能・言語機能の障害用">聴覚・鼻腔機能・平衡機能・そしゃく・嚥下機能・言語機能の障害用</option>
+                                                                <option value="腎疾患・肝疾患・糖尿病の障害用">腎疾患・肝疾患・糖尿病の障害用</option>
+                                                                <option value="血液・造血器・その他の障害用">血液・造血器・その他の障害用</option>
+                                                                <option value="呼吸器疾患の障害用">呼吸器疾患の障害用</option>
+                                                                <option value="循環器疾患の障害用">循環器疾患の障害用</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">初診日</label>
+                                                        <div class="view-mode">
+                                                            <span id="initial-medical-date-display" class="text-sm text-gray-900">2023年5月10日</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <input type="date" id="initial-medical-date-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">初診日の内容</label>
+                                                        <div class="view-mode">
+                                                            <span id="initial-medical-content-display" class="text-sm text-gray-900">うつ症状による初回受診</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <input type="text" id="initial-medical-content-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="初診時の症状や内容">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">認定日</label>
+                                                        <div class="view-mode">
+                                                            <span id="recognition-date-display" class="text-sm text-gray-900">2024年5月10日</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <input type="date" id="recognition-date-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">認定日の内容</label>
+                                                        <div class="view-mode">
+                                                            <span id="recognition-content-display" class="text-sm text-gray-900">初診日から1年6ヶ月経過</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <input type="text" id="recognition-content-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="認定日の根拠や内容">
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">加入していた社会保障</label>
+                                                        <div class="view-mode">
+                                                            <span id="social-insurance-display" class="text-sm text-gray-900">厚生年金保険</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <select id="social-insurance-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                <option value="厚生年金保険">厚生年金保険</option>
+                                                                <option value="国民年金">国民年金</option>
+                                                                <option value="共済年金">共済年金</option>
+                                                                <option value="厚生年金保険・国民年金">厚生年金保険・国民年金</option>
+                                                                <option value="その他">その他</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-gray-700 mb-2">納付要件</label>
+                                                        <div class="view-mode">
+                                                            <span id="payment-requirement-display" class="text-sm text-gray-900">満たしている</span>
+                                                        </div>
+                                                        <div class="edit-mode hidden">
+                                                            <select id="payment-requirement-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                                <option value="満たしている">満たしている</option>
+                                                                <option value="満たしていない">満たしていない</option>
+                                                                <option value="確認中">確認中</option>
+                                                                <option value="特例措置適用">特例措置適用</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">売上見込み</label>
+                                                    <div class="view-mode">
+                                                        <span id="revenue-display" class="text-sm text-gray-900">¥300,000</span>
+                                                    </div>
+                                                    <div class="edit-mode hidden">
+                                                        <input type="number" id="revenue-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- サイドバー情報 -->
+                        <div class="space-y-6">
+                            <!-- 申請進捗 -->
+                            <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h3 class="text-lg font-medium text-gray-900">申請進捗</h3>
+                                </div>
+                                <div class="p-6">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-600">完了率</span>
+                                                <span class="font-medium">70%</span>
+                                            </div>
+                                            <div class="mt-2 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: 70%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4 text-center">
+                                            <div>
+                                                <p class="text-2xl font-bold text-gray-900">¥300k</p>
+                                                <p class="text-xs text-gray-500">売上見込み</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-2xl font-bold text-gray-900">45日</p>
+                                                <p class="text-xs text-gray-500">申請後日数</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // URLパラメータから申請IDを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const applicationId = urlParams.get('id') || '1';
+        
+        // 障害年金申請データ
+        const applications = {
+            '1': {
+                name: '田中太郎',
+                furigana: 'たなかたろう',
+                birthDate: '1982-03-15',
+                phone: '03-1234-5678',
+                email: 'tanaka@example.com',
+                pensionNumber: '1234-567890',
+                myNumber: '123456789012',
+                progressStatus: 'reviewing',
+                progressStatusText: '審査中',
+                pensionType: 'employees',
+                pensionTypeText: '厚生年金',
+                diseaseName: 'うつ病',
+                expectedRevenue: 300000,
+                daysSinceApplication: 45,
+                spouse: {
+                    name: '田中花子',
+                    furigana: 'たなかはなこ',
+                    birthDate: '1984-08-20',
+                    pensionNumber: '2345-678901',
+                    pensionStatus: 'あり'
+                },
+                children: [
+                    {
+                        name: '田中一郎',
+                        furigana: 'たなかいちろう',
+                        birthDate: '2009-04-12',
+                        pensionNumber: '',
+                        additionStatus: '対象'
+                    }
+                ]
+            },
+            '2': {
+                name: '山田花子',
+                furigana: 'やまだはなこ',
+                birthDate: '1989-08-22',
+                phone: '06-2345-6789',
+                email: 'yamada@example.com',
+                pensionNumber: '5678-123456',
+                myNumber: '234567890123',
+                progressStatus: 'decided',
+                progressStatusText: '決定済み',
+                pensionType: 'basic',
+                pensionTypeText: '基礎年金',
+                diseaseName: '統合失調症',
+                expectedRevenue: 250000,
+                daysSinceApplication: 120,
+                spouse: {
+                    name: '山田太郎',
+                    furigana: 'やまだたろう',
+                    birthDate: '1986-12-15',
+                    pensionNumber: '3456-789012',
+                    pensionStatus: 'あり'
+                },
+                children: []
+            },
+            '3': {
+                name: '佐藤一郎',
+                furigana: 'さとういちろう',
+                birthDate: '1966-12-05',
+                phone: '052-3456-7890',
+                email: 'sato@example.com',
+                pensionNumber: '9012-345678',
+                myNumber: '345678901234',
+                progressStatus: 'completed',
+                progressStatusText: '完了',
+                pensionType: 'mutual',
+                pensionTypeText: '共済年金',
+                diseaseName: '腰椎椎間板ヘルニア',
+                expectedRevenue: 400000,
+                daysSinceApplication: 180,
+                spouse: {
+                    name: '佐藤花子',
+                    furigana: 'さとうはなこ',
+                    birthDate: '1970-05-18',
+                    pensionNumber: '4567-890123',
+                    pensionStatus: 'あり'
+                },
+                children: [
+                    {
+                        name: '佐藤美香',
+                        furigana: 'さとうみか',
+                        birthDate: '1995-09-08',
+                        pensionNumber: '5678-901234',
+                        additionStatus: '対象外'
+                    },
+                    {
+                        name: '佐藤健太',
+                        furigana: 'さとうけんた',
+                        birthDate: '1998-11-25',
+                        pensionNumber: '6789-012345',
+                        additionStatus: '対象'
+                    }
+                ]
+            },
+            '4': {
+                name: '鈴木美智子',
+                furigana: 'すずきみちこ',
+                birthDate: '1995-04-10',
+                phone: '03-4567-8901',
+                email: 'suzuki@example.com',
+                pensionNumber: '3456-789012',
+                myNumber: '456789012345',
+                progressStatus: 'preparation',
+                progressStatusText: '申請準備中',
+                pensionType: 'employees',
+                pensionTypeText: '厚生年金',
+                diseaseName: '双極性障害',
+                expectedRevenue: 350000,
+                daysSinceApplication: 0,
+                spouse: null,
+                children: []
+            }
+        };
+
+        let isEditMode = false;
+        let currentData = {};
+
+        // ページ初期化
+        function initializePage() {
+            const app = applications[applicationId];
+            if (!app) return;
+            
+            // 深いコピーで配偶者・子供情報も含めてコピー
+            currentData = JSON.parse(JSON.stringify(app));
+            updateDisplay();
+        }
+
+        // 年齢計算関数
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+        
+        // 和暦変換関数
+        function toJapaneseEra(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            let era, eraYear;
+            
+            if (year >= 2019 && (year > 2019 || month >= 5)) {
+                era = '令和';
+                eraYear = year - 2018;
+            } else if (year >= 1989) {
+                era = '平成';
+                eraYear = year - 1988;
+            } else if (year >= 1926) {
+                era = '昭和';
+                eraYear = year - 1925;
+            } else if (year >= 1912) {
+                era = '大正';
+                eraYear = year - 1911;
+            } else {
+                era = '明治';
+                eraYear = year - 1867;
+            }
+            
+            return `${era}${eraYear}年`;
+        }
+        
+        // 年齢表示を生成
+        function formatAgeDisplay(birthDate) {
+            const birth = new Date(birthDate);
+            const age = calculateAge(birthDate);
+            const westernDate = `${birth.getFullYear()}年${birth.getMonth() + 1}月${birth.getDate()}日`;
+            const japaneseEra = toJapaneseEra(birth);
+            
+            return `${age}歳（${westernDate}（${japaneseEra}））`;
+        }
+        
+        // 表示を更新
+        function updateDisplay() {
+            const app = currentData;
+            
+            // 年齢と年齢表示を計算
+            const age = calculateAge(app.birthDate);
+            const ageDisplay = formatAgeDisplay(app.birthDate);
+            
+            // ヘッダー情報
+            document.getElementById('applicant-name').textContent = app.name;
+            document.getElementById('disease-badge').textContent = app.diseaseName;
+            document.getElementById('progress-status').textContent = app.progressStatusText;
+            document.getElementById('pension-type').textContent = app.pensionTypeText;
+            document.getElementById('days-since-application').textContent = `${app.daysSinceApplication}日`;
+            document.getElementById('applicant-age').textContent = `${age}歳`;
+            document.getElementById('expected-revenue').textContent = `¥${app.expectedRevenue.toLocaleString()}`;
+            document.getElementById('pension-number').textContent = app.pensionNumber;
+            
+            // 詳細情報（表示モード）
+            document.getElementById('name-display').textContent = app.name;
+            document.getElementById('furigana-display').textContent = app.furigana || '-';
+            document.getElementById('age-display').textContent = ageDisplay;
+            document.getElementById('phone-display').textContent = app.phone;
+            document.getElementById('email-display').textContent = app.email;
+            document.getElementById('pension-number-display').textContent = app.pensionNumber;
+            document.getElementById('mynumber-display').textContent = app.myNumber;
+            document.getElementById('progress-display').textContent = app.progressStatusText;
+            document.getElementById('pension-type-display').textContent = app.pensionTypeText;
+            document.getElementById('disease-display').textContent = app.diseaseName;
+            document.getElementById('revenue-display').textContent = `¥${app.expectedRevenue.toLocaleString()}`;
+            
+            // 詳細情報（編集モード）
+            document.getElementById('name-input').value = app.name;
+            document.getElementById('furigana-input').value = app.furigana || '';
+            document.getElementById('age-input').value = app.birthDate;
+            document.getElementById('phone-input').value = app.phone;
+            document.getElementById('email-input').value = app.email;
+            document.getElementById('pension-number-input').value = app.pensionNumber;
+            document.getElementById('mynumber-input').value = app.myNumber;
+            document.getElementById('progress-input').value = app.progressStatus;
+            document.getElementById('pension-type-input').value = app.pensionType;
+            document.getElementById('disease-input').value = app.diseaseName;
+            document.getElementById('revenue-input').value = app.expectedRevenue;
+            
+            // 配偶者情報表示
+            updateSpouseDisplay(app.spouse);
+            
+            // 子供情報表示
+            updateChildrenDisplay(app.children);
+        }
+        
+        // 配偶者情報表示更新
+        function updateSpouseDisplay(spouse) {
+            const spouseContainer = document.getElementById('spouse-container');
+            const addBtn = document.getElementById('add-spouse-btn');
+            const removeBtn = document.getElementById('remove-spouse-btn');
+            
+            if (spouse && (spouse.name || isEditMode)) {
+                spouseContainer.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">配偶者名</label>
+                            <div class="view-mode">
+                                <span id="spouse-name-display" class="text-sm text-gray-900">${spouse.name}</span>
+                            </div>
+                            <div class="edit-mode hidden">
+                                <input type="text" id="spouse-name-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${spouse.name}">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">配偶者ふりがな</label>
+                            <div class="view-mode">
+                                <span id="spouse-furigana-display" class="text-sm text-gray-900">${spouse.furigana || '-'}</span>
+                            </div>
+                            <div class="edit-mode hidden">
+                                <input type="text" id="spouse-furigana-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${spouse.furigana || ''}" placeholder="ひらがなで入力">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">配偶者年齢</label>
+                            <div class="view-mode">
+                                <span id="spouse-age-display" class="text-sm text-gray-900">${spouse.birthDate ? formatAgeDisplay(spouse.birthDate) : '-'}</span>
+                            </div>
+                            <div class="edit-mode hidden">
+                                <input type="date" id="spouse-birthdate-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${spouse.birthDate}">
+                            </div>
+                        </div>
+                        <div></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">配偶者基礎年金番号</label>
+                            <div class="view-mode">
+                                <span id="spouse-pension-number-display" class="text-sm text-gray-900">${spouse.pensionNumber || '未取得'}</span>
+                            </div>
+                            <div class="edit-mode hidden">
+                                <input type="text" id="spouse-pension-number-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${spouse.pensionNumber}">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">配偶者年金加入</label>
+                            <div class="view-mode">
+                                <span id="spouse-pension-status-display" class="text-sm text-gray-900">${spouse.pensionStatus}</span>
+                            </div>
+                            <div class="edit-mode hidden">
+                                <select id="spouse-pension-status-input" class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="あり" ${spouse.pensionStatus === 'あり' ? 'selected' : ''}>あり</option>
+                                    <option value="なし" ${spouse.pensionStatus === 'なし' ? 'selected' : ''}>なし</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                if (addBtn) addBtn.style.display = 'none';
+                if (removeBtn) removeBtn.style.display = 'inline-block';
+            } else {
+                spouseContainer.innerHTML = '<p class="text-sm text-gray-500">配偶者の登録はありません</p>';
+                if (addBtn) addBtn.style.display = 'inline-block';
+                if (removeBtn) removeBtn.style.display = 'none';
+            }
+        }
+        
+        // 配偶者情報編集更新
+        function updateSpouseEdit(spouse) {
+            // 配偶者情報は updateSpouseDisplay で処理済み
+        }
+        
+        // 子供情報表示更新
+        function updateChildrenDisplay(children) {
+            const container = document.getElementById('children-container');
+            container.innerHTML = '';
+            
+            if (!children || children.length === 0) {
+                container.innerHTML = '<p class="text-sm text-gray-500">子供の登録はありません</p>';
+                return;
+            }
+            
+            children.forEach((child, index) => {
+                const childHtml = `
+                    <div class="child-entry border border-gray-200 rounded-lg p-4 mb-4" data-child-index="${index}">
+                        <div class="flex justify-between items-center mb-3">
+                            <h5 class="text-sm font-medium text-gray-800">子供${index + 1}</h5>
+                            <div class="edit-mode hidden">
+                                <button type="button" onclick="removeChildByButton(this)" class="text-red-600 hover:text-red-800 text-sm">
+                                    削除
+                                </button>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">子供名</label>
+                                <div class="view-mode">
+                                    <span class="child-name-display text-sm text-gray-900">${child.name}</span>
+                                </div>
+                                <div class="edit-mode hidden">
+                                    <input type="text" class="child-name-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${child.name}">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">子供ふりがな</label>
+                                <div class="view-mode">
+                                    <span class="child-furigana-display text-sm text-gray-900">${child.furigana || '-'}</span>
+                                </div>
+                                <div class="edit-mode hidden">
+                                    <input type="text" class="child-furigana-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${child.furigana || ''}" placeholder="ひらがなで入力">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">子供年齢</label>
+                                <div class="view-mode">
+                                    <span class="child-age-display text-sm text-gray-900">${child.birthDate ? formatAgeDisplay(child.birthDate) : '-'}</span>
+                                </div>
+                                <div class="edit-mode hidden">
+                                    <input type="date" class="child-birthdate-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" value="${child.birthDate}">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">子供基礎年金番号</label>
+                                <div class="view-mode">
+                                    <span class="child-pension-number-display text-sm text-gray-900">${child.pensionNumber || '未取得'}</span>
+                                </div>
+                                <div class="edit-mode hidden">
+                                    <input type="text" class="child-pension-number-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="未取得の場合は空白" value="${child.pensionNumber}">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">加算対象</label>
+                                <div class="view-mode">
+                                    <span class="child-addition-status-display text-sm text-gray-900">${child.additionStatus}</span>
+                                </div>
+                                <div class="edit-mode hidden">
+                                    <select class="child-addition-status-input w-full h-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option value="対象" ${child.additionStatus === '対象' ? 'selected' : ''}>対象</option>
+                                        <option value="対象外" ${child.additionStatus === '対象外' ? 'selected' : ''}>対象外</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', childHtml);
+            });
+        }
+        
+        // 子供情報編集更新
+        function updateChildrenEdit(children) {
+            // 既に updateChildrenDisplay で処理済み
+        }
+        
+        // 子供追加
+        function addChild() {
+            if (!currentData.children) currentData.children = [];
+            
+            const newChild = {
+                name: '',
+                furigana: '',
+                birthDate: '',
+                pensionNumber: '',
+                additionStatus: '対象'
+            };
+            
+            currentData.children.push(newChild);
+            updateChildrenDisplay(currentData.children);
+            
+            // 編集モードを適用
+            toggleEditModeElements();
+        }
+        
+        // 子供削除
+        function removeChild(index) {
+            if (confirm('この子供情報を削除しますか？')) {
+                currentData.children.splice(index, 1);
+                updateChildrenDisplay(currentData.children);
+                
+                // 編集モードを適用
+                toggleEditModeElements();
+            }
+        }
+        
+        // ボタンから子供削除
+        function removeChildByButton(button) {
+            const childEntry = button.closest('.child-entry');
+            const index = parseInt(childEntry.getAttribute('data-child-index'));
+            removeChild(index);
+        }
+        
+        // 配偶者追加
+        function addSpouse() {
+            currentData.spouse = {
+                name: '',
+                furigana: '',
+                birthDate: '',
+                pensionNumber: '',
+                pensionStatus: 'あり'
+            };
+            
+            updateSpouseDisplay(currentData.spouse);
+            
+            // 編集モードを適用
+            if (isEditMode) {
+                toggleEditModeElements();
+            }
+        }
+        
+        // 配偶者削除
+        function removeSpouse() {
+            if (confirm('配偶者情報を削除しますか？')) {
+                currentData.spouse = null;
+                
+                updateSpouseDisplay(null);
+                
+                // 編集モードを適用
+                if (isEditMode) {
+                    toggleEditModeElements();
+                }
+            }
+        }
+        
+        // 編集モード要素を切り替え
+        function toggleEditModeElements() {
+            const viewElements = document.querySelectorAll('.view-mode');
+            const editElements = document.querySelectorAll('.edit-mode');
+            
+            if (isEditMode) {
+                viewElements.forEach(el => el.classList.add('hidden'));
+                editElements.forEach(el => el.classList.remove('hidden'));
+            } else {
+                viewElements.forEach(el => el.classList.remove('hidden'));
+                editElements.forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        // 編集モード切り替え
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            
+            const editBtn = document.getElementById('edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            if (isEditMode) {
+                editBtn.classList.add('hidden');
+                saveBtn.classList.remove('hidden');
+                cancelBtn.classList.remove('hidden');
+            } else {
+                editBtn.classList.remove('hidden');
+                saveBtn.classList.add('hidden');
+                cancelBtn.classList.add('hidden');
+            }
+            
+            toggleEditModeElements();
+        }
+
+        // 変更を保存
+        function saveChanges() {
+            // フォームデータを取得
+            const progressMap = {
+                'preparation': '申請準備中',
+                'submitted': '申請済み',
+                'reviewing': '審査中',
+                'decided': '決定済み',
+                'completed': '完了'
+            };
+            
+            const pensionMap = {
+                'basic': '基礎年金',
+                'employees': '厚生年金',
+                'mutual': '共済年金'
+            };
+            
+            currentData.name = document.getElementById('name-input').value;
+            currentData.furigana = document.getElementById('furigana-input').value;
+            currentData.birthDate = document.getElementById('age-input').value;
+            currentData.phone = document.getElementById('phone-input').value;
+            currentData.email = document.getElementById('email-input').value;
+            currentData.pensionNumber = document.getElementById('pension-number-input').value;
+            currentData.myNumber = document.getElementById('mynumber-input').value;
+            currentData.progressStatus = document.getElementById('progress-input').value;
+            currentData.progressStatusText = progressMap[currentData.progressStatus];
+            currentData.pensionType = document.getElementById('pension-type-input').value;
+            currentData.pensionTypeText = pensionMap[currentData.pensionType];
+            currentData.diseaseName = document.getElementById('disease-input').value;
+            currentData.expectedRevenue = parseInt(document.getElementById('revenue-input').value);
+            
+            // 配偶者情報保存
+            const spouseNameInput = document.getElementById('spouse-name-input');
+            const spouseFuriganaInput = document.getElementById('spouse-furigana-input');
+            const spouseBirthdateInput = document.getElementById('spouse-birthdate-input');
+            const spousePensionNumberInput = document.getElementById('spouse-pension-number-input');
+            const spousePensionStatusInput = document.getElementById('spouse-pension-status-input');
+            
+            if (spouseNameInput && spouseFuriganaInput && spouseBirthdateInput && spousePensionNumberInput && spousePensionStatusInput) {
+                currentData.spouse = {
+                    name: spouseNameInput.value,
+                    furigana: spouseFuriganaInput.value,
+                    birthDate: spouseBirthdateInput.value,
+                    pensionNumber: spousePensionNumberInput.value,
+                    pensionStatus: spousePensionStatusInput.value
+                };
+            } else if (!currentData.spouse || (currentData.spouse && !currentData.spouse.name)) {
+                // 配偶者情報が存在しない場合はnullに設定
+                currentData.spouse = null;
+            }
+            
+            // 子供情報保存
+            const childEntries = document.querySelectorAll('.child-entry');
+            currentData.children = [];
+            childEntries.forEach((entry) => {
+                const child = {
+                    name: entry.querySelector('.child-name-input').value,
+                    furigana: entry.querySelector('.child-furigana-input').value,
+                    birthDate: entry.querySelector('.child-birthdate-input').value,
+                    pensionNumber: entry.querySelector('.child-pension-number-input').value,
+                    additionStatus: entry.querySelector('.child-addition-status-input').value
+                };
+                currentData.children.push(child);
+            });
+            
+            // 表示を更新
+            updateDisplay();
+            
+            // 編集モードを終了
+            toggleEditMode();
+            
+            alert('変更が保存されました！');
+        }
+
+        // 編集をキャンセル
+        function cancelEdit() {
+            // 元のデータに戻す（深いコピー）
+            currentData = JSON.parse(JSON.stringify(applications[applicationId]));
+            updateDisplay();
+            toggleEditMode();
+        }
+
+        // ページ読み込み時に初期化
+        window.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
