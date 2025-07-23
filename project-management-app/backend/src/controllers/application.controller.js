@@ -5,6 +5,7 @@ const {
   Document, 
   Activity, 
   Comment,
+  FamilyMember,
   sequelize 
 } = require('../models');
 const logger = require('../utils/logger');
@@ -93,6 +94,11 @@ const applicationController = {
               { model: User, as: 'uploader', attributes: ['id', 'name'] },
               { model: User, as: 'verifier', attributes: ['id', 'name'] }
             ]
+          },
+          {
+            model: FamilyMember,
+            as: 'familyMembers',
+            order: [['memberType', 'ASC'], ['birthDate', 'ASC']]
           }
         ]
       });
@@ -121,13 +127,23 @@ const applicationController = {
     const transaction = await sequelize.transaction();
 
     try {
-      const applicationData = {
-        ...req.body,
+      const { familyMembers, ...applicationData } = req.body;
+      
+      const application = await Application.create({
+        ...applicationData,
         createdById: req.user.id,
         lastUpdatedById: req.user.id
-      };
+      }, { transaction });
 
-      const application = await Application.create(applicationData, { transaction });
+      // Create family members if provided
+      if (familyMembers && Array.isArray(familyMembers)) {
+        for (const member of familyMembers) {
+          await FamilyMember.create({
+            ...member,
+            applicationId: application.id
+          }, { transaction });
+        }
+      }
 
       // Create activity log
       await createActivity({
@@ -143,7 +159,8 @@ const applicationController = {
 
       const createdApplication = await Application.findByPk(application.id, {
         include: [
-          { model: User, as: 'creator', attributes: ['id', 'name', 'email'] }
+          { model: User, as: 'creator', attributes: ['id', 'name', 'email'] },
+          { model: FamilyMember, as: 'familyMembers' }
         ]
       });
 
@@ -164,6 +181,7 @@ const applicationController = {
 
     try {
       const { id } = req.params;
+      const { familyMembers, ...applicationData } = req.body;
       
       const application = await Application.findByPk(id);
       if (!application) {
@@ -180,19 +198,38 @@ const applicationController = {
 
       // Track changes for activity log
       const changes = {};
-      Object.keys(req.body).forEach(key => {
-        if (application[key] !== req.body[key]) {
+      Object.keys(applicationData).forEach(key => {
+        if (application[key] !== applicationData[key]) {
           changes[key] = {
             from: application[key],
-            to: req.body[key]
+            to: applicationData[key]
           };
         }
       });
 
       await application.update({
-        ...req.body,
+        ...applicationData,
         lastUpdatedById: req.user.id
       }, { transaction });
+
+      // Update family members if provided
+      if (familyMembers !== undefined) {
+        // Delete existing family members
+        await FamilyMember.destroy({
+          where: { applicationId: id },
+          transaction
+        });
+
+        // Create new family members
+        if (Array.isArray(familyMembers)) {
+          for (const member of familyMembers) {
+            await FamilyMember.create({
+              ...member,
+              applicationId: id
+            }, { transaction });
+          }
+        }
+      }
 
       // Create activity log
       await createActivity({
@@ -210,7 +247,8 @@ const applicationController = {
       const updatedApplication = await Application.findByPk(id, {
         include: [
           { model: User, as: 'assignee', attributes: ['id', 'name', 'email'] },
-          { model: User, as: 'lastUpdater', attributes: ['id', 'name', 'email'] }
+          { model: User, as: 'lastUpdater', attributes: ['id', 'name', 'email'] },
+          { model: FamilyMember, as: 'familyMembers' }
         ]
       });
 
