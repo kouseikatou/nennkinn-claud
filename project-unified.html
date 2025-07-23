@@ -588,6 +588,7 @@
             } else if (isViewMode) {
                 // 表示モードの場合
                 console.log('Setting view mode...');
+                alert('View mode detected! ViewID: ' + viewId);
                 
                 const titleElement = document.getElementById('pageTitle');
                 const subtitleElement = document.getElementById('pageSubtitle');
@@ -595,6 +596,7 @@
                 
                 if (titleElement) {
                     titleElement.textContent = '申請情報詳細';
+                    alert('Title changed to: ' + titleElement.textContent);
                 }
                 
                 if (subtitleElement) {
@@ -605,12 +607,13 @@
                     buttonElement.textContent = '編集モードに切り替え';
                 }
                 
-                // フォームを読み取り専用にする
-                makeFormReadOnly();
-                
                 // データを読み込み
                 setTimeout(() => {
                     loadExistingData(viewId);
+                    // データ読み込み後にフォームを読み取り専用にする
+                    setTimeout(() => {
+                        makeFormReadOnly();
+                    }, 500);
                 }, 100);
             } else {
                 console.log('New application mode');
