@@ -4,8 +4,7 @@ on:
   pull_request:
     # 任意のブランチへのPRで実行（main, develop, feature/*, など全て）
   push:
-    branches: [ feature/* ]                 # feature ブランチへのプッシュでも実行
-    branches-ignore: [ main ]               # mainブランチは除外（Pages用ワークフローに任せる）
+    branches: [ feature/* ]                 # feature ブランチへのプッシュでのみ実行
   workflow_dispatch:                        # 手動実行も可能
 
 # GitHub Pagesのステージング環境用の権限
