@@ -1,26 +1,108 @@
 // Projects list management
 const ProjectsList = {
-    // Initialize the projects list
-    async init() {
-        try {
-            await this.loadProjects();
-        } catch (error) {
-            console.error('Failed to initialize projects list:', error);
-            // Fallback to existing static data if API fails
+    // Sample data for UI demonstration
+    sampleApplications: [
+        {
+            id: 1,
+            applicantName: '田中太郎',
+            status: 'under_review',
+            disabilityDescription: 'うつ病',
+            applicationType: 'new',
+            onsetDate: '2023-05-10',
+            monthlyAmount: 300000,
+            createdAt: '2024-01-15',
+            assignee: { name: '佐藤花子' },
+            familyMembers: [
+                { memberType: 'spouse', name: '田中花子' },
+                { memberType: 'child', name: '田中一郎' },
+                { memberType: 'child', name: '田中次郎' }
+            ]
+        },
+        {
+            id: 2,
+            applicantName: '山田花子',
+            status: 'approved',
+            disabilityDescription: '統合失調症',
+            applicationType: 'new',
+            onsetDate: '2022-03-15',
+            monthlyAmount: 250000,
+            createdAt: '2023-08-01',
+            assignee: { name: '田中一郎' },
+            familyMembers: []
+        },
+        {
+            id: 3,
+            applicantName: '佐藤一郎',
+            status: 'approved',
+            disabilityDescription: '腰椎椎間板ヘルニア',
+            applicationType: 'renewal',
+            onsetDate: '2021-08-10',
+            monthlyAmount: 400000,
+            createdAt: '2023-06-01',
+            assignee: { name: '山田太郎' },
+            familyMembers: [
+                { memberType: 'spouse', name: '佐藤美香' },
+                { memberType: 'child', name: '佐藤健太' },
+                { memberType: 'child', name: '佐藤美穂' },
+                { memberType: 'child', name: '佐藤大輔' }
+            ]
+        },
+        {
+            id: 4,
+            applicantName: '鈴木次郎',
+            status: 'draft',
+            disabilityDescription: '双極性障害',
+            applicationType: 'new',
+            onsetDate: '2023-12-01',
+            monthlyAmount: 280000,
+            createdAt: '2024-02-10',
+            assignee: { name: '高橋美里' },
+            familyMembers: [
+                { memberType: 'spouse', name: '鈴木恵子' }
+            ]
+        },
+        {
+            id: 5,
+            applicantName: '高橋三郎',
+            status: 'rejected',
+            disabilityDescription: '関節リウマチ',
+            applicationType: 'appeal',
+            onsetDate: '2022-11-20',
+            monthlyAmount: 0,
+            createdAt: '2023-12-15',
+            assignee: { name: '佐藤花子' },
+            familyMembers: [
+                { memberType: 'child', name: '高橋優子' },
+                { memberType: 'child', name: '高橋健一' }
+            ]
         }
+    ],
+
+    // Initialize the projects list
+    init() {
+        this.loadProjects();
     },
 
-    // Load projects from API
-    async loadProjects(params = {}) {
-        try {
-            const response = await ApplicationAPI.getApplications(params);
-            if (response && response.applications) {
-                this.renderProjects(response.applications);
-            }
-        } catch (error) {
-            console.error('Error loading projects:', error);
-            throw error;
+    // Load projects (using sample data)
+    loadProjects(params = {}) {
+        let filteredApplications = [...this.sampleApplications];
+
+        // Apply search filter
+        if (params.search) {
+            const searchTerm = params.search.toLowerCase();
+            filteredApplications = filteredApplications.filter(app => 
+                app.applicantName.toLowerCase().includes(searchTerm)
+            );
         }
+
+        // Apply status filter
+        if (params.status) {
+            filteredApplications = filteredApplications.filter(app => 
+                app.status === params.status
+            );
+        }
+
+        this.renderProjects(filteredApplications);
     },
 
     // Render projects list
