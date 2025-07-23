@@ -1,10 +1,11 @@
-name: PR Check
+name: PR Check (Non-Production)
 
 on:
   pull_request:
     # 任意のブランチへのPRで実行（main, develop, feature/*, など全て）
   push:
     branches: [ feature/* ]                 # feature ブランチへのプッシュでも実行
+    branches-ignore: [ main ]               # mainブランチは除外（Pages用ワークフローに任せる）
   workflow_dispatch:                        # 手動実行も可能
 
 jobs:
