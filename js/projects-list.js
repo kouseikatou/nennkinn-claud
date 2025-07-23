@@ -262,14 +262,158 @@ const ProjectsList = {
     }
 };
 
+// Global variable to store current application ID for modal
+let currentApplicationId = null;
+
 // Action handlers
 function viewApplication(id) {
-    window.location.href = `project-unified.html?edit=${id}`;
+    const application = ProjectsList.sampleApplications.find(app => app.id === id);
+    if (application) {
+        showApplicationModal(application);
+    }
 }
 
 function editApplication(id) {
     window.location.href = `project-unified.html?edit=${id}`;
 }
+
+// Modal functions
+function showApplicationModal(application) {
+    currentApplicationId = application.id;
+    const modal = document.getElementById('view-modal');
+    const modalContent = document.getElementById('modal-content');
+    
+    if (!modal || !modalContent) return;
+    
+    // Get family composition
+    const familyComposition = ProjectsList.getFamilyComposition(application.familyMembers || []);
+    
+    // Get status badge
+    const statusBadge = ProjectsList.getStatusBadge(application.status);
+    
+    // Build family members section
+    let familyMembersSection = '';
+    if (application.familyMembers && application.familyMembers.length > 0) {
+        const spouse = application.familyMembers.find(m => m.memberType === 'spouse');
+        const children = application.familyMembers.filter(m => m.memberType === 'child');
+        
+        familyMembersSection = `
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h4 class="font-semibold text-notion-gray-800 mb-4">家族構成詳細</h4>
+                ${spouse ? `
+                    <div class="mb-4">
+                        <h5 class="font-medium text-notion-gray-700 mb-2">配偶者</h5>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-notion-gray-500">氏名:</span>
+                                <span class="font-medium ml-2">${spouse.name}</span>
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+                ${children.length > 0 ? `
+                    <div>
+                        <h5 class="font-medium text-notion-gray-700 mb-2">子ども（${children.length}名）</h5>
+                        <div class="space-y-2">
+                            ${children.map((child, index) => `
+                                <div class="text-sm">
+                                    <span class="text-notion-gray-500">子${index + 1}:</span>
+                                    <span class="font-medium ml-2">${child.name}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    modalContent.innerHTML = `
+        <div class="space-y-6">
+            <!-- Header Section -->
+            <div class="flex items-start space-x-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-white font-semibold text-xl">
+                    ${application.applicantName ? application.applicantName.charAt(0) : 'N'}
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-2xl font-semibold text-notion-gray-800">${application.applicantName || '未設定'}</h3>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-notion-gray-600">申請ID: A-2024-${String(application.id).padStart(3, '0')}</p>
+                </div>
+            </div>
+            
+            <!-- Basic Information -->
+            <div class="bg-white border border-notion-gray-200 rounded-xl p-6">
+                <h4 class="font-semibold text-notion-gray-800 mb-4">基本情報</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-sm font-medium text-notion-gray-500">傷病名</label>
+                        <p class="mt-1 font-medium text-notion-gray-800">${application.disabilityDescription || '未設定'}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-notion-gray-500">年金種類</label>
+                        <p class="mt-1 font-medium text-notion-gray-800">${ProjectsList.getPensionType(application.applicationType)}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-notion-gray-500">初診日</label>
+                        <p class="mt-1 font-medium text-notion-gray-800">${ProjectsList.formatDate(application.onsetDate)}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-notion-gray-500">見込み収益</label>
+                        <p class="mt-1 font-medium text-notion-gray-800">${ProjectsList.formatCurrency(application.monthlyAmount)}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-notion-gray-500">申請日</label>
+                        <p class="mt-1 font-medium text-notion-gray-800">${ProjectsList.formatDate(application.createdAt)}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-notion-gray-500">担当者</label>
+                        <p class="mt-1 font-medium text-notion-gray-800">${application.assignee?.name || '未割当'}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Family Information -->
+            ${familyMembersSection}
+        </div>
+    `;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeViewModal() {
+    const modal = document.getElementById('view-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        currentApplicationId = null;
+    }
+}
+
+function editFromModal() {
+    if (currentApplicationId) {
+        closeViewModal();
+        editApplication(currentApplicationId);
+    }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('view-modal');
+    if (modal && e.target === modal) {
+        closeViewModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeViewModal();
+    }
+});
 
 // Search functionality
 function setupSearch() {
