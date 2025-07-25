@@ -135,15 +135,9 @@ const ProjectsList = {
         // Get status badge
         const statusBadge = this.getStatusBadge(application.status);
 
-        // Get initials for avatar
-        const initials = application.applicantName ? application.applicantName.charAt(0) : 'N';
-
         card.innerHTML = `
             <div class="flex items-start justify-between">
                 <div class="flex items-start space-x-4 flex-1">
-                    <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-saas">
-                        ${initials}
-                    </div>
                     <div class="flex-1">
                         <div class="flex items-center space-x-3 mb-3">
                             <h3 class="text-lg font-semibold text-saas-900">${application.applicantName || '未設定'}</h3>
