@@ -409,6 +409,14 @@
                                     </label>
                                     <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="うつ病、統合失調症など">
                                 </div>
+                                
+                                <!-- 現症 -->
+                                <div>
+                                    <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                        現症（現在の症状・状態）
+                                    </label>
+                                    <textarea id="currentSymptoms" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" rows="4" placeholder="現在の症状、治療状況、日常生活への影響などを記入してください"></textarea>
+                                </div>
 
                                 <!-- 初診日詳細 -->
                                 <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
@@ -1215,6 +1223,7 @@
             // 傷病情報
             try {
                 const diseaseInput = document.querySelector('input[placeholder="うつ病、統合失調症など"]');
+                const currentSymptomsTextarea = document.getElementById('currentSymptoms');
                 const firstVisitInput = document.querySelectorAll('input[type="date"]')[1];
                 const disabilityDateInput = document.querySelectorAll('input[type="date"]')[2];
                 const hospitalInput = document.querySelector('input[placeholder="○○病院、○○クリニック"]');
@@ -1227,6 +1236,7 @@
                 const workTextarea = document.querySelector('textarea[placeholder="就労状況、業務への影響など"]');
                 
                 if (diseaseInput) diseaseInput.value = data.disease || '';
+                if (currentSymptomsTextarea) currentSymptomsTextarea.value = data.currentSymptoms || '';
                 if (firstVisitInput) firstVisitInput.value = data.firstVisit || '';
                 if (disabilityDateInput) disabilityDateInput.value = data.disabilityDate || '';
                 if (hospitalInput) hospitalInput.value = data.hospital || '';
@@ -1449,8 +1459,46 @@
 
         // 申請データを保存する関数
         function saveApplication() {
-            // 保存処理のシミュレーション
-            console.log('Saving application...');
+            // フォームデータを収集
+            const projectData = {
+                id: Date.now(),
+                name: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
+                furigana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
+                age: parseInt(document.querySelector('input[placeholder="45"]')?.value) || 0,
+                gender: document.querySelector('select')?.value || '',
+                birthday: document.querySelector('input[type="date"]')?.value || '',
+                pensionNumber: document.querySelector('input[placeholder="1234-567890"]')?.value || '',
+                phone: document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
+                email: document.querySelector('input[placeholder="example@email.com"]')?.value || '',
+                address: document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
+                hasSpouse: document.querySelector('input[name="spouse"]:checked')?.value || 'no',
+                disease: document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || '',
+                currentSymptoms: document.getElementById('currentSymptoms')?.value || '',
+                firstVisit: document.getElementById('initialVisitDateWestern')?.value || '',
+                disabilityDate: document.querySelectorAll('input[type="date"]')[2]?.value || '',
+                hospital: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
+                doctor: document.querySelector('input[placeholder="田中医師"]')?.value || '',
+                grade: document.querySelectorAll('select')[2]?.value || '',
+                symptoms: document.querySelector('textarea[placeholder="具体的な症状を記載してください"]')?.value || '',
+                treatment: document.querySelector('textarea[placeholder="通院频度、治療内容など"]')?.value || '',
+                medication: document.querySelector('textarea[placeholder="服用中の薬剤名、用量など"]')?.value || '',
+                dailyLife: document.querySelector('textarea[placeholder="食事、入浴、外出等への影響"]')?.value || '',
+                work: document.querySelector('textarea[placeholder="就労状況、業務への影響など"]')?.value || '',
+                hasChildren: document.querySelector('input[name="children"]:checked')?.value || 'false',
+                status: 'draft',
+                createdAt: new Date().toISOString()
+            };
+            
+            // ローカルストレージから既存のプロジェクトを取得
+            let projects = JSON.parse(localStorage.getItem('pensionProjects') || '[]');
+            
+            // 新しいプロジェクトを追加
+            projects.push(projectData);
+            
+            // ローカルストレージに保存
+            localStorage.setItem('pensionProjects', JSON.stringify(projects));
+            
+            console.log('Saving application...', projectData);
             
             // 成功メッセージを表示
             const notification = document.createElement('div');
@@ -1654,13 +1702,14 @@
             
             try {
                 const childElement = button.closest('.border.border-notion-gray-200');
-                if (childElement) {
-                    // より安全な削除方法
+                const childrenList = document.getElementById('childrenList');
+                
+                if (childElement && childrenList && childrenList.contains(childElement)) {
+                    // 親要素に含まれていることを確認してから削除
                     childElement.remove();
                     childCount--;
                     
                     // 残りの子ども要素の番号を振り直し
-                    const childrenList = document.getElementById('childrenList');
                     if (childrenList) {
                         const remainingChildren = childrenList.querySelectorAll('.border.border-notion-gray-200');
                         remainingChildren.forEach((child, index) => {
