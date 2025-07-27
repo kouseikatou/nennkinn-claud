@@ -28,6 +28,30 @@
                             800: '#25241f',
                             900: '#1f1e1a'
                         },
+                        'saas': {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a'
+                        },
+                        'primary': {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        },
                         'linear-blue': {
                             50: '#f0f9ff',
                             100: '#e0f2fe',
@@ -39,7 +63,11 @@
                     boxShadow: {
                         'notion': '0 1px 2px rgba(0, 0, 0, 0.04)',
                         'notion-hover': '0 2px 8px rgba(0, 0, 0, 0.08)',
-                        'linear': '0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px rgba(0, 0, 0, 0.05)'
+                        'linear': '0 1px 3px rgba(0, 0, 0, 0.05), 0 10px 25px rgba(0, 0, 0, 0.05)',
+                        'saas': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 2s infinite',
                     }
                 }
             }
@@ -47,44 +75,49 @@
     </script>
 </head>
 <body class="bg-notion-gray-50 font-sans antialiased">
-    <div class="min-h-screen">
-        <!-- Header -->
-        <header class="bg-white/80 backdrop-blur-md border-b border-notion-gray-200/60 px-6 py-4 sticky top-0 z-40">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-linear-blue-500 to-linear-blue-600 rounded-lg flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <h1 class="text-xl font-semibold text-notion-gray-800">障害年金管理システム</h1>
+    <!-- ヘッダー -->
+    <header class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-50">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <button onclick="window.history.back()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1 class="text-xl font-semibold text-gray-900" id="pageTitle">新規申請作成</h1>
+                    <p class="text-sm text-gray-500" id="pageSubtitle">障害年金申請の情報を入力してください</p>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-2 px-3 py-2 bg-notion-gray-100 rounded-lg">
-                        <div class="w-6 h-6 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-xs font-medium text-white">田</div>
-                        <span class="text-sm font-medium text-notion-gray-700">田中太郎</span>
-                    </div>
-                    <button class="p-2 text-notion-gray-500 hover:text-notion-gray-700 hover:bg-notion-gray-100 rounded-lg transition-all duration-200">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
-                        </svg>
+            </div>
+            
+            <div class="flex items-center space-x-3" id="headerActions">
+                <!-- View mode でのステータスバッジ -->
+                <span id="statusBadge" class="hidden inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+                    下書き
+                </span>
+                
+                <!-- Edit mode でのアクションボタン -->
+                <div id="editActions">
+                    <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200" onclick="window.history.back()">
+                        キャンセル
                     </button>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <div class="flex">
+    <div class="flex min-h-screen w-full" id="mainLayout">
             <!-- Sidebar -->
-            <div class="w-64 bg-white/50 backdrop-blur-sm border-r border-notion-gray-200/60 min-h-screen">
-                <nav class="p-4 space-y-1">
+            <div class="w-64 bg-white border-r border-saas-200 shadow-saas min-h-screen">
+                <nav class="p-6">
                     <div class="mb-8">
-                        <div class="text-xs font-semibold text-notion-gray-400 uppercase tracking-wider mb-3">メニュー</div>
-                        <ul class="space-y-1">
+                        <div class="text-xs font-semibold text-saas-400 uppercase tracking-wider mb-4">ナビゲーション</div>
+                        <ul class="space-y-2">
                             <li>
-                                <a href="index.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-notion-gray-600 hover:bg-notion-gray-100 hover:text-notion-gray-800 transition-all duration-200">
-                                    <div class="mr-3 p-1.5">
-                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <a href="index.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-saas-700 hover:bg-saas-50 hover:text-saas-900 transition-all duration-200">
+                                    <div class="mr-3 flex-shrink-0">
+                                        <svg class="h-5 w-5 text-saas-500 group-hover:text-saas-700" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                                         </svg>
                                     </div>
@@ -92,24 +125,24 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="projects.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-notion-gray-600 hover:bg-notion-gray-100 hover:text-notion-gray-800 transition-all duration-200">
-                                    <div class="mr-3 p-1.5">
-                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                <a href="projects.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl bg-primary-50 text-primary-700 border border-primary-200">
+                                    <div class="mr-3 flex-shrink-0">
+                                        <svg class="h-5 w-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                                             <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
                                         </svg>
                                     </div>
-                                    年金申請一覧
+                                    申請管理
                                 </a>
                             </li>
                             <li>
-                                <a href="logs.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-notion-gray-600 hover:bg-notion-gray-100 hover:text-notion-gray-800 transition-all duration-200">
-                                    <div class="mr-3 p-1.5">
-                                        <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z" clip-rule="evenodd"/>
+                                <a href="logs.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-saas-700 hover:bg-saas-50 hover:text-saas-900 transition-all duration-200">
+                                    <div class="mr-3 flex-shrink-0">
+                                        <svg class="h-5 w-5 text-saas-500 group-hover:text-saas-700" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd"/>
                                         </svg>
                                     </div>
-                                    変更履歴
+                                    アクティビティ
                                 </a>
                             </li>
                         </ul>
@@ -118,16 +151,26 @@
             </div>
 
             <!-- Main Content -->
-            <main class="flex-1 p-8 max-w-6xl mx-auto">
+            <main class="flex-1 p-6">
                 <div class="space-y-8">
                     <!-- Page Header -->
-                    <div class="text-center">
-                        <h1 id="pageTitle" class="text-3xl font-bold text-notion-gray-800 mb-2">新規申請作成</h1>
-                        <p id="pageSubtitle" class="text-notion-gray-500">障害年金申請の情報を入力してください</p>
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="text-center flex-1">
+                            <h1 id="pageTitle" class="text-3xl font-bold text-notion-gray-800 mb-2">新規申請作成</h1>
+                            <p id="pageSubtitle" class="text-notion-gray-500">障害年金申請の情報を入力してください</p>
+                        </div>
+                        <div id="editModeIndicator" class="hidden px-4 py-2 bg-blue-100 text-blue-800 rounded-lg border border-blue-300 text-sm font-medium">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                </svg>
+                                <span>編集モード</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Form -->
-                    <form class="space-y-8">
+                    <form class="space-y-8" onsubmit="event.preventDefault(); saveApplication(); return false;">
                         <!-- 申請者基本情報 -->
                         <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion overflow-hidden">
                             <div class="bg-blue-50 px-6 py-4 border-b border-notion-gray-200/60">
@@ -185,12 +228,20 @@
                                     </div>
                                 </div>
 
-                                <!-- 基礎年金番号 -->
-                                <div>
-                                    <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                        基礎年金番号 <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="1234-567890">
+                                <!-- 基礎年金番号・マイナンバー -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                            基礎年金番号 <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="1234-567890">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                            マイナンバー <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="123456789012" pattern="[0-9]{12}" maxlength="12">
+                                    </div>
                                 </div>
 
                                 <!-- 連絡先 -->
@@ -321,15 +372,6 @@
                                                 <option value="unknown">不明</option>
                                             </select>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">振替加算対象</label>
-                                            <select class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
-                                                <option value="">選択してください</option>
-                                                <option value="yes">対象</option>
-                                                <option value="no">対象外</option>
-                                                <option value="unknown">不明</option>
-                                            </select>
-                                        </div>
                                     </div>
 
                                     <!-- 住所情報 -->
@@ -369,20 +411,6 @@
                             </div>
                         </div>
                         
-                        <!-- 保存ボタン -->
-                        <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion p-6">
-                            <div class="flex justify-end space-x-4">
-                                <button type="button" onclick="window.history.back()" class="px-6 py-3 border border-notion-gray-300 rounded-lg text-notion-gray-700 font-medium hover:bg-notion-gray-50 transition-all duration-200">
-                                    キャンセル
-                                </button>
-                                <button type="button" onclick="saveApplication()" class="px-6 py-3 bg-linear-blue-600 hover:bg-linear-blue-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center space-x-2">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/>
-                                    </svg>
-                                    <span>保存</span>
-                                </button>
-                            </div>
-                        </div>
 
                         <!-- 傷病情報 -->
                         <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-notion-gray-200/60 shadow-notion overflow-hidden">
@@ -405,31 +433,296 @@
                                     </label>
                                     <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="うつ病、統合失調症など">
                                 </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                            初診日 <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="date" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
+                                
+                                <!-- 現症日詳細 -->
+                                <div class="bg-purple-50 p-6 rounded-lg border border-purple-200">
+                                    <h3 class="text-lg font-medium text-notion-gray-800 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                        </svg>
+                                        現症日情報
+                                    </h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                現症日（西暦） <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="date" id="currentSymptomsDateWestern" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="convertCurrentSymptomsDateToJapanese(this.value)">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                現症日（和暦）
+                                            </label>
+                                            <input type="text" id="currentSymptomsDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和6年7月27日">
+                                        </div>
                                     </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                現症日の精度
+                                            </label>
+                                            <select id="currentSymptomsDatePrecision" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="updateCurrentSymptomsDateDisplay()">
+                                                <option value="exact">正確な日付</option>
+                                                <option value="approximate">頃（おおよその時期）</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                表示用現症日
+                                            </label>
+                                            <input type="text" id="displayCurrentSymptomsDate" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm bg-gray-50" readonly placeholder="上記の入力に基づいて自動表示されます">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">現症（現在の症状・状態）</label>
+                                        <textarea id="currentSymptoms" rows="4" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-none" placeholder="現在の症状、治療状況、日常生活への影響などを記入してください"></textarea>
+                                    </div>
+                                    
+                                    <!-- 現症日診断書のアップロード -->
                                     <div>
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                            障害認定日 <span class="text-red-500">*</span>
+                                            現症日診断書
                                         </label>
-                                        <input type="date" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
+                                        <div class="flex items-center space-x-4">
+                                            <label class="px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 cursor-pointer transition-all duration-200 text-sm font-medium">
+                                                <input type="file" id="currentSymptomsCertificate" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileUpload(this, 'currentSymptomsCertificatePreview')">
+                                                ファイルを選択
+                                            </label>
+                                            <span class="text-sm text-notion-gray-500">PDF、JPG、PNG形式（最大10MB）</span>
+                                        </div>
+                                        <div id="currentSymptomsCertificatePreview" class="mt-3 hidden">
+                                            <div class="flex items-center p-3 bg-notion-gray-50 rounded-lg border border-notion-gray-200">
+                                                <svg class="w-8 h-8 text-purple-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-5L9 2H4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <div class="flex-1">
+                                                    <p class="text-sm font-medium text-gray-900" id="currentSymptomsFileName"></p>
+                                                    <p class="text-sm text-gray-500" id="currentSymptomsFileSize"></p>
+                                                </div>
+                                                <button type="button" onclick="removeFile('currentSymptomsCertificate', 'currentSymptomsCertificatePreview')" class="text-red-500 hover:text-red-700">
+                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <!-- 医療機関情報 -->
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">医療機関名</label>
-                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="○○病院、○○クリニック">
+                                <!-- 初診日詳細 -->
+                                <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                    <h3 class="text-lg font-medium text-notion-gray-800 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                        </svg>
+                                        初診日情報
+                                    </h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                初診日（西暦） <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="date" id="initialVisitDateWestern" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="convertToJapaneseDate(this.value)">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                初診日（和暦）
+                                            </label>
+                                            <input type="text" id="initialVisitDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和5年4月15日">
+                                        </div>
                                     </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                初診日の精度
+                                            </label>
+                                            <select id="initialVisitDatePrecision" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="updateDateDisplay()">
+                                                <option value="exact">正確な日付</option>
+                                                <option value="approximate">頃（おおよその時期）</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                表示用初診日
+                                            </label>
+                                            <input type="text" id="displayInitialVisitDate" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm bg-gray-50" readonly placeholder="上記の入力に基づいて自動表示されます">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                初診時医療機関名 <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="○○病院、○○クリニック">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">初診の状況</label>
+                                            <textarea rows="4" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-none" placeholder="初診時の症状、受診経緯、医師の診断内容等を具体的に記載してください（例：頭痛と吐き気で救急外来を受診、MRI検査の結果...）"></textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- 受診状況等証明書のアップロード -->
                                     <div>
-                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">主治医名</label>
-                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="田中医師">
+                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                            受診状況等証明書
+                                        </label>
+                                        <div class="flex items-center space-x-4">
+                                            <label class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 cursor-pointer transition-all duration-200 text-sm font-medium">
+                                                <input type="file" id="initialVisitCertificate" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileUpload(this, 'initialVisitCertificatePreview')">
+                                                ファイルを選択
+                                            </label>
+                                            <span class="text-sm text-notion-gray-500">PDF、JPG、PNG形式（最大10MB）</span>
+                                        </div>
+                                        <div id="initialVisitCertificatePreview" class="mt-3 hidden">
+                                            <div class="flex items-center p-3 bg-notion-gray-50 rounded-lg border border-notion-gray-200">
+                                                <svg class="w-8 h-8 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-5L9 2H4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <div class="flex-1">
+                                                    <p class="text-sm font-medium text-gray-900" id="initialVisitFileName"></p>
+                                                    <p class="text-sm text-gray-500" id="initialVisitFileSize"></p>
+                                                </div>
+                                                <button type="button" onclick="removeFile('initialVisitCertificate', 'initialVisitCertificatePreview')" class="text-red-500 hover:text-red-700">
+                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 診断書の保存 -->
+                                <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                                    <h3 class="text-lg font-medium text-notion-gray-800 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                                        </svg>
+                                        診断書の保存
+                                    </h3>
+                                    
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                証明書画像をアップロード <span class="text-red-500">*</span>
+                                            </label>
+                                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-linear-blue-400 transition-colors duration-200">
+                                                <input type="file" id="medicalCertificate" accept="image/*,.pdf" class="hidden" onchange="handleFileUpload(this, 'certificatePreview')">
+                                                <label for="medicalCertificate" class="cursor-pointer">
+                                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                    <div class="mt-4">
+                                                        <p class="text-sm text-gray-600">
+                                                            <span class="font-medium text-linear-blue-600 hover:text-linear-blue-500">ファイルを選択</span>
+                                                            またはドラッグ&ドロップ
+                                                        </p>
+                                                        <p class="text-xs text-gray-500">PNG, JPG, PDF形式（最大10MB）</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            <div id="certificatePreview" class="mt-4 hidden">
+                                                <div class="flex items-center p-3 bg-white rounded-lg border border-gray-200">
+                                                    <svg class="w-8 h-8 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                    <div class="flex-1">
+                                                        <p class="text-sm font-medium text-gray-900" id="fileName"></p>
+                                                        <p class="text-sm text-gray-500" id="fileSize"></p>
+                                                    </div>
+                                                    <button type="button" onclick="removeFile('medicalCertificate', 'certificatePreview')" class="text-red-500 hover:text-red-700">
+                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 障害認定日詳細 -->
+                                <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                                    <h3 class="text-lg font-medium text-notion-gray-800 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 text-orange-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                        </svg>
+                                        障害認定日情報
+                                    </h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                障害認定日（西暦） <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="date" id="disabilityRecognitionDateWestern" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="convertDisabilityDateToJapanese(this.value)">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                障害認定日（和暦）
+                                            </label>
+                                            <input type="text" id="disabilityRecognitionDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和5年10月15日">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                障害認定日の精度
+                                            </label>
+                                            <select id="disabilityRecognitionDatePrecision" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="updateDisabilityDateDisplay()">
+                                                <option value="exact">正確な日付</option>
+                                                <option value="approximate">頃（おおよその時期）</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                                表示用障害認定日
+                                            </label>
+                                            <input type="text" id="displayDisabilityRecognitionDate" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm bg-gray-50" readonly placeholder="上記の入力に基づいて自動表示されます">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">障害認定日の根拠・説明</label>
+                                        <textarea rows="3" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-none" placeholder="障害認定日の設定根拠や医師の判断内容等を記載してください"></textarea>
+                                    </div>
+                                    
+                                    <!-- 認定日診断書のアップロード -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">
+                                            認定日診断書
+                                        </label>
+                                        <div class="flex items-center space-x-4">
+                                            <label class="px-4 py-2 bg-orange-50 text-orange-600 rounded-lg hover:bg-orange-100 cursor-pointer transition-all duration-200 text-sm font-medium">
+                                                <input type="file" id="disabilityDateCertificate" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileUpload(this, 'disabilityDateCertificatePreview')">
+                                                ファイルを選択
+                                            </label>
+                                            <span class="text-sm text-notion-gray-500">PDF、JPG、PNG形式（最大10MB）</span>
+                                        </div>
+                                        <div id="disabilityDateCertificatePreview" class="mt-3 hidden">
+                                            <div class="flex items-center p-3 bg-notion-gray-50 rounded-lg border border-notion-gray-200">
+                                                <svg class="w-8 h-8 text-orange-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-5L9 2H4z" clip-rule="evenodd"/>
+                                                </svg>
+                                                <div class="flex-1">
+                                                    <p class="text-sm font-medium text-gray-900" id="disabilityDateFileName"></p>
+                                                    <p class="text-sm text-gray-500" id="disabilityDateFileSize"></p>
+                                                </div>
+                                                <button type="button" onclick="removeFile('disabilityDateCertificate', 'disabilityDateCertificatePreview')" class="text-red-500 hover:text-red-700">
+                                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -542,59 +835,141 @@
     <script>
         // 基本テスト
         console.log('JavaScript loaded successfully');
-        alert('JavaScript is working! URL: ' + window.location.href);
         
         // ページ初期化：編集モードか新規作成モードかを判定
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOMContentLoaded fired');
-            alert('DOM loaded! Current URL: ' + window.location.href);
             
             const urlParams = new URLSearchParams(window.location.search);
             const editId = urlParams.get('edit');
+            const viewId = urlParams.get('view');
             const isEditMode = editId !== null;
+            const isViewMode = viewId !== null;
+            const currentId = editId || viewId;
             
             console.log('URL Parameters:', window.location.search);
             console.log('Edit ID:', editId);
+            console.log('View ID:', viewId);
+            console.log('Current ID:', currentId);
             console.log('Is Edit Mode:', isEditMode);
-            
-            alert('URL Params: ' + window.location.search + ' EditId: ' + editId + ' IsEdit: ' + isEditMode);
+            console.log('Is View Mode:', isViewMode);
             
             if (isEditMode) {
                 // 編集モードの場合
                 console.log('Setting edit mode...');
-                alert('Setting edit mode for ID: ' + editId);
                 
                 const titleElement = document.getElementById('pageTitle');
                 const subtitleElement = document.getElementById('pageSubtitle');
                 const buttonElement = document.getElementById('submitButtonText');
+                const editModeIndicator = document.getElementById('editModeIndicator');
                 
                 if (titleElement) {
                     titleElement.textContent = '申請情報編集';
-                    alert('Title changed successfully');
-                } else {
-                    alert('Title element not found!');
                 }
                 
                 if (subtitleElement) {
                     subtitleElement.textContent = `申請ID: APP-2024-${String(editId).padStart(3, '0')} の情報を編集しています`;
-                } else {
-                    alert('Subtitle element not found!');
                 }
                 
                 if (buttonElement) {
                     buttonElement.textContent = '変更を保存';
-                } else {
-                    alert('Button element not found!');
+                }
+                
+                if (editModeIndicator) {
+                    editModeIndicator.classList.remove('hidden');
                 }
                 
                 // 少し遅延してからデータを読み込み
                 setTimeout(() => {
                     loadExistingData(editId);
                 }, 100);
+            } else if (isViewMode) {
+                // 表示モードの場合
+                console.log('Setting view mode...');
+                
+                const titleElement = document.getElementById('pageTitle');
+                const subtitleElement = document.getElementById('pageSubtitle');
+                const statusBadge = document.getElementById('statusBadge');
+                const editActions = document.getElementById('editActions');
+                
+                if (titleElement) {
+                    titleElement.textContent = '田中太郎さんの申請詳細';
+                }
+                if (subtitleElement) {
+                    subtitleElement.textContent = '申請ID: #2024-0727-' + String(viewId).padStart(3, '0');
+                }
+                if (statusBadge) {
+                    statusBadge.classList.remove('hidden');
+                    statusBadge.classList.remove('bg-blue-100', 'text-blue-800');
+                    statusBadge.classList.add('bg-orange-100', 'text-orange-800');
+                    statusBadge.innerHTML = '<div class="w-2 h-2 bg-orange-400 rounded-full mr-2 animate-pulse-slow"></div>審査中';
+                }
+                if (editActions) {
+                    editActions.innerHTML = `
+                        <button class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all duration-200">
+                            編集
+                        </button>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200">
+                            書類追加
+                        </button>
+                    `;
+                }
+                
+                // サイドバーを追加
+                createDetailSidebar();
+                
+                // データを読み込み
+                setTimeout(() => {
+                    loadExistingData(viewId);
+                    // データ読み込み後にフォームを読み取り専用にする
+                    setTimeout(() => {
+                        makeFormReadOnly();
+                    }, 500);
+                }, 100);
             } else {
-                alert('New application mode');
+                console.log('New application mode');
             }
         });
+
+        // フォームを読み取り専用にする関数
+        function makeFormReadOnly() {
+            const form = document.querySelector('form');
+            if (form) {
+                // すべての入力フィールドを無効化
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.style.backgroundColor = '#f7f6f3';
+                    input.style.cursor = 'not-allowed';
+                });
+                
+                // viewモードでのみ削除ボタンとaddChildボタンを非表示
+                const urlParams = new URLSearchParams(window.location.search);
+                const isViewMode = urlParams.get('view') !== null;
+                
+                if (isViewMode) {
+                    const removeButtons = form.querySelectorAll('button[onclick*="removeChild"]');
+                    removeButtons.forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+                    
+                    const addChildButton = form.querySelector('button[onclick*="addChild"]');
+                    if (addChildButton) {
+                        addChildButton.style.display = 'none';
+                    }
+                }
+                
+                // ボタンのクリックイベントを変更
+                const submitBtn = document.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.onclick = function(e) {
+                        e.preventDefault();
+                        const currentId = new URLSearchParams(window.location.search).get('view');
+                        window.location.href = `project-unified.html?edit=${currentId}`;
+                    };
+                }
+            }
+        }
 
         // 既存データの読み込み
         async function loadExistingData(editId) {
@@ -610,6 +985,253 @@
             
             // フォールバック用サンプルデータ
             const sampleData = {
+                '1': {
+                    name: '田中太郎',
+                    furigana: 'タナカタロウ',
+                    age: 42,
+                    gender: 'male',
+                    birthday: '1982-05-15',
+                    pensionNumber: '1234-567890',
+                    phone: '03-1234-5678',
+                    email: 'tanaka@example.com',
+                    address: '東京都新宿区西新宿1-1-1',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '田中花子',
+                        furigana: 'タナカハナコ',
+                        mynumber: '123456789012',
+                        pensionNumber: '2345-678901',
+                        birthday: '1985-03-20',
+                        age: 39,
+                        gender: 'female',
+                        income1: 2800000,
+                        income2: 2900000,
+                        spouseAddition: 'yes',
+                        transferAddition: 'no',
+                        address: '東京都新宿区西新宿1-1-1',
+                        phone: '03-1234-5679',
+                        email: 'hanako@example.com'
+                    },
+                    disease: 'うつ病',
+                    firstVisit: '2023-05-10',
+                    disabilityDate: '2023-11-10',
+                    hospital: '新宿病院',
+                    doctor: '山田医師',
+                    grade: '2級',
+                    symptoms: '気分の落ち込み、集中力低下、睡眠障害が継続している',
+                    treatment: '週1回の通院、抗うつ薬の服用、カウンセリング',
+                    medication: 'セルトラリン50mg、ロラゼパム0.5mg',
+                    hasChildren: 'true',
+                    childrenData: [
+                        {
+                            name: '田中一郎',
+                            furigana: 'タナカイチロウ',
+                            birthday: '2010-04-01',
+                            age: 14,
+                            gender: 'male',
+                            mynumber: '345678901234',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '新宿中学校',
+                            schoolYear: '2年'
+                        },
+                        {
+                            name: '田中次郎',
+                            furigana: 'タナカジロウ',
+                            birthday: '2012-07-15',
+                            age: 12,
+                            gender: 'male',
+                            mynumber: '456789012345',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '新宿小学校',
+                            schoolYear: '6年'
+                        }
+                    ]
+                },
+                '2': {
+                    name: '山田花子',
+                    furigana: 'ヤマダハナコ',
+                    age: 35,
+                    gender: 'female',
+                    birthday: '1989-08-22',
+                    pensionNumber: '3456-789012',
+                    phone: '03-2345-6789',
+                    email: 'yamada@example.com',
+                    address: '東京都渋谷区神南1-2-3',
+                    hasSpouse: 'false',
+                    disease: '統合失調症',
+                    firstVisit: '2022-03-15',
+                    disabilityDate: '2022-09-15',
+                    hospital: '渋谷メンタルクリニック',
+                    doctor: '佐藤医師',
+                    grade: '1級',
+                    symptoms: '幻聴、妄想、思考の混乱が見られる',
+                    treatment: '月2回の通院、抗精神病薬の服用、デイケア参加',
+                    medication: 'リスペリドン2mg、ロラゼパム1mg',
+                    hasChildren: 'false'
+                },
+                '3': {
+                    name: '佐藤一郎',
+                    furigana: 'サトウイチロウ',
+                    age: 58,
+                    gender: 'male',
+                    birthday: '1966-12-03',
+                    pensionNumber: '4567-890123',
+                    phone: '03-3456-7890',
+                    email: 'sato@example.com', 
+                    address: '東京都世田谷区三軒茶屋2-3-4',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '佐藤美香',
+                        furigana: 'サトウミカ',
+                        mynumber: '567890123456',
+                        pensionNumber: '5678-901234',
+                        birthday: '1970-01-10',
+                        age: 54,
+                        gender: 'female',
+                        income1: 3200000,
+                        income2: 3300000,
+                        spouseAddition: 'yes',
+                        transferAddition: 'no',
+                        address: '東京都世田谷区三軒茶屋2-3-4',
+                        phone: '03-3456-7891',
+                        email: 'mika@example.com'
+                    },
+                    disease: '腰椎椎間板ヘルニア',
+                    firstVisit: '2021-08-10',
+                    disabilityDate: '2022-02-10',
+                    hospital: '世田谷整形外科',
+                    doctor: '鈴木医師',
+                    grade: '3級',
+                    symptoms: '腰部の激痛、下肢のしびれ、歩行困難',
+                    treatment: '理学療法、痛み止めの服用、週1回のリハビリ',
+                    medication: 'ロキソニン60mg、リリカ75mg',
+                    hasChildren: 'true',
+                    childrenData: [
+                        {
+                            name: '佐藤健太',
+                            furigana: 'サトウケンタ',
+                            birthday: '2005-09-12',
+                            age: 19,
+                            gender: 'male',
+                            mynumber: '678901234567',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '東京大学',
+                            schoolYear: '1年'
+                        },
+                        {
+                            name: '佐藤美穂',
+                            furigana: 'サトウミホ',
+                            birthday: '2007-11-25',
+                            age: 17,
+                            gender: 'female',
+                            mynumber: '789012345678',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '都立高校',
+                            schoolYear: '2年'
+                        },
+                        {
+                            name: '佐藤大輔',
+                            furigana: 'サトウダイスケ',
+                            birthday: '2009-03-08',
+                            age: 15,
+                            gender: 'male',
+                            mynumber: '890123456789',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '世田谷中学校',
+                            schoolYear: '3年'
+                        }
+                    ]
+                },
+                '4': {
+                    name: '鈴木次郎',
+                    furigana: 'スズキジロウ',
+                    age: 29,
+                    gender: 'male',
+                    birthday: '1995-06-18',
+                    pensionNumber: '6789-012345',
+                    phone: '03-4567-8901',
+                    email: 'suzuki@example.com',
+                    address: '東京都練馬区石神井町4-5-6',
+                    hasSpouse: 'true',
+                    spouse: {
+                        name: '鈴木恵子',
+                        furigana: 'スズキケイコ',
+                        mynumber: '901234567890',
+                        pensionNumber: '7890-123456',
+                        birthday: '1997-02-14',
+                        age: 27,
+                        gender: 'female',
+                        income1: 2500000,
+                        income2: 2600000,
+                        spouseAddition: 'yes',
+                        transferAddition: 'no',
+                        address: '東京都練馬区石神井町4-5-6',
+                        phone: '03-4567-8902',
+                        email: 'keiko@example.com'
+                    },
+                    disease: '双極性障害',
+                    firstVisit: '2023-12-01',
+                    disabilityDate: '2024-06-01',
+                    hospital: '練馬心療内科',
+                    doctor: '高橋医師',
+                    grade: '2級',
+                    symptoms: '躁状態とうつ状態の繰り返し、気分の激しい変動',
+                    treatment: '月1回の通院、気分安定薬の服用、心理療法',
+                    medication: 'リチウム300mg、ラモトリギン100mg',
+                    hasChildren: 'false'
+                },
+                '5': {
+                    name: '高橋三郎',
+                    furigana: 'タカハシサブロウ',
+                    age: 52,
+                    gender: 'male',
+                    birthday: '1972-04-05',
+                    pensionNumber: '8901-234567',
+                    phone: '03-5678-9012',
+                    email: 'takahashi@example.com',
+                    address: '東京都中野区中野5-6-7',
+                    hasSpouse: 'false',
+                    disease: '関節リウマチ',
+                    firstVisit: '2022-11-20',
+                    disabilityDate: '2023-05-20',
+                    hospital: '中野リウマチクリニック',
+                    doctor: '伊藤医師',
+                    grade: '3級',
+                    symptoms: '全身の関節痛、朝のこわばり、関節の腫れ',
+                    treatment: '月2回の通院、抗リウマチ薬の服用、理学療法',
+                    medication: 'メトトレキサート10mg、プレドニゾロン5mg',
+                    hasChildren: 'true',
+                    childrenData: [
+                        {
+                            name: '高橋優子',
+                            furigana: 'タカハシユウコ',
+                            birthday: '2000-12-10',
+                            age: 24,
+                            gender: 'female',
+                            mynumber: '012345678901',
+                            pensionNumber: '',
+                            isStudent: 'no',
+                            occupation: '会社員'
+                        },
+                        {
+                            name: '高橋健一',
+                            furigana: 'タカハシケンイチ',
+                            birthday: '2003-08-15',
+                            age: 21,
+                            gender: 'male',
+                            mynumber: '123456789012',
+                            pensionNumber: '',
+                            isStudent: 'yes',
+                            schoolName: '専門学校',
+                            schoolYear: '2年'
+                        }
+                    ]
+                },
                 '001': {
                     name: '田中太郎',
                     furigana: 'タナカタロウ',
@@ -680,35 +1302,37 @@
                 }
             };
             
-            const data = sampleData[editId] || sampleData['001'];
+            const data = sampleData[editId] || sampleData['1'];
             
             console.log('Loading data for editId:', editId);
+            console.log('Sample data keys:', Object.keys(sampleData));
+            console.log('Found data:', data);
             console.log('Data:', data);
             
-            // フォームにデータを入力 - より信頼性の高い方法
+            // フォームにデータを入力 - より確実な方法
             try {
-                // 申請者基本情報
-                const nameInput = document.querySelector('input[placeholder="田中太郎"]');
-                const furiganaInput = document.querySelector('input[placeholder="タナカタロウ"]');
-                const ageInput = document.querySelector('input[placeholder="42"]');
-                const genderSelect = document.querySelectorAll('select')[0];
-                const birthdayInput = document.querySelectorAll('input[type="date"]')[0];
-                const pensionInput = document.querySelector('input[placeholder="1234-567890"]');
-                const phoneInput = document.querySelector('input[placeholder="03-1234-5678"]');
-                const emailInput = document.querySelector('input[placeholder="example@example.com"]');
-                const addressInput = document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]');
+                // 申請者基本情報 - より確実なセレクタを使用
+                const inputs = document.querySelectorAll('input, select');
+                console.log('Found inputs:', inputs.length);
                 
-                if (nameInput) nameInput.value = data.name;
-                if (furiganaInput) furiganaInput.value = data.furigana;
-                if (ageInput) ageInput.value = data.age;
-                if (genderSelect) genderSelect.value = data.gender;
-                if (birthdayInput) birthdayInput.value = data.birthday;
-                if (pensionInput) pensionInput.value = data.pensionNumber;
-                if (phoneInput) phoneInput.value = data.phone;
-                if (emailInput) emailInput.value = data.email;
-                if (addressInput) addressInput.value = data.address;
+                // 基本情報フィールドを位置で特定（より確実）
+                if (inputs.length >= 9) {
+                    if (inputs[0] && inputs[0].type === 'text') inputs[0].value = data.name || '';
+                    if (inputs[1] && inputs[1].type === 'text') inputs[1].value = data.furigana || '';
+                    if (inputs[2] && inputs[2].type === 'number') inputs[2].value = data.age || '';
+                    if (inputs[3] && inputs[3].tagName === 'SELECT') inputs[3].value = data.gender || '';
+                    if (inputs[4] && inputs[4].type === 'date') inputs[4].value = data.birthday || '';
+                    if (inputs[5] && inputs[5].type === 'text') inputs[5].value = data.pensionNumber || '';
+                    if (inputs[6] && inputs[6].type === 'tel') inputs[6].value = data.phone || '';
+                    if (inputs[7] && inputs[7].type === 'email') inputs[7].value = data.email || '';
+                    if (inputs[8] && inputs[8].type === 'text') inputs[8].value = data.address || '';
+                }
                 
-                console.log('Basic info loaded successfully');
+                console.log('Basic info loaded successfully:', {
+                    name: data.name,
+                    furigana: data.furigana,
+                    age: data.age
+                });
             } catch (error) {
                 console.error('Error loading basic info:', error);
             }
@@ -746,10 +1370,9 @@
                                 spouseInputs[7].value = data.spouse.income1 || ''; // 年収（前年度）
                                 spouseInputs[8].value = data.spouse.income2 || ''; // 年収（前々年度）
                                 spouseInputs[9].value = data.spouse.spouseAddition || ''; // 配偶者加算対象
-                                spouseInputs[10].value = data.spouse.transferAddition || ''; // 振替加算対象
-                                spouseInputs[11].value = data.spouse.address || ''; // 住所
-                                spouseInputs[12].value = data.spouse.phone || ''; // 電話番号
-                                spouseInputs[13].value = data.spouse.email || ''; // メールアドレス
+                                spouseInputs[10].value = data.spouse.address || ''; // 住所
+                                spouseInputs[11].value = data.spouse.phone || ''; // 電話番号
+                                spouseInputs[12].value = data.spouse.email || ''; // メールアドレス
                                 console.log('Spouse info loaded successfully');
                             }
                         }
@@ -767,6 +1390,7 @@
             // 傷病情報
             try {
                 const diseaseInput = document.querySelector('input[placeholder="うつ病、統合失調症など"]');
+                const currentSymptomsTextarea = document.getElementById('currentSymptoms');
                 const firstVisitInput = document.querySelectorAll('input[type="date"]')[1];
                 const disabilityDateInput = document.querySelectorAll('input[type="date"]')[2];
                 const hospitalInput = document.querySelector('input[placeholder="○○病院、○○クリニック"]');
@@ -779,6 +1403,7 @@
                 const workTextarea = document.querySelector('textarea[placeholder="就労状況、業務への影響など"]');
                 
                 if (diseaseInput) diseaseInput.value = data.disease || '';
+                if (currentSymptomsTextarea) currentSymptomsTextarea.value = data.currentSymptoms || '';
                 if (firstVisitInput) firstVisitInput.value = data.firstVisit || '';
                 if (disabilityDateInput) disabilityDateInput.value = data.disabilityDate || '';
                 if (hospitalInput) hospitalInput.value = data.hospital || '';
@@ -835,7 +1460,7 @@
             
             const childItem = document.createElement('div');
             childItem.className = 'border border-notion-gray-200 rounded-lg p-6 space-y-6 bg-notion-gray-50';
-            childItem.innerHTML = \`
+            childItem.innerHTML = `
                 <div class="flex items-center justify-between">
                     <h4 class="font-semibold text-notion-gray-700 text-lg flex items-center">
                         <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-2">
@@ -843,7 +1468,7 @@
                                 <path d="M10 2L3 7v11a2 2 0 002 2h4v-6h2v6h4a2 2 0 002-2V7l-7-5z"/>
                             </svg>
                         </div>
-                        子ども \${childCount}
+                        子ども ${childCount}
                     </h4>
                     <button type="button" class="text-red-500 hover:text-red-700 p-1.5 hover:bg-red-100 rounded-lg transition-all duration-200" onclick="removeChild(this)">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -994,17 +1619,537 @@
                         <textarea rows="2" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200 resize-none" placeholder="特記事項があれば記載してください"></textarea>
                     </div>
                 </div>
-            \`;
+            `;
             
             childrenList.appendChild(childItem);
         }
 
-        function removeChild(button) {
-            button.closest('.border').remove();
-            childCount--;
+        // 申請データを保存する関数
+        function saveApplication() {
+            // フォームデータを収集
+            const projectData = {
+                id: Date.now(),
+                name: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
+                furigana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
+                age: parseInt(document.querySelector('input[placeholder="45"]')?.value) || 0,
+                gender: document.querySelector('select')?.value || '',
+                birthday: document.querySelector('input[type="date"]')?.value || '',
+                pensionNumber: document.querySelector('input[placeholder="1234-567890"]')?.value || '',
+                phone: document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
+                email: document.querySelector('input[placeholder="example@email.com"]')?.value || '',
+                address: document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
+                hasSpouse: document.querySelector('input[name="spouse"]:checked')?.value || 'no',
+                disease: document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || '',
+                currentSymptoms: document.getElementById('currentSymptoms')?.value || '',
+                firstVisit: document.getElementById('initialVisitDateWestern')?.value || '',
+                disabilityDate: document.querySelectorAll('input[type="date"]')[2]?.value || '',
+                hospital: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
+                doctor: document.querySelector('input[placeholder="田中医師"]')?.value || '',
+                grade: document.querySelectorAll('select')[2]?.value || '',
+                symptoms: document.querySelector('textarea[placeholder="具体的な症状を記載してください"]')?.value || '',
+                treatment: document.querySelector('textarea[placeholder="通院频度、治療内容など"]')?.value || '',
+                medication: document.querySelector('textarea[placeholder="服用中の薬剤名、用量など"]')?.value || '',
+                dailyLife: document.querySelector('textarea[placeholder="食事、入浴、外出等への影響"]')?.value || '',
+                work: document.querySelector('textarea[placeholder="就労状況、業務への影響など"]')?.value || '',
+                hasChildren: document.querySelector('input[name="children"]:checked')?.value || 'false',
+                status: 'draft',
+                createdAt: new Date().toISOString()
+            };
             
-            if (childCount === 0) {
-                document.getElementById('childrenList').innerHTML = '<div class="text-sm text-notion-gray-500">「子どもを追加」ボタンを押して子ども情報を入力してください</div>';
+            // ローカルストレージから既存のプロジェクトを取得
+            let projects = JSON.parse(localStorage.getItem('pensionProjects') || '[]');
+            
+            // 新しいプロジェクトを追加
+            projects.push(projectData);
+            
+            // ローカルストレージに保存
+            localStorage.setItem('pensionProjects', JSON.stringify(projects));
+            
+            console.log('Saving application...', projectData);
+            
+            // 成功メッセージを表示
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white bg-green-500 transition-all duration-300 z-50';
+            notification.textContent = '保存しました';
+            document.body.appendChild(notification);
+            
+            // 通知を3秒後に削除
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+            
+            // 2秒後にプロジェクト一覧に遷移
+            setTimeout(() => {
+                window.location.href = 'projects.html';
+            }, 2000);
+        }
+
+        // 和暦変換機能
+        function convertToJapaneseDate(westernDate) {
+            if (!westernDate) return;
+            
+            const date = new Date(westernDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            let era, eraYear;
+            
+            if (year >= 2019 && (year > 2019 || month >= 5)) {
+                // 令和元年は2019年5月1日から
+                era = '令和';
+                eraYear = year - 2018;
+            } else if (year >= 1989) {
+                // 平成元年は1989年1月8日から
+                era = '平成';
+                eraYear = year - 1988;
+            } else if (year >= 1926) {
+                // 昭和元年は1926年12月25日から
+                era = '昭和';
+                eraYear = year - 1925;
+            } else if (year >= 1912) {
+                // 大正元年は1912年7月30日から
+                era = '大正';
+                eraYear = year - 1911;
+            } else {
+                // 明治
+                era = '明治';
+                eraYear = year - 1867;
+            }
+            
+            // 元年の場合の表記調整
+            const yearText = eraYear === 1 ? '元' : eraYear;
+            const japaneseDate = `${era}${yearText}年${month}月${day}日`;
+            
+            document.getElementById('initialVisitDateJapanese').value = japaneseDate;
+            updateDateDisplay();
+        }
+        
+        // 表示用日付の更新
+        function updateDateDisplay() {
+            const westernDate = document.getElementById('initialVisitDateWestern').value;
+            const japaneseDate = document.getElementById('initialVisitDateJapanese').value;
+            const precision = document.getElementById('initialVisitDatePrecision').value;
+            const displayField = document.getElementById('displayInitialVisitDate');
+            
+            if (!westernDate && !japaneseDate) {
+                displayField.value = '';
+                return;
+            }
+            
+            let displayText = '';
+            if (japaneseDate) {
+                displayText = japaneseDate;
+            } else if (westernDate) {
+                const date = new Date(westernDate);
+                displayText = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+            }
+            
+            if (precision === 'approximate' && displayText) {
+                displayText += '頃';
+            }
+            
+            displayField.value = displayText;
+        }
+        
+        // 障害認定日の和暦変換機能
+        function convertDisabilityDateToJapanese(westernDate) {
+            if (!westernDate) return;
+            
+            const date = new Date(westernDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            let era, eraYear;
+            
+            if (year >= 2019 && (year > 2019 || month >= 5)) {
+                // 令和元年は2019年5月1日から
+                era = '令和';
+                eraYear = year - 2018;
+            } else if (year >= 1989) {
+                // 平成元年は1989年1月8日から
+                era = '平成';
+                eraYear = year - 1988;
+            } else if (year >= 1926) {
+                // 昭和元年は1926年12月25日から
+                era = '昭和';
+                eraYear = year - 1925;
+            } else if (year >= 1912) {
+                // 大正元年は1912年7月30日から
+                era = '大正';
+                eraYear = year - 1911;
+            } else {
+                // 明治
+                era = '明治';
+                eraYear = year - 1867;
+            }
+            
+            // 元年の場合の表記調整
+            const yearText = eraYear === 1 ? '元' : eraYear;
+            const japaneseDate = `${era}${yearText}年${month}月${day}日`;
+            
+            document.getElementById('disabilityRecognitionDateJapanese').value = japaneseDate;
+            updateDisabilityDateDisplay();
+        }
+        
+        // 現症日の和暦変換機能
+        function convertCurrentSymptomsDateToJapanese(westernDate) {
+            if (!westernDate) return;
+            
+            const date = new Date(westernDate);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            let era, eraYear;
+            
+            if (year >= 2019 && (year > 2019 || month >= 5)) {
+                // 令和元年は2019年5月1日から
+                era = '令和';
+                eraYear = year - 2018;
+            } else if (year >= 1989) {
+                // 平成元年は1989年1月8日から
+                era = '平成';
+                eraYear = year - 1988;
+            } else if (year >= 1926) {
+                // 昭和元年は1926年12月25日から
+                era = '昭和';
+                eraYear = year - 1925;
+            } else if (year >= 1912) {
+                // 大正元年は1912年7月30日から
+                era = '大正';
+                eraYear = year - 1911;
+            } else {
+                // 明治
+                era = '明治';
+                eraYear = year - 1867;
+            }
+            
+            // 元年の場合の表記調整
+            const yearText = eraYear === 1 ? '元' : eraYear;
+            const japaneseDate = `${era}${yearText}年${month}月${day}日`;
+            
+            document.getElementById('currentSymptomsDateJapanese').value = japaneseDate;
+            updateCurrentSymptomsDateDisplay();
+        }
+        
+        // 障害認定日の表示用日付更新
+        function updateDisabilityDateDisplay() {
+            const westernDate = document.getElementById('disabilityRecognitionDateWestern').value;
+            const japaneseDate = document.getElementById('disabilityRecognitionDateJapanese').value;
+            const precision = document.getElementById('disabilityRecognitionDatePrecision').value;
+            const displayField = document.getElementById('displayDisabilityRecognitionDate');
+            
+            if (!westernDate && !japaneseDate) {
+                displayField.value = '';
+                return;
+            }
+            
+            let displayText = '';
+            if (japaneseDate) {
+                displayText = japaneseDate;
+            } else if (westernDate) {
+                const date = new Date(westernDate);
+                displayText = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+            }
+            
+            if (precision === 'approximate' && displayText) {
+                displayText += '頃';
+            }
+            
+            displayField.value = displayText;
+        }
+        
+        // 現症日の表示用日付更新
+        function updateCurrentSymptomsDateDisplay() {
+            const westernDate = document.getElementById('currentSymptomsDateWestern').value;
+            const japaneseDate = document.getElementById('currentSymptomsDateJapanese').value;
+            const precision = document.getElementById('currentSymptomsDatePrecision').value;
+            const displayField = document.getElementById('displayCurrentSymptomsDate');
+            
+            if (!westernDate && !japaneseDate) {
+                displayField.value = '';
+                return;
+            }
+            
+            let displayText = '';
+            if (japaneseDate) {
+                displayText = japaneseDate;
+            } else if (westernDate) {
+                const date = new Date(westernDate);
+                displayText = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+            }
+            
+            if (precision === 'approximate' && displayText) {
+                displayText += '頃';
+            }
+            
+            displayField.value = displayText;
+        }
+
+        // ファイルアップロード処理
+        function handleFileUpload(input, previewId) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // ファイルサイズチェック (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('ファイルサイズが10MBを超えています。');
+                input.value = '';
+                return;
+            }
+            
+            // ファイル形式チェック
+            if (!file.type.match(/^image\/(png|jpg|jpeg)$/) && file.type !== 'application/pdf') {
+                alert('PNG、JPG、PDF形式のファイルのみアップロード可能です。');
+                input.value = '';
+                return;
+            }
+            
+            // プレビュー表示
+            const preview = document.getElementById(previewId);
+            const fileName = preview.querySelector('#fileName');
+            const fileSize = preview.querySelector('#fileSize');
+            
+            if (fileName) fileName.textContent = file.name;
+            if (fileSize) fileSize.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            
+            preview.classList.remove('hidden');
+        }
+        
+        // ファイル削除
+        function removeFile(inputId, previewId) {
+            document.getElementById(inputId).value = '';
+            document.getElementById(previewId).classList.add('hidden');
+        }
+
+        // 詳細画面用のサイドバーを作成
+        function createDetailSidebar() {
+            const mainLayout = document.getElementById('mainLayout');
+            
+            // サイドバーのHTMLを作成
+            const sidebarHTML = `
+                <!-- サイドバー（進捗ナビゲーション） -->
+                <aside class="w-80 bg-gray-50 border-r border-gray-200 p-6 space-y-6">
+                    <!-- 進捗概要 -->
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <h3 class="font-semibold text-gray-900 mb-3">申請進捗</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">書類準備</p>
+                                    <p class="text-xs text-gray-500">2024/07/15 完了</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">申請提出</p>
+                                    <p class="text-xs text-gray-500">2024/07/20 完了</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">審査中</p>
+                                    <p class="text-xs text-gray-500">進行中（45日経過）</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">結果通知</p>
+                                    <p class="text-xs text-gray-400">待機中</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 進捗バー -->
+                        <div class="mt-4">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>進捗</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full transition-all duration-500" style="width: 60%"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">推定残り期間: 30-45日</p>
+                        </div>
+                    </div>
+
+                    <!-- 書類状況サマリー -->
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <h3 class="font-semibold text-gray-900 mb-3">書類状況</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">取得済み</span>
+                                <span class="text-sm font-medium text-green-600">8/10</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">不足書類</span>
+                                <span class="text-sm font-medium text-red-600">2</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full transition-all duration-500" style="width: 80%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 次のアクション -->
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                        <h3 class="font-semibold text-yellow-800 mb-2">⚡ 要アクション</h3>
+                        <div class="space-y-2">
+                            <div class="text-sm text-yellow-700">
+                                • 病歴申立書の提出
+                            </div>
+                            <div class="text-sm text-yellow-700">
+                                • 追加診断書の依頼
+                            </div>
+                        </div>
+                        <button class="w-full mt-3 px-3 py-2 bg-yellow-600 text-white text-sm rounded-lg hover:bg-yellow-700 transition-all duration-200">
+                            詳細を確認
+                        </button>
+                    </div>
+                </aside>
+            `;
+            
+            // 既存のサイドバーをview mode用に置き換え
+            const existingSidebar = mainLayout.querySelector('.w-64');
+            if (existingSidebar) {
+                existingSidebar.outerHTML = sidebarHTML;
+            } else {
+                // サイドバーが存在しない場合は追加
+                mainLayout.insertAdjacentHTML('afterbegin', sidebarHTML);
+            }
+            
+            // メインコンテンツ領域のスタイルを調整
+            const contentArea = mainLayout.querySelector('main, .flex-1');
+            if (contentArea) {
+                contentArea.classList.add('p-6', 'space-y-6');
+                contentArea.classList.remove('p-8');
+            }
+            
+            // view mode用の追加コンテンツを挿入
+            addViewModeContent();
+        }
+        
+        // view mode用の追加コンテンツを追加
+        function addViewModeContent() {
+            const form = document.querySelector('form');
+            if (!form) return;
+            
+            // Get form data for display
+            const savedData = JSON.parse(localStorage.getItem('applicationData') || '{}');
+            
+            // Get basic info from form
+            const name = document.querySelector('input[placeholder="田中太郎"]')?.value || savedData.name || '';
+            const furigana = document.querySelector('input[placeholder="タナカタロウ"]')?.value || savedData.furigana || '';
+            const pensionNumber = document.querySelector('input[placeholder="1234-567890"]')?.value || savedData.pensionNumber || '';
+            const age = document.querySelector('input[placeholder="45"]')?.value || savedData.age || '';
+            const gender = document.querySelector('select')?.selectedOptions[0]?.text || savedData.gender || '';
+            const disease = document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || savedData.disease || '';
+            const currentSymptoms = document.getElementById('currentSymptoms')?.value || savedData.currentSymptoms || '';
+            const firstVisit = document.getElementById('initialVisitDateWestern')?.value || savedData.firstVisit || '';
+            const hospital = document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || savedData.hospital || '';
+            const doctor = document.querySelector('input[placeholder="田中医師"]')?.value || savedData.doctor || '';
+            
+            // Get first character of name for avatar
+            const avatarChar = name.charAt(0) || '申';
+            
+            // Update page title and subtitle with applicant name
+            const pageTitle = document.getElementById('pageTitle');
+            const pageSubtitle = document.getElementById('pageSubtitle');
+            
+            if (pageTitle) {
+                if (name) {
+                    pageTitle.textContent = `${name}さんの申請詳細`;
+                } else {
+                    pageTitle.textContent = '申請詳細';
+                }
+            }
+            
+            if (pageSubtitle) {
+                if (name) {
+                    pageSubtitle.textContent = `${name}さんの障害年金申請情報`;
+                } else {
+                    pageSubtitle.textContent = '障害年金申請の情報を入力してください';
+                }
+            }
+            
+            // Format current date for application date
+            const today = new Date().toLocaleDateString('ja-JP', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            
+        }
+
+
+
+
+        function removeChild(button) {
+            // viewモードでは削除を無効化
+            const urlParams = new URLSearchParams(window.location.search);
+            const isViewMode = urlParams.get('view') !== null;
+            
+            if (isViewMode) {
+                console.log('View mode: child removal disabled');
+                return;
+            }
+            
+            try {
+                const childElement = button.closest('.border.border-notion-gray-200');
+                const childrenList = document.getElementById('childrenList');
+                
+                if (childElement && childrenList && childrenList.contains(childElement)) {
+                    // 親要素に含まれていることを確認してから削除
+                    childElement.remove();
+                    childCount--;
+                    
+                    // 残りの子ども要素の番号を振り直し
+                    if (childrenList) {
+                        const remainingChildren = childrenList.querySelectorAll('.border.border-notion-gray-200');
+                        remainingChildren.forEach((child, index) => {
+                            const titleElement = child.querySelector('h4');
+                            if (titleElement) {
+                                titleElement.innerHTML = `
+                                    <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-2">
+                                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 2L3 7v11a2 2 0 002 2h4v-6h2v6h4a2 2 0 002-2V7l-7-5z"/>
+                                        </svg>
+                                    </div>
+                                    子ども ${index + 1}
+                                `;
+                            }
+                        });
+                        
+                        if (childCount === 0) {
+                            childrenList.innerHTML = '<div class="text-sm text-notion-gray-500">「子どもを追加」ボタンを押して子ども情報を入力してください</div>';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error removing child:', error);
             }
         }
     </script>
