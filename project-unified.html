@@ -1210,6 +1210,9 @@
             console.log('Found data:', data);
             console.log('Data:', data);
             
+            // サイドバーの申請者情報を更新
+            updateSidebarApplicantInfo(data, editId);
+            
             // フォームにデータを入力 - より確実な方法
             try {
                 // 申請者基本情報 - より確実なセレクタを使用
@@ -1776,6 +1779,46 @@ ${data.medication || ''}
             });
         }
         
+        // サイドバーの申請者情報を更新
+        function updateSidebarApplicantInfo(data, editId) {
+            try {
+                const applicantName = document.getElementById('applicantName');
+                const applicantInitial = document.getElementById('applicantInitial');
+                const applicantId = document.getElementById('applicantId');
+                const applicantStatus = document.getElementById('applicantStatus');
+                
+                if (applicantName && data.name) {
+                    applicantName.textContent = data.name;
+                }
+                
+                if (applicantInitial && data.name) {
+                    applicantInitial.textContent = data.name.charAt(0);
+                }
+                
+                if (applicantId) {
+                    applicantId.textContent = `ID: APP-2024-${String(editId).padStart(3, '0')}`;
+                }
+                
+                if (applicantStatus) {
+                    // 障害等級に応じてステータスを設定
+                    let statusText = '審査中';
+                    let statusClass = 'bg-orange-100 text-orange-800';
+                    
+                    if (data.grade) {
+                        statusText = `${data.grade} 認定済み`;
+                        statusClass = 'bg-green-100 text-green-800';
+                    }
+                    
+                    applicantStatus.textContent = statusText;
+                    applicantStatus.className = `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusClass}`;
+                }
+                
+                console.log('Sidebar applicant info updated:', data.name);
+            } catch (error) {
+                console.error('Error updating sidebar applicant info:', error);
+            }
+        }
+        
         // 日付入力ハンドラー
         function handleDateInput(e) {
             let value = e.target.value;
@@ -2066,6 +2109,22 @@ ${data.medication || ''}
             const sidebarHTML = `
                 <!-- サイドバー（進捗ナビゲーション） -->
                 <aside class="fixed top-20 left-0 w-80 h-[calc(100vh-5rem)] bg-gray-50 border-r border-gray-200 p-6 space-y-6 overflow-y-auto z-10">
+                    <!-- 申請者情報 -->
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <span id="applicantInitial" class="text-blue-600 font-semibold text-lg">田</span>
+                            </div>
+                            <div>
+                                <h3 id="applicantName" class="font-semibold text-gray-900">田中太郎</h3>
+                                <p id="applicantId" class="text-xs text-gray-500">ID: APP-2024-001</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-600">
+                            <span id="applicantStatus" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">審査中</span>
+                        </div>
+                    </div>
+                    
                     <!-- 進捗概要 -->
                     <div class="bg-white rounded-xl p-4 shadow-sm">
                         <div class="flex items-center justify-between mb-3">
