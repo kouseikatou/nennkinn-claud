@@ -455,7 +455,7 @@
                                             <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                                 初診日（和暦）
                                             </label>
-                                            <input type="text" id="initialVisitDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和5年4月15日">
+                                            <input type="text" id="initialVisitDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和5年4月15日 または 令和5年4月頃">
                                         </div>
                                     </div>
                                     
@@ -525,7 +525,7 @@
                                             <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                                 障害認定日（和暦）
                                             </label>
-                                            <input type="text" id="disabilityRecognitionDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和5年10月15日">
+                                            <input type="text" id="disabilityRecognitionDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和5年10月15日 または 令和5年10月頃">
                                         </div>
                                     </div>
                                     
@@ -587,7 +587,7 @@
                                             <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                                 現症日（和暦）
                                             </label>
-                                            <input type="text" id="currentSymptomsDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和6年7月27日">
+                                            <input type="text" id="currentSymptomsDateJapanese" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="例：令和6年7月27日 または 令和6年7月頃">
                                         </div>
                                     </div>
                                     
@@ -1802,6 +1802,58 @@
             document.getElementById('currentSymptomsDateJapanese').value = japaneseDate;
         }
         
+        // 和暦日付フィールドの「頃」対応入力補助
+        function setupDateApproximateInput() {
+            const dateFields = [
+                'initialVisitDateJapanese',
+                'disabilityRecognitionDateJapanese', 
+                'currentSymptomsDateJapanese'
+            ];
+            
+            dateFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', function(e) {
+                        let value = e.target.value;
+                        
+                        // 「ころ」を「頃」に自動変換
+                        value = value.replace(/ころ/g, '頃');
+                        
+                        // 重複する「頃」を除去
+                        value = value.replace(/頃+/g, '頃');
+                        
+                        // 「頃」が複数の位置にある場合は最後の一つのみ残す
+                        const koroCount = (value.match(/頃/g) || []).length;
+                        if (koroCount > 1) {
+                            value = value.replace(/頃/g, '') + '頃';
+                        }
+                        
+                        e.target.value = value;
+                    });
+                    
+                    field.addEventListener('blur', function(e) {
+                        let value = e.target.value.trim();
+                        
+                        // 基本的な日付形式の検証（簡易版）
+                        if (value && !value.includes('頃')) {
+                            // 正確な日付の場合の基本チェック
+                            const datePattern = /(令和|平成|昭和|大正|明治)(\d+|元)年\d+月\d+日/;
+                            if (!datePattern.test(value)) {
+                                // パターンにマッチしない場合は警告を出すことも可能
+                                console.log('日付形式を確認してください: ' + value);
+                            }
+                        }
+                        
+                        e.target.value = value;
+                    });
+                }
+            });
+        }
+        
+        // ページ読み込み時に実行
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDateApproximateInput();
+        });
 
         // ファイルアップロード処理
         function handleFileUpload(input, previewId) {
