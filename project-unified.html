@@ -2002,38 +2002,44 @@ ${data.medication || ''}
             const displayDate = new Date(date).toLocaleDateString('ja-JP');
             
             // ステータスに応じてアイコンと表示を更新
-            let iconHtml, statusText, statusClass;
+            let iconHtml, statusText, statusClass, statusTextClass;
             
             switch (status) {
                 case 'initial-contact':
                     iconHtml = `<div class="w-3 h-3 bg-blue-500 rounded-full"></div>`;
                     statusText = '初回連絡先';
                     statusClass = 'bg-blue-100';
+                    statusTextClass = 'text-blue-800';
                     break;
                 case 'before-document-send':
                     iconHtml = `<div class="w-3 h-3 bg-yellow-500 rounded-full"></div>`;
                     statusText = '書類一式送付前';
                     statusClass = 'bg-yellow-100';
+                    statusTextClass = 'text-yellow-800';
                     break;
                 case 'before-interview':
                     iconHtml = `<div class="w-3 h-3 bg-purple-500 rounded-full"></div>`;
                     statusText = '面談前';
                     statusClass = 'bg-purple-100';
+                    statusTextClass = 'text-purple-800';
                     break;
                 case 'before-medical-certificate':
                     iconHtml = `<div class="w-3 h-3 bg-indigo-500 rounded-full"></div>`;
                     statusText = '受診状況等証明書作成前';
                     statusClass = 'bg-indigo-100';
+                    statusTextClass = 'text-indigo-800';
                     break;
                 case 'before-diagnosis':
                     iconHtml = `<div class="w-3 h-3 bg-pink-500 rounded-full"></div>`;
                     statusText = '診断書前';
                     statusClass = 'bg-pink-100';
+                    statusTextClass = 'text-pink-800';
                     break;
                 case 'before-submit':
                     iconHtml = `<div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>`;
                     statusText = '提出前';
                     statusClass = 'bg-orange-100';
+                    statusTextClass = 'text-orange-800';
                     break;
                 case 'lost':
                     iconHtml = `
@@ -2043,6 +2049,7 @@ ${data.medication || ''}
                     `;
                     statusText = '失注';
                     statusClass = 'bg-red-100';
+                    statusTextClass = 'text-red-800';
                     break;
                 case 'rejected':
                     iconHtml = `
@@ -2052,11 +2059,13 @@ ${data.medication || ''}
                     `;
                     statusText = '不支給';
                     statusClass = 'bg-red-100';
+                    statusTextClass = 'text-red-800';
                     break;
                 case 'on-hold':
                     iconHtml = `<div class="w-3 h-3 bg-gray-400 rounded-full"></div>`;
                     statusText = '保留';
                     statusClass = 'bg-gray-100';
+                    statusTextClass = 'text-gray-800';
                     break;
                 case 'before-payment':
                     iconHtml = `
@@ -2066,6 +2075,7 @@ ${data.medication || ''}
                     `;
                     statusText = '報酬入金前';
                     statusClass = 'bg-green-100';
+                    statusTextClass = 'text-green-800';
                     break;
                 case 'before-commission-payment':
                     iconHtml = `
@@ -2075,11 +2085,13 @@ ${data.medication || ''}
                     `;
                     statusText = '委託費支払い前';
                     statusClass = 'bg-green-100';
+                    statusTextClass = 'text-green-800';
                     break;
                 default:
                     iconHtml = `<div class="w-3 h-3 bg-gray-400 rounded-full"></div>`;
                     statusText = '不明';
                     statusClass = 'bg-gray-100';
+                    statusTextClass = 'text-gray-800';
                     break;
             }
             
@@ -2091,7 +2103,7 @@ ${data.medication || ''}
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-900">${title}</p>
-                        <p class="text-xs text-gray-500">${displayDate} ${statusText}</p>
+                        <p class="text-xs text-gray-500">${displayDate} <span class="${statusTextClass} font-medium">${statusText}</span></p>
                     </div>
                 </div>
                 <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
