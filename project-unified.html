@@ -1891,7 +1891,21 @@ ${data.medication || ''}
             const dateElement = progressItem.querySelector('.text-xs.text-gray-500');
             
             const currentTitle = titleElement.textContent;
-            const currentDate = dateElement.textContent.replace(' 完了', '').replace('進行中（', '').replace('日経過）', '').replace('待機中', '');
+            const currentDate = dateElement.textContent
+                .replace(' 完了', '')
+                .replace('進行中（', '').replace('日経過）', '')
+                .replace('待機中', '')
+                .replace(' 初回連絡先', '')
+                .replace(' 書類一式送付前', '')
+                .replace(' 面談前', '')
+                .replace(' 受診状況等証明書作成前', '')
+                .replace(' 診断書前', '')
+                .replace(' 提出前', '')
+                .replace(' 失注', '')
+                .replace(' 不支給', '')
+                .replace(' 保留', '')
+                .replace(' 報酬入金前', '')
+                .replace(' 委託費支払い前', '');
             
             // モーダルを作成
             const modal = document.createElement('div');
@@ -1911,9 +1925,17 @@ ${data.medication || ''}
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">ステータス</label>
                             <select id="editStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="completed">完了</option>
-                                <option value="in-progress">進行中</option>
-                                <option value="waiting">待機中</option>
+                                <option value="initial-contact">初回連絡先</option>
+                                <option value="before-document-send">書類一式送付前</option>
+                                <option value="before-interview">面談前</option>
+                                <option value="before-medical-certificate">受診状況等証明書作成前</option>
+                                <option value="before-diagnosis">診断書前</option>
+                                <option value="before-submit">提出前</option>
+                                <option value="lost">失注</option>
+                                <option value="rejected">不支給</option>
+                                <option value="on-hold">保留</option>
+                                <option value="before-payment">報酬入金前</option>
+                                <option value="before-commission-payment">委託費支払い前</option>
                             </select>
                         </div>
                     </div>
@@ -1983,23 +2005,80 @@ ${data.medication || ''}
             let iconHtml, statusText, statusClass;
             
             switch (status) {
-                case 'completed':
+                case 'initial-contact':
+                    iconHtml = `<div class="w-3 h-3 bg-blue-500 rounded-full"></div>`;
+                    statusText = '初回連絡先';
+                    statusClass = 'bg-blue-100';
+                    break;
+                case 'before-document-send':
+                    iconHtml = `<div class="w-3 h-3 bg-yellow-500 rounded-full"></div>`;
+                    statusText = '書類一式送付前';
+                    statusClass = 'bg-yellow-100';
+                    break;
+                case 'before-interview':
+                    iconHtml = `<div class="w-3 h-3 bg-purple-500 rounded-full"></div>`;
+                    statusText = '面談前';
+                    statusClass = 'bg-purple-100';
+                    break;
+                case 'before-medical-certificate':
+                    iconHtml = `<div class="w-3 h-3 bg-indigo-500 rounded-full"></div>`;
+                    statusText = '受診状況等証明書作成前';
+                    statusClass = 'bg-indigo-100';
+                    break;
+                case 'before-diagnosis':
+                    iconHtml = `<div class="w-3 h-3 bg-pink-500 rounded-full"></div>`;
+                    statusText = '診断書前';
+                    statusClass = 'bg-pink-100';
+                    break;
+                case 'before-submit':
+                    iconHtml = `<div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>`;
+                    statusText = '提出前';
+                    statusClass = 'bg-orange-100';
+                    break;
+                case 'lost':
+                    iconHtml = `
+                        <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    `;
+                    statusText = '失注';
+                    statusClass = 'bg-red-100';
+                    break;
+                case 'rejected':
+                    iconHtml = `
+                        <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    `;
+                    statusText = '不支給';
+                    statusClass = 'bg-red-100';
+                    break;
+                case 'on-hold':
+                    iconHtml = `<div class="w-3 h-3 bg-gray-400 rounded-full"></div>`;
+                    statusText = '保留';
+                    statusClass = 'bg-gray-100';
+                    break;
+                case 'before-payment':
                     iconHtml = `
                         <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
                         </svg>
                     `;
-                    statusText = '完了';
+                    statusText = '報酬入金前';
                     statusClass = 'bg-green-100';
                     break;
-                case 'in-progress':
-                    iconHtml = `<div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>`;
-                    statusText = '進行中';
-                    statusClass = 'bg-orange-100';
+                case 'before-commission-payment':
+                    iconHtml = `
+                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                    `;
+                    statusText = '委託費支払い前';
+                    statusClass = 'bg-green-100';
                     break;
-                case 'waiting':
+                default:
                     iconHtml = `<div class="w-3 h-3 bg-gray-400 rounded-full"></div>`;
-                    statusText = '待機中';
+                    statusText = '不明';
                     statusClass = 'bg-gray-100';
                     break;
             }
