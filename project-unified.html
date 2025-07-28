@@ -459,23 +459,6 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                        <div>
-                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                                初診日の精度
-                                            </label>
-                                            <select id="initialVisitDatePrecision" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="updateDateDisplay()">
-                                                <option value="exact">正確な日付</option>
-                                                <option value="approximate">頃（おおよその時期）</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                                表示用初診日
-                                            </label>
-                                            <input type="text" id="displayInitialVisitDate" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm bg-gray-50" readonly placeholder="上記の入力に基づいて自動表示されます">
-                                        </div>
-                                    </div>
                                     
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                         <div>
@@ -546,23 +529,6 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                        <div>
-                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                                障害認定日の精度
-                                            </label>
-                                            <select id="disabilityRecognitionDatePrecision" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="updateDisabilityDateDisplay()">
-                                                <option value="exact">正確な日付</option>
-                                                <option value="approximate">頃（おおよその時期）</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                                表示用障害認定日
-                                            </label>
-                                            <input type="text" id="displayDisabilityRecognitionDate" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm bg-gray-50" readonly placeholder="上記の入力に基づいて自動表示されます">
-                                        </div>
-                                    </div>
                                     
                                     <div class="mb-6">
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">障害認定日の根拠・説明</label>
@@ -625,23 +591,6 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                        <div>
-                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                                現症日の精度
-                                            </label>
-                                            <select id="currentSymptomsDatePrecision" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" onchange="updateCurrentSymptomsDateDisplay()">
-                                                <option value="exact">正確な日付</option>
-                                                <option value="approximate">頃（おおよその時期）</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">
-                                                表示用現症日
-                                            </label>
-                                            <input type="text" id="displayCurrentSymptomsDate" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm bg-gray-50" readonly placeholder="上記の入力に基づいて自動表示されます">
-                                        </div>
-                                    </div>
                                     
                                     <div class="mb-6">
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">現症（現在の症状・状態）</label>
@@ -1770,35 +1719,8 @@
             const japaneseDate = `${era}${yearText}年${month}月${day}日`;
             
             document.getElementById('initialVisitDateJapanese').value = japaneseDate;
-            updateDateDisplay();
         }
         
-        // 表示用日付の更新
-        function updateDateDisplay() {
-            const westernDate = document.getElementById('initialVisitDateWestern').value;
-            const japaneseDate = document.getElementById('initialVisitDateJapanese').value;
-            const precision = document.getElementById('initialVisitDatePrecision').value;
-            const displayField = document.getElementById('displayInitialVisitDate');
-            
-            if (!westernDate && !japaneseDate) {
-                displayField.value = '';
-                return;
-            }
-            
-            let displayText = '';
-            if (japaneseDate) {
-                displayText = japaneseDate;
-            } else if (westernDate) {
-                const date = new Date(westernDate);
-                displayText = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-            }
-            
-            if (precision === 'approximate' && displayText) {
-                displayText += '頃';
-            }
-            
-            displayField.value = displayText;
-        }
         
         // 障害認定日の和暦変換機能
         function convertDisabilityDateToJapanese(westernDate) {
@@ -1838,7 +1760,6 @@
             const japaneseDate = `${era}${yearText}年${month}月${day}日`;
             
             document.getElementById('disabilityRecognitionDateJapanese').value = japaneseDate;
-            updateDisabilityDateDisplay();
         }
         
         // 現症日の和暦変換機能
@@ -1879,62 +1800,8 @@
             const japaneseDate = `${era}${yearText}年${month}月${day}日`;
             
             document.getElementById('currentSymptomsDateJapanese').value = japaneseDate;
-            updateCurrentSymptomsDateDisplay();
         }
         
-        // 障害認定日の表示用日付更新
-        function updateDisabilityDateDisplay() {
-            const westernDate = document.getElementById('disabilityRecognitionDateWestern').value;
-            const japaneseDate = document.getElementById('disabilityRecognitionDateJapanese').value;
-            const precision = document.getElementById('disabilityRecognitionDatePrecision').value;
-            const displayField = document.getElementById('displayDisabilityRecognitionDate');
-            
-            if (!westernDate && !japaneseDate) {
-                displayField.value = '';
-                return;
-            }
-            
-            let displayText = '';
-            if (japaneseDate) {
-                displayText = japaneseDate;
-            } else if (westernDate) {
-                const date = new Date(westernDate);
-                displayText = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-            }
-            
-            if (precision === 'approximate' && displayText) {
-                displayText += '頃';
-            }
-            
-            displayField.value = displayText;
-        }
-        
-        // 現症日の表示用日付更新
-        function updateCurrentSymptomsDateDisplay() {
-            const westernDate = document.getElementById('currentSymptomsDateWestern').value;
-            const japaneseDate = document.getElementById('currentSymptomsDateJapanese').value;
-            const precision = document.getElementById('currentSymptomsDatePrecision').value;
-            const displayField = document.getElementById('displayCurrentSymptomsDate');
-            
-            if (!westernDate && !japaneseDate) {
-                displayField.value = '';
-                return;
-            }
-            
-            let displayText = '';
-            if (japaneseDate) {
-                displayText = japaneseDate;
-            } else if (westernDate) {
-                const date = new Date(westernDate);
-                displayText = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-            }
-            
-            if (precision === 'approximate' && displayText) {
-                displayText += '頃';
-            }
-            
-            displayField.value = displayText;
-        }
 
         // ファイルアップロード処理
         function handleFileUpload(input, previewId) {
