@@ -1885,7 +1885,7 @@ ${data.medication || ''}
             const dateElement = progressItem.querySelector('.text-xs.text-gray-500');
             
             const currentTitle = titleElement.textContent;
-            const currentDate = dateElement.textContent
+            let currentDate = dateElement.textContent
                 .replace(' 完了', '')
                 .replace('進行中（', '').replace('日経過）', '')
                 .replace('待機中', '')
@@ -1899,7 +1899,16 @@ ${data.medication || ''}
                 .replace(' 不支給', '')
                 .replace(' 保留', '')
                 .replace(' 報酬入金前', '')
-                .replace(' 委託費支払い前', '');
+                .replace(' 委託費支払い前', '')
+                .trim();
+            
+            // 新しい進捗の場合、currentDateが日付形式でない可能性があるので確認
+            if (currentDate && currentDate.match(/^\d{4}\/\d{1,2}\/\d{1,2}$/)) {
+                // 正常な日付形式の場合はそのまま使用
+            } else {
+                // 日付が取得できない場合は現在の日付を使用
+                currentDate = new Date().toLocaleDateString('ja-JP');
+            }
             
             // モーダルを作成
             const modal = document.createElement('div');
@@ -1962,6 +1971,15 @@ ${data.medication || ''}
 
         // 日付を入力フィールド用に変換
         function convertToDateInput(dateStr) {
+            // 空の場合や新しい進捗の場合は現在の日付を返す
+            if (!dateStr || dateStr.trim() === '' || dateStr.includes('新しい進捗')) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
             // 2024/07/15 形式から 2024-07-15 形式に変換
             if (dateStr.includes('/')) {
                 return dateStr.replace(/\//g, '-');
