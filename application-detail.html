@@ -110,7 +110,7 @@
 
     <div class="flex min-h-screen">
         <!-- サイドバー（進捗ナビゲーション） -->
-        <aside class="w-80 bg-gray-50 border-r border-gray-200 p-6 space-y-6">
+        <aside class="w-80 bg-gray-50 border-r border-gray-200 p-6 space-y-6 sticky top-0 h-screen overflow-y-auto">
             <!-- 進捗概要 -->
             <div class="bg-white rounded-xl p-4 shadow-sm">
                 <h3 class="font-semibold text-gray-900 mb-3">申請進捗</h3>
@@ -253,7 +253,7 @@
             <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">傷病詳細情報</h3>
                 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="space-y-6">
                     <!-- 初診日情報 -->
                     <div class="border-l-4 border-blue-500 pl-4">
                         <div class="flex items-center space-x-2 mb-2">
@@ -325,6 +325,7 @@
                                 <span class="font-medium ml-2">休職中</span>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
 
