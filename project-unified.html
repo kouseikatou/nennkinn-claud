@@ -1321,11 +1321,8 @@
                 const hospitalInput = document.querySelector('input[placeholder="○○病院、○○クリニック"]');
                 const doctorInput = document.querySelector('input[placeholder="田中医師"]');
                 const gradeSelect = document.querySelectorAll('select')[2];
-                const symptomsTextarea = document.querySelector('textarea[placeholder="具体的な症状を記載してください"]');
-                const treatmentTextarea = document.querySelector('textarea[placeholder="通院频度、治療内容など"]');
-                const medicationTextarea = document.querySelector('textarea[placeholder="服用中の薬剤名、用量など"]');
-                const dailyLifeTextarea = document.querySelector('textarea[placeholder="食事、入浴、外出等への影響"]');
-                const workTextarea = document.querySelector('textarea[placeholder="就労状況、業務への影響など"]');
+                // 統合された症状・治療・生活への影響フィールド
+                const combinedSymptomsTextarea = document.querySelector('textarea[placeholder*="【症状詳細】"]');
                 
                 if (diseaseInput) diseaseInput.value = data.disease || '';
                 if (currentSymptomsTextarea) currentSymptomsTextarea.value = data.currentSymptoms || '';
@@ -1334,11 +1331,25 @@
                 if (hospitalInput) hospitalInput.value = data.hospital || '';
                 if (doctorInput) doctorInput.value = data.doctor || '';
                 if (gradeSelect) gradeSelect.value = data.grade || '';
-                if (symptomsTextarea) symptomsTextarea.value = data.symptoms || '';
-                if (treatmentTextarea) treatmentTextarea.value = data.treatment || '';
-                if (medicationTextarea) medicationTextarea.value = data.medication || '';
-                if (dailyLifeTextarea) dailyLifeTextarea.value = data.dailyLife || '';
-                if (workTextarea) workTextarea.value = data.work || '';
+                
+                // 統合されたフィールドに複数の情報を設定
+                if (combinedSymptomsTextarea) {
+                    const combinedInfo = `【症状詳細】
+${data.symptoms || ''}
+
+【現在の治療内容】
+${data.treatment || ''}
+
+【投薬歴】
+${data.medication || ''}
+
+【日常生活への影響】
+食事、入浴、外出等への影響
+
+【就労への影響】
+就労状況、業務への影響など`;
+                    combinedSymptomsTextarea.value = combinedInfo;
+                }
                 
                 console.log('Disease info loaded successfully');
             } catch (error) {
@@ -1742,46 +1753,83 @@
                 'currentSymptomsDateJapanese'
             ];
             
+            // 各フィールドに対してイベントリスナーを設定
             dateFields.forEach(fieldId => {
+                // 既存のイベントリスナーをクリアしてから設定
                 const field = document.getElementById(fieldId);
                 if (field) {
-                    field.addEventListener('input', function(e) {
-                        let value = e.target.value;
-                        
-                        // 「ころ」を「頃」に自動変換
-                        value = value.replace(/ころ/g, '頃');
-                        
-                        // 重複する「頃」を除去
-                        value = value.replace(/頃+/g, '頃');
-                        
-                        // 「頃」が複数の位置にある場合は最後の一つのみ残す
-                        const koroCount = (value.match(/頃/g) || []).length;
-                        if (koroCount > 1) {
-                            value = value.replace(/頃/g, '') + '頃';
-                        }
-                        
-                        e.target.value = value;
-                    });
+                    // 既存のリスナーを削除
+                    field.removeEventListener('input', handleDateInput);
+                    field.removeEventListener('blur', handleDateBlur);
                     
-                    field.addEventListener('blur', function(e) {
-                        let value = e.target.value.trim();
-                        
-                        // 基本的な日付形式の検証（簡易版）
-                        if (value && !value.includes('頃')) {
-                            // 正確な日付の場合の基本チェック
-                            const datePattern = /(令和|平成|昭和|大正|明治)(\d+|元)年\d+月\d+日/;
-                            if (!datePattern.test(value)) {
-                                // パターンにマッチしない場合は警告を出すことも可能
-                                console.log('日付形式を確認してください: ' + value);
-                            }
-                        }
-                        
-                        e.target.value = value;
-                    });
+                    // 新しいリスナーを追加
+                    field.addEventListener('input', handleDateInput);
+                    field.addEventListener('blur', handleDateBlur);
+                    
+                    console.log(`Set up date input handler for ${fieldId}`);
+                } else {
+                    console.warn(`Field ${fieldId} not found`);
                 }
             });
         }
         
+        // 日付入力ハンドラー
+        function handleDateInput(e) {
+            let value = e.target.value;
+            
+            // 「ころ」を「頃」に自動変換
+            value = value.replace(/ころ/g, '頃');
+            
+            // 重複する「頃」を除去
+            value = value.replace(/頃+/g, '頃');
+            
+            // 「頃」が複数の位置にある場合は最後の一つのみ残す
+            const koroCount = (value.match(/頃/g) || []).length;
+            if (koroCount > 1) {
+                value = value.replace(/頃/g, '') + '頃';
+            }
+            
+            e.target.value = value;
+        }
+        
+        // 日付フィールドのblurハンドラー
+        function handleDateBlur(e) {
+            let value = e.target.value.trim();
+                        
+            // 基本的な日付形式の検証（簡易版）
+            if (value && !value.includes('頃')) {
+                // 正確な日付の場合の基本チェック
+                const datePattern = /(令和|平成|昭和|大正|明治)(\d+|元)年\d+月\d+日/;
+                if (!datePattern.test(value)) {
+                    // パターンにマッチしない場合は警告を出すことも可能
+                    console.log('日付形式を確認してください: ' + value);
+                }
+            }
+                        
+            e.target.value = value;
+        }
+        
+        // 申請進捗の追加機能
+        function addNewProgress() {
+            const progressList = document.getElementById('progressList');
+            if (!progressList) return;
+            
+            const progressItem = document.createElement('div');
+            progressItem.className = 'flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg';
+            progressItem.innerHTML = `
+                <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">新しい進捗</p>
+                    <p class="text-xs text-gray-500">${new Date().toLocaleDateString('ja-JP')}</p>
+                </div>
+            `;
+            
+            progressList.appendChild(progressItem);
+            console.log('Progress item added');
+        }
+
         // ページ読み込み時に実行
         document.addEventListener('DOMContentLoaded', function() {
             setupDateApproximateInput();
