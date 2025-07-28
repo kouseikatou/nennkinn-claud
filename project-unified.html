@@ -159,14 +159,6 @@
                             <h1 id="pageTitle" class="text-3xl font-bold text-notion-gray-800 mb-2">新規申請作成</h1>
                             <p id="pageSubtitle" class="text-notion-gray-500">障害年金申請の情報を入力してください</p>
                         </div>
-                        <div id="editModeIndicator" class="hidden px-4 py-2 bg-blue-100 text-blue-800 rounded-lg border border-blue-300 text-sm font-medium">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                                </svg>
-                                <span>編集モード</span>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Form -->
@@ -863,7 +855,6 @@
                 const titleElement = document.getElementById('pageTitle');
                 const subtitleElement = document.getElementById('pageSubtitle');
                 const buttonElement = document.getElementById('submitButtonText');
-                const editModeIndicator = document.getElementById('editModeIndicator');
                 
                 if (titleElement) {
                     titleElement.textContent = '申請情報編集';
@@ -877,9 +868,6 @@
                     buttonElement.textContent = '変更を保存';
                 }
                 
-                if (editModeIndicator) {
-                    editModeIndicator.classList.remove('hidden');
-                }
                 
                 // 編集モードでナビゲーションを隠し、サイドバーを表示
                 hideNavigationAndShowSidebar();
