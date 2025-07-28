@@ -875,6 +875,9 @@
                     editModeIndicator.classList.remove('hidden');
                 }
                 
+                // 編集モードでナビゲーションを隠し、サイドバーを表示
+                hideNavigationAndShowSidebar();
+                
                 // 少し遅延してからデータを読み込み
                 setTimeout(() => {
                     loadExistingData(editId);
@@ -1854,6 +1857,27 @@
         document.addEventListener('DOMContentLoaded', function() {
             setupDateApproximateInput();
         });
+
+        // 編集モード用: ナビゲーションを隠してサイドバーを表示する関数
+        function hideNavigationAndShowSidebar() {
+            const mainLayout = document.getElementById('mainLayout');
+            
+            // 既存のナビゲーション付きサイドバーを隠す
+            const existingSidebar = mainLayout.querySelector('.w-64');
+            if (existingSidebar) {
+                existingSidebar.style.display = 'none';
+            }
+            
+            // 詳細画面用のサイドバーを作成
+            createDetailSidebar();
+            
+            // メインコンテンツ領域のスタイルを調整
+            const contentArea = mainLayout.querySelector('main, .flex-1');
+            if (contentArea) {
+                contentArea.classList.add('p-6', 'space-y-6', 'ml-80');
+                contentArea.classList.remove('p-8');
+            }
+        }
 
         // ファイルアップロード処理
         function handleFileUpload(input, previewId) {
