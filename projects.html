@@ -125,32 +125,32 @@
         </div>
 
         <!-- Main Content -->
-        <main class="flex-1 p-6">
-            <div class="max-w-6xl mx-auto py-8">
-        <!-- タイトル -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-semibold text-notion-gray-800 mb-2">申請一覧</h2>
-            <p class="text-notion-gray-600">障害年金申請の管理と追跡</p>
-        </div>
+        <main class="flex-1 p-6 bg-notion-gray-50">
+            <div class="max-w-7xl mx-auto">
+                <!-- タイトル -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-semibold text-notion-gray-800 mb-2">申請一覧</h2>
+                    <p class="text-notion-gray-600">障害年金申請の管理と追跡</p>
+                </div>
 
-        <!-- 検索・フィルター -->
-        <div class="mb-6 flex flex-col sm:flex-row gap-4">
-            <div class="flex-1">
-                <input type="text" placeholder="申請者名やIDで検索..." class="w-full px-4 py-2 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
-            </div>
-            <div class="flex gap-2">
-                <select class="px-3 py-2 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
-                    <option value="">全てのステータス</option>
-                    <option value="initial-contact">初回連絡先</option>
-                    <option value="before-submit">提出前</option>
-                    <option value="before-payment">報酬入金前</option>
-                    <option value="lost">失注</option>
-                </select>
-            </div>
-        </div>
+                <!-- 検索・フィルター -->
+                <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" placeholder="申請者名やIDで検索..." class="w-full px-4 py-2 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none bg-white">
+                    </div>
+                    <div class="flex gap-2">
+                        <select class="px-3 py-2 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none bg-white">
+                            <option value="">全てのステータス</option>
+                            <option value="initial-contact">初回連絡先</option>
+                            <option value="before-submit">提出前</option>
+                            <option value="before-payment">報酬入金前</option>
+                            <option value="lost">失注</option>
+                        </select>
+                    </div>
+                </div>
 
-        <!-- 申請リスト -->
-        <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden">
+                <!-- 申請リスト -->
+                <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm">
             <div class="grid grid-cols-1 gap-0">
                 <!-- 申請項目 1 -->
                 <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(1)">
@@ -304,8 +304,8 @@
                             <p class="text-xs text-notion-gray-500 mt-1">障害等級: 未定</p>
                         </div>
                     </div>
+                    </div>
                 </div>
-            </div>
             </div>
         </main>
     </div>
