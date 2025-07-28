@@ -156,8 +156,6 @@
                     <!-- Page Header -->
                     <div class="flex items-center justify-between mb-8">
                         <div class="text-center flex-1">
-                            <h1 id="pageTitle" class="text-3xl font-bold text-notion-gray-800 mb-2">新規申請作成</h1>
-                            <p id="pageSubtitle" class="text-notion-gray-500">障害年金申請の情報を入力してください</p>
                         </div>
                     </div>
 
@@ -852,17 +850,7 @@
                 // 編集モードの場合
                 console.log('Setting edit mode...');
                 
-                const titleElement = document.getElementById('pageTitle');
-                const subtitleElement = document.getElementById('pageSubtitle');
                 const buttonElement = document.getElementById('submitButtonText');
-                
-                if (titleElement) {
-                    titleElement.textContent = '申請情報編集';
-                }
-                
-                if (subtitleElement) {
-                    subtitleElement.textContent = `申請ID: APP-2024-${String(editId).padStart(3, '0')} の情報を編集しています`;
-                }
                 
                 if (buttonElement) {
                     buttonElement.textContent = '変更を保存';
