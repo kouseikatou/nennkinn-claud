@@ -1815,7 +1815,9 @@ ${data.medication || ''}
             if (!progressList) return;
             
             const progressItem = document.createElement('div');
+            const itemId = Date.now(); // ユニークなIDを生成
             progressItem.className = 'flex items-center justify-between group';
+            progressItem.setAttribute('data-id', itemId);
             progressItem.innerHTML = `
                 <div class="flex items-center space-x-3">
                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -1823,7 +1825,7 @@ ${data.medication || ''}
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-900">新しい進捗</p>
-                        <p class="text-xs text-gray-500">${new Date().toLocaleDateString('ja-JP')}</p>
+                        <p class="text-xs text-gray-500">${new Date().toLocaleDateString('ja-JP')} 待機中</p>
                     </div>
                 </div>
                 <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -1833,20 +1835,161 @@ ${data.medication || ''}
             `;
             
             progressList.appendChild(progressItem);
-            console.log('Progress item added');
+            console.log('Progress item added with ID:', itemId);
         }
 
         // 申請進捗の編集機能
         function editProgressRecord(button) {
-            console.log('Edit progress record clicked');
+            const progressItem = button.closest('.group');
+            const titleElement = progressItem.querySelector('.text-sm.font-medium');
+            const dateElement = progressItem.querySelector('.text-xs.text-gray-500');
+            
+            const currentTitle = titleElement.textContent;
+            const currentDate = dateElement.textContent.replace(' 完了', '').replace('進行中（', '').replace('日経過）', '').replace('待機中', '');
+            
+            // モーダルを作成
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg p-6 w-96 max-w-md mx-4">
+                    <h3 class="text-lg font-semibold mb-4">進捗記録を編集</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">タイトル</label>
+                            <input type="text" id="editTitle" value="${currentTitle}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">日付</label>
+                            <input type="date" id="editDate" value="${convertToDateInput(currentDate)}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">ステータス</label>
+                            <select id="editStatus" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="completed">完了</option>
+                                <option value="in-progress">進行中</option>
+                                <option value="waiting">待機中</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button onclick="closeEditModal()" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                            キャンセル
+                        </button>
+                        <button onclick="saveProgressEdit('${progressItem.getAttribute('data-id') || Date.now()}')" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 現在のステータスを設定
+            const statusSelect = document.getElementById('editStatus');
+            if (currentDate.includes('完了') || dateElement.textContent.includes('完了')) {
+                statusSelect.value = 'completed';
+            } else if (currentDate.includes('進行中') || dateElement.textContent.includes('進行中')) {
+                statusSelect.value = 'in-progress';
+            } else {
+                statusSelect.value = 'waiting';
+            }
+            
+            // 現在の進捗項目を保存
+            window.currentEditingItem = progressItem;
+        }
+
+        // 日付を入力フィールド用に変換
+        function convertToDateInput(dateStr) {
+            // 2024/07/15 形式から 2024-07-15 形式に変換
+            if (dateStr.includes('/')) {
+                return dateStr.replace(/\//g, '-');
+            }
+            return dateStr;
+        }
+
+        // 編集モーダルを閉じる
+        function closeEditModal() {
+            const modal = document.querySelector('.fixed.inset-0.bg-black');
+            if (modal) {
+                modal.remove();
+            }
+            window.currentEditingItem = null;
+        }
+
+        // 進捗編集を保存
+        function saveProgressEdit(itemId) {
+            const title = document.getElementById('editTitle').value;
+            const date = document.getElementById('editDate').value;
+            const status = document.getElementById('editStatus').value;
+            
+            if (!title.trim()) {
+                alert('タイトルを入力してください');
+                return;
+            }
+            
+            const progressItem = window.currentEditingItem;
+            if (!progressItem) return;
+            
+            // 日付を表示用に変換
+            const displayDate = new Date(date).toLocaleDateString('ja-JP');
+            
+            // ステータスに応じてアイコンと表示を更新
+            let iconHtml, statusText, statusClass;
+            
+            switch (status) {
+                case 'completed':
+                    iconHtml = `
+                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                        </svg>
+                    `;
+                    statusText = '完了';
+                    statusClass = 'bg-green-100';
+                    break;
+                case 'in-progress':
+                    iconHtml = `<div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>`;
+                    statusText = '進行中';
+                    statusClass = 'bg-orange-100';
+                    break;
+                case 'waiting':
+                    iconHtml = `<div class="w-3 h-3 bg-gray-400 rounded-full"></div>`;
+                    statusText = '待機中';
+                    statusClass = 'bg-gray-100';
+                    break;
+            }
+            
+            // 進捗項目を更新
+            progressItem.innerHTML = `
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 ${statusClass} rounded-full flex items-center justify-center">
+                        ${iconHtml}
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900">${title}</p>
+                        <p class="text-xs text-gray-500">${displayDate} ${statusText}</p>
+                    </div>
+                </div>
+                <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button onclick="editProgressRecord(this)" class="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-all duration-200">編集</button>
+                    <button onclick="deleteProgressRecord(this)" class="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition-all duration-200">削除</button>
+                </div>
+            `;
+            
+            progressItem.setAttribute('data-id', itemId);
+            
+            closeEditModal();
+            console.log('Progress record updated:', { title, date, status });
         }
 
         // 申請進捗の削除機能
         function deleteProgressRecord(button) {
             const progressItem = button.closest('.group');
-            if (progressItem && confirm('この進捗記録を削除しますか？')) {
+            const titleElement = progressItem.querySelector('.text-sm.font-medium');
+            const title = titleElement ? titleElement.textContent : '進捗項目';
+            
+            if (progressItem && confirm(`「${title}」を削除しますか？`)) {
                 progressItem.remove();
-                console.log('Progress record deleted');
+                console.log('Progress record deleted:', title);
             }
         }
 
@@ -1930,7 +2073,7 @@ ${data.medication || ''}
                             </button>
                         </div>
                         <div id="progressList" class="space-y-3">
-                            <div class="flex items-center justify-between group">
+                            <div class="flex items-center justify-between group" data-id="1">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                         <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -1948,7 +2091,7 @@ ${data.medication || ''}
                                 </div>
                             </div>
                             
-                            <div class="flex items-center justify-between group">
+                            <div class="flex items-center justify-between group" data-id="2">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                         <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -1966,7 +2109,7 @@ ${data.medication || ''}
                                 </div>
                             </div>
                             
-                            <div class="flex items-center justify-between group">
+                            <div class="flex items-center justify-between group" data-id="3">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                                         <div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
@@ -1982,7 +2125,7 @@ ${data.medication || ''}
                                 </div>
                             </div>
                             
-                            <div class="flex items-center justify-between group">
+                            <div class="flex items-center justify-between group" data-id="4">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                                         <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
