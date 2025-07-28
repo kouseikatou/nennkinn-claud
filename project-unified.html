@@ -1433,6 +1433,9 @@
             } catch (error) {
                 console.error('Error loading management info:', error);
             }
+            
+            // 日付フィールドの「頃」入力補助を再設定
+            setupDateApproximateInput();
         }
 
         // 配偶者有無によるフィールド表示切替
