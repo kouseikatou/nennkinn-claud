@@ -153,7 +153,7 @@
                 <!-- 書類作成メニュー -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     <!-- 診断書関連 -->
-                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="createDocument('diagnosis')">
                         <div class="flex items-start space-x-4">
                             <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
@@ -169,7 +169,7 @@
                     </div>
 
                     <!-- 受診状況等証明書 -->
-                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="createDocument('medical-certificate')">
                         <div class="flex items-start space-x-4">
                             <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -185,7 +185,7 @@
                     </div>
 
                     <!-- 申請書 -->
-                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="createDocument('application')">
                         <div class="flex items-start space-x-4">
                             <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
@@ -201,7 +201,7 @@
                     </div>
 
                     <!-- 病歴・就労状況等申立書 -->
-                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="createDocument('medical-history')">
                         <div class="flex items-start space-x-4">
                             <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
@@ -217,7 +217,7 @@
                     </div>
 
                     <!-- 年金加入期間確認通知書 -->
-                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="createDocument('pension-period')">
                         <div class="flex items-start space-x-4">
                             <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
@@ -233,7 +233,7 @@
                     </div>
 
                     <!-- その他書類 -->
-                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="createDocument('others')">
                         <div class="flex items-start space-x-4">
                             <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
@@ -252,8 +252,453 @@
                 <!-- 最近の書類作成履歴 -->
                 <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm">
                     <div class="px-6 py-4 border-b border-notion-gray-200">
-                        <h3 class="text-lg font-semibold text-notion-gray-800">最近の書類作成履歴</h3>
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-notion-gray-800">最近の書類作成履歴</h3>
+                            <button onclick="refreshHistory()" class="text-sm text-linear-blue-600 hover:text-linear-blue-700 font-medium">更新</button>
+                        </div>
                     </div>
+                    <div id="documentHistory" class="divide-y divide-notion-gray-100">
+                        <!-- サンプル履歴データ -->
+                        <div class="p-6 hover:bg-notion-gray-50 transition-all duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-notion-gray-800">診断書（精神の障害用）</h4>
+                                        <p class="text-xs text-notion-gray-600">田中太郎 • 2024/07/26</p>
+                                        <p class="text-xs text-notion-gray-500">○○総合病院 / 山田医師</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                        作成依頼中
+                                    </span>
+                                    <p class="text-xs text-notion-gray-500 mt-1">予定: 2024/08/02</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 hover:bg-notion-gray-50 transition-all duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-notion-gray-800">受診状況等証明書</h4>
+                                        <p class="text-xs text-notion-gray-600">山田花子 • 2024/07/24</p>
+                                        <p class="text-xs text-notion-gray-500">△△クリニック</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        取得完了
+                                    </span>
+                                    <p class="text-xs text-notion-gray-500 mt-1">完了: 2024/07/25</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6 hover:bg-notion-gray-50 transition-all duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-notion-gray-800">診断書（肢体の障害用）</h4>
+                                        <p class="text-xs text-notion-gray-600">佐藤一郎 • 2024/07/22</p>
+                                        <p class="text-xs text-notion-gray-500">□□整形外科 / 佐藤医師</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        医師確認中
+                                    </span>
+                                    <p class="text-xs text-notion-gray-500 mt-1">予定: 2024/07/30</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 書類作成モーダル -->
+    <div id="createDocumentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl border border-notion-gray-200 w-full max-w-2xl mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-notion-gray-200 flex items-center justify-between">
+                <h3 id="modalTitle" class="text-lg font-semibold text-notion-gray-800">書類作成</h3>
+                <button onclick="closeModal()" class="text-notion-gray-400 hover:text-notion-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="modalContent" class="p-6">
+                <!-- コンテンツはJavaScriptで動的に追加 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 書類作成モーダルを開く
+        function createDocument(type) {
+            const modal = document.getElementById('createDocumentModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            const documentTypes = {
+                'diagnosis': {
+                    title: '診断書作成',
+                    content: getDiagnosisForm()
+                },
+                'medical-certificate': {
+                    title: '受診状況等証明書作成',
+                    content: getMedicalCertificateForm()
+                },
+                'application': {
+                    title: '障害年金裁定請求書作成',
+                    content: getApplicationForm()
+                },
+                'medical-history': {
+                    title: '病歴・就労状況等申立書作成',
+                    content: getMedicalHistoryForm()
+                },
+                'pension-period': {
+                    title: '年金加入期間確認通知書作成',
+                    content: getPensionPeriodForm()
+                },
+                'others': {
+                    title: 'その他書類管理',
+                    content: getOthersForm()
+                }
+            };
+            
+            const docType = documentTypes[type];
+            if (docType) {
+                title.textContent = docType.title;
+                content.innerHTML = docType.content;
+                modal.classList.remove('hidden');
+            }
+        }
+
+        // モーダルを閉じる
+        function closeModal() {
+            document.getElementById('createDocumentModal').classList.add('hidden');
+        }
+
+        // 診断書フォーム
+        function getDiagnosisForm() {
+            return `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">申請者選択</label>
+                            <select class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
+                                <option>申請者を選択してください</option>
+                                <option>田中太郎 (APP-2024-001)</option>
+                                <option>山田花子 (APP-2024-002)</option>
+                                <option>佐藤一郎 (APP-2024-003)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">診断書の種類</label>
+                            <select class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
+                                <option>精神の障害用</option>
+                                <option>肢体の障害用</option>
+                                <option>眼の障害用</option>
+                                <option>聴覚・鼻腔機能・平衡機能・そしゃく・嚥下機能・言語機能の障害用</option>
+                                <option>呼吸器疾患の障害用</option>
+                                <option>循環器疾患の障害用</option>
+                                <option>腎疾患・肝疾患・糖尿病の障害用</option>
+                                <option>血液・造血器・その他の障害用</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">医療機関名</label>
+                            <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none" placeholder="例：○○総合病院">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">医師名</label>
+                            <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none" placeholder="例：山田　太郎">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">診断書作成依頼日</label>
+                        <input type="date" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">特記事項</label>
+                        <textarea class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none h-24" placeholder="診断書作成に関する特記事項があれば記入してください"></textarea>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button onclick="closeModal()" class="px-6 py-3 border border-notion-gray-300 text-notion-gray-700 rounded-lg hover:bg-notion-gray-50 transition-all duration-200">
+                            キャンセル
+                        </button>
+                        <button onclick="saveDiagnosis()" class="px-6 py-3 bg-linear-blue-600 text-white rounded-lg hover:bg-linear-blue-700 transition-all duration-200">
+                            作成依頼を保存
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 受診状況等証明書フォーム
+        function getMedicalCertificateForm() {
+            return `
+                <div class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">申請者選択</label>
+                            <select class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
+                                <option>申請者を選択してください</option>
+                                <option>田中太郎 (APP-2024-001)</option>
+                                <option>山田花子 (APP-2024-002)</option>
+                                <option>佐藤一郎 (APP-2024-003)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">証明書の種類</label>
+                            <select class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
+                                <option>受診状況等証明書</option>
+                                <option>受診状況等証明書（初診日不明用）</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">初診医療機関名</label>
+                            <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none" placeholder="例：○○クリニック">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-notion-gray-700 mb-2">証明依頼日</label>
+                            <input type="date" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-notion-gray-700 mb-2">特記事項</label>
+                        <textarea class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none h-24" placeholder="証明書作成に関する特記事項があれば記入してください"></textarea>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button onclick="closeModal()" class="px-6 py-3 border border-notion-gray-300 text-notion-gray-700 rounded-lg hover:bg-notion-gray-50 transition-all duration-200">
+                            キャンセル
+                        </button>
+                        <button onclick="saveMedicalCertificate()" class="px-6 py-3 bg-linear-blue-600 text-white rounded-lg hover:bg-linear-blue-700 transition-all duration-200">
+                            証明依頼を保存
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 他のフォーム関数（簡略版）
+        function getApplicationForm() {
+            return `
+                <div class="space-y-6">
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-notion-gray-800 mb-2">障害年金裁定請求書作成</h4>
+                        <p class="text-notion-gray-600 mb-6">障害年金の裁定を請求するための公式申請書を作成します。</p>
+                        <button onclick="closeModal()" class="px-6 py-3 bg-linear-blue-600 text-white rounded-lg hover:bg-linear-blue-700 transition-all duration-200">
+                            詳細フォームを準備中...
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getMedicalHistoryForm() {
+            return `
+                <div class="space-y-6">
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-notion-gray-800 mb-2">病歴・就労状況等申立書</h4>
+                        <p class="text-notion-gray-600 mb-6">AI申立書機能をご利用ください。より詳細な申立書作成が可能です。</p>
+                        <button onclick="closeModal(); window.location.href='ai-statement.html'" class="px-6 py-3 bg-linear-blue-600 text-white rounded-lg hover:bg-linear-blue-700 transition-all duration-200">
+                            AI申立書ページへ
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getPensionPeriodForm() {
+            return `
+                <div class="space-y-6">
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-notion-gray-800 mb-2">年金加入期間確認通知書</h4>
+                        <p class="text-notion-gray-600 mb-6">年金制度への加入期間を確認するための通知書作成機能を準備中です。</p>
+                        <button onclick="closeModal()" class="px-6 py-3 bg-linear-blue-600 text-white rounded-lg hover:bg-linear-blue-700 transition-all duration-200">
+                            準備中...
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getOthersForm() {
+            return `
+                <div class="space-y-6">
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <h4 class="text-lg font-semibold text-notion-gray-800 mb-2">その他書類管理</h4>
+                        <p class="text-notion-gray-600 mb-6">戸籍謄本、住民票、振込先通帳写しなどの添付書類の管理機能を準備中です。</p>
+                        <button onclick="closeModal()" class="px-6 py-3 bg-linear-blue-600 text-white rounded-lg hover:bg-linear-blue-700 transition-all duration-200">
+                            準備中...
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 書類管理データ
+        let documentHistory = [
+            {
+                id: 1,
+                type: 'diagnosis',
+                typeName: '診断書（精神の障害用）',
+                applicant: '田中太郎',
+                date: '2024/07/26',
+                hospital: '○○総合病院',
+                doctor: '山田医師',
+                status: 'requested',
+                statusName: '作成依頼中',
+                dueDate: '2024/08/02'
+            },
+            {
+                id: 2,
+                type: 'medical-certificate',
+                typeName: '受診状況等証明書',
+                applicant: '山田花子',
+                date: '2024/07/24',
+                hospital: '△△クリニック',
+                doctor: '',
+                status: 'completed',
+                statusName: '取得完了',
+                dueDate: '2024/07/25'
+            },
+            {
+                id: 3,
+                type: 'diagnosis',
+                typeName: '診断書（肢体の障害用）',
+                applicant: '佐藤一郎',
+                date: '2024/07/22',
+                hospital: '□□整形外科',
+                doctor: '佐藤医師',
+                status: 'in-review',
+                statusName: '医師確認中',
+                dueDate: '2024/07/30'
+            }
+        ];
+
+        // 保存関数
+        function saveDiagnosis() {
+            // フォームデータを収集
+            const modal = document.getElementById('createDocumentModal');
+            const formData = {
+                applicant: modal.querySelector('select').value,
+                diagnosisType: modal.querySelectorAll('select')[1].value,
+                hospital: modal.querySelector('input[type="text"]').value,
+                doctor: modal.querySelectorAll('input[type="text"]')[1].value,
+                requestDate: modal.querySelector('input[type="date"]').value,
+                notes: modal.querySelector('textarea').value
+            };
+
+            // 新しい書類エントリを追加
+            const newDocument = {
+                id: documentHistory.length + 1,
+                type: 'diagnosis',
+                typeName: `診断書（${formData.diagnosisType}）`,
+                applicant: formData.applicant,
+                date: new Date().toLocaleDateString('ja-JP'),
+                hospital: formData.hospital,
+                doctor: formData.doctor,
+                status: 'requested',
+                statusName: '作成依頼中',
+                dueDate: formData.requestDate
+            };
+
+            documentHistory.unshift(newDocument);
+            refreshHistory();
+            
+            alert('診断書作成依頼を保存しました。');
+            closeModal();
+        }
+
+        function saveMedicalCertificate() {
+            // フォームデータを収集
+            const modal = document.getElementById('createDocumentModal');
+            const formData = {
+                applicant: modal.querySelector('select').value,
+                certificateType: modal.querySelectorAll('select')[1].value,
+                hospital: modal.querySelector('input[type="text"]').value,
+                requestDate: modal.querySelector('input[type="date"]').value,
+                notes: modal.querySelector('textarea').value
+            };
+
+            // 新しい書類エントリを追加
+            const newDocument = {
+                id: documentHistory.length + 1,
+                type: 'medical-certificate',
+                typeName: formData.certificateType,
+                applicant: formData.applicant,
+                date: new Date().toLocaleDateString('ja-JP'),
+                hospital: formData.hospital,
+                doctor: '',
+                status: 'requested',
+                statusName: '作成依頼中',
+                dueDate: formData.requestDate
+            };
+
+            documentHistory.unshift(newDocument);
+            refreshHistory();
+            
+            alert('受診状況等証明書の依頼を保存しました。');
+            closeModal();
+        }
+
+        // 履歴更新関数
+        function refreshHistory() {
+            const historyContainer = document.getElementById('documentHistory');
+            
+            if (documentHistory.length === 0) {
+                historyContainer.innerHTML = `
                     <div class="p-6">
                         <div class="text-center py-12">
                             <div class="w-16 h-16 bg-notion-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -265,9 +710,74 @@
                             <p class="text-notion-gray-600 mb-6">まだ書類が作成されていません。上記のメニューから書類作成を開始してください。</p>
                         </div>
                     </div>
-                </div>
-            </div>
-        </main>
-    </div>
+                `;
+                return;
+            }
+
+            const historyHTML = documentHistory.map(doc => {
+                const statusColors = {
+                    'requested': 'bg-orange-100 text-orange-800',
+                    'in-review': 'bg-yellow-100 text-yellow-800',
+                    'completed': 'bg-green-100 text-green-800',
+                    'cancelled': 'bg-red-100 text-red-800'
+                };
+
+                const iconColors = {
+                    'diagnosis': 'bg-blue-100 text-blue-600',
+                    'medical-certificate': 'bg-green-100 text-green-600',
+                    'application': 'bg-purple-100 text-purple-600',
+                    'medical-history': 'bg-orange-100 text-orange-600',
+                    'pension-period': 'bg-indigo-100 text-indigo-600',
+                    'others': 'bg-gray-100 text-gray-600'
+                };
+
+                return `
+                    <div class="p-6 hover:bg-notion-gray-50 transition-all duration-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 ${iconColors[doc.type]} rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 ${iconColors[doc.type].split(' ')[1]}" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-notion-gray-800">${doc.typeName}</h4>
+                                    <p class="text-xs text-notion-gray-600">${doc.applicant} • ${doc.date}</p>
+                                    <p class="text-xs text-notion-gray-500">${doc.hospital}${doc.doctor ? ' / ' + doc.doctor : ''}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusColors[doc.status]}">
+                                    ${doc.statusName}
+                                </span>
+                                <p class="text-xs text-notion-gray-500 mt-1">${doc.status === 'completed' ? '完了' : '予定'}: ${doc.dueDate}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            historyContainer.innerHTML = historyHTML;
+        }
+
+        // ESCキーでモーダルを閉じる
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // モーダル外クリックで閉じる
+        document.getElementById('createDocumentModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshHistory();
+        });
+    </script>
 </body>
 </html>
