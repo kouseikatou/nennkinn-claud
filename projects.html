@@ -39,6 +39,20 @@
                             700: '#1d4ed8',
                             800: '#1e40af',
                             900: '#1e3a8a'
+                        },
+                        'saas': {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            700: '#374151'
+                        },
+                        'primary': {
+                            50: '#eff6ff',
+                            200: '#bfdbfe',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
                         }
                     }
                 }
@@ -67,22 +81,103 @@
         </div>
     </header>
 
-    <div class="max-w-6xl mx-auto px-8 py-8">
-        <!-- タイトル -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-semibold text-notion-gray-800 mb-2">申請一覧</h2>
-            <p class="text-notion-gray-600">障害年金申請の管理と追跡</p>
+    <div class="flex min-h-screen w-full">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white border-r border-saas-200 shadow-sm min-h-screen">
+            <nav class="p-6">
+                <div class="mb-8">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="index.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-saas-700 hover:bg-saas-50 hover:text-saas-700 transition-all duration-200">
+                                <div class="mr-3 flex-shrink-0">
+                                    <svg class="h-5 w-5 text-saas-500 group-hover:text-saas-700" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                    </svg>
+                                </div>
+                                ダッシュボード
+                            </a>
+                        </li>
+                        <li>
+                            <a href="customer-management.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-saas-700 hover:bg-saas-50 hover:text-saas-700 transition-all duration-200">
+                                <div class="mr-3 flex-shrink-0">
+                                    <svg class="h-5 w-5 text-saas-500 group-hover:text-saas-700" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                                    </svg>
+                                </div>
+                                顧客管理
+                            </a>
+                        </li>
+                        <li>
+                            <a href="projects.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl bg-primary-50 text-primary-700 border border-primary-200">
+                                <div class="mr-3 flex-shrink-0">
+                                    <svg class="h-5 w-5 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                申請管理
+                            </a>
+                        </li>
+                        <li>
+                            <a href="document-creation.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-saas-700 hover:bg-saas-50 hover:text-saas-700 transition-all duration-200">
+                                <div class="mr-3 flex-shrink-0">
+                                    <svg class="h-5 w-5 text-saas-500 group-hover:text-saas-700" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm0 3a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                                        <path d="M14 9a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1z"/>
+                                    </svg>
+                                </div>
+                                書類作成
+                            </a>
+                        </li>
+                        <li>
+                            <a href="ai-statement.html" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl text-saas-700 hover:bg-saas-50 hover:text-saas-700 transition-all duration-200">
+                                <div class="mr-3 flex-shrink-0">
+                                    <svg class="h-5 w-5 text-saas-500 group-hover:text-saas-700" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                AI申立書
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
         </div>
 
-        <!-- 申請リスト -->
-        <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden">
+        <!-- Main Content -->
+        <main class="flex-1 p-6 bg-notion-gray-50">
+            <div class="max-w-7xl mx-auto">
+                <!-- タイトル -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-semibold text-notion-gray-800 mb-2">申請一覧</h2>
+                    <p class="text-notion-gray-600">障害年金申請の管理と追跡</p>
+                </div>
+
+                <!-- 検索・フィルター -->
+                <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" placeholder="申請者名やIDで検索..." class="w-full px-4 py-2 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none bg-white">
+                    </div>
+                    <div class="flex gap-2">
+                        <select class="px-3 py-2 border border-notion-gray-300 rounded-lg focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none bg-white">
+                            <option value="">全てのステータス</option>
+                            <option value="initial-contact">初回連絡先</option>
+                            <option value="before-submit">提出前</option>
+                            <option value="before-payment">報酬入金前</option>
+                            <option value="lost">失注</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 申請リスト -->
+                <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm">
             <div class="grid grid-cols-1 gap-0">
                 <!-- 申請項目 1 -->
                 <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(1)">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                                <span class="text-green-600 font-semibold">田</span>
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <span class="text-blue-600 font-semibold">田</span>
                             </div>
                             <div>
                                 <h3 class="text-lg font-medium text-notion-gray-800">田中太郎</h3>
@@ -91,8 +186,8 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                                審査中
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                                報酬入金前
                             </span>
                             <p class="text-xs text-notion-gray-500 mt-1">障害等級: 2級</p>
                         </div>
@@ -103,8 +198,8 @@
                 <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(2)">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                                <span class="text-blue-600 font-semibold">山</span>
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <span class="text-purple-600 font-semibold">山</span>
                             </div>
                             <div>
                                 <h3 class="text-lg font-medium text-notion-gray-800">山田花子</h3>
@@ -113,8 +208,8 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                承認済み
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
+                                提出前
                             </span>
                             <p class="text-xs text-notion-gray-500 mt-1">障害等級: 1級</p>
                         </div>
@@ -122,11 +217,11 @@
                 </div>
 
                 <!-- 申請項目 3 -->
-                <div class="p-6 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(3)">
+                <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(3)">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                                <span class="text-purple-600 font-semibold">佐</span>
+                            <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                                <span class="text-indigo-600 font-semibold">佐</span>
                             </div>
                             <div>
                                 <h3 class="text-lg font-medium text-notion-gray-800">佐藤一郎</h3>
@@ -135,15 +230,104 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
-                                下書き
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
+                                診断書前
                             </span>
                             <p class="text-xs text-notion-gray-500 mt-1">障害等級: 未定</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- 申請項目 4 -->
+                <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(4)">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
+                                <span class="text-yellow-600 font-semibold">鈴</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-notion-gray-800">鈴木美香</h3>
+                                <p class="text-sm text-notion-gray-600">ID: APP-2024-004</p>
+                                <p class="text-xs text-notion-gray-500">作成日: 2024/07/25</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                                書類一式送付前
+                            </span>
+                            <p class="text-xs text-notion-gray-500 mt-1">障害等級: 未定</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 申請項目 5 -->
+                <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(5)">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                                <span class="text-red-600 font-semibold">高</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-notion-gray-800">高橋健太</h3>
+                                <p class="text-sm text-notion-gray-600">ID: APP-2024-005</p>
+                                <p class="text-xs text-notion-gray-500">作成日: 2024/07/20</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                                不支給
+                            </span>
+                            <p class="text-xs text-notion-gray-500 mt-1">障害等級: なし</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 申請項目 6 -->
+                <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(6)">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                                <span class="text-teal-600 font-semibold">小</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-notion-gray-800">小林由美</h3>
+                                <p class="text-sm text-notion-gray-600">ID: APP-2024-006</p>
+                                <p class="text-xs text-notion-gray-500">作成日: 2024/07/26</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                初回連絡先
+                            </span>
+                            <p class="text-xs text-notion-gray-500 mt-1">障害等級: 未定</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 申請項目 7 -->
+                <div class="p-6 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="openApplication(7)">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                                <span class="text-gray-600 font-semibold">伊</span>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium text-notion-gray-800">伊藤慎一</h3>
+                                <p class="text-sm text-notion-gray-600">ID: APP-2024-007</p>
+                                <p class="text-xs text-notion-gray-500">作成日: 2024/07/23</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                                保留
+                            </span>
+                            <p class="text-xs text-notion-gray-500 mt-1">障害等級: 未定</p>
+                        </div>
+                    </div>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script>
