@@ -1557,64 +1557,190 @@ ${data.medication || ''}
         }
 
         // 申請データを保存する関数
-        function saveApplication() {
-            // フォームデータを収集
-            const projectData = {
-                id: Date.now(),
-                name: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
-                furigana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
-                age: parseInt(document.querySelector('input[placeholder="45"]')?.value) || 0,
-                gender: document.querySelector('select')?.value || '',
-                birthday: document.querySelector('input[type="date"]')?.value || '',
+        async function saveApplication() {
+            try {
+                // Show loading notification
+                showNotification('保存中...', 'info');
+                
+                const formData = collectFormData();
+                const urlParams = new URLSearchParams(window.location.search);
+                const applicationId = urlParams.get('edit');
+                
+                // 開発環境で認証をスキップ
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    DevAuth.skipAuth();
+                }
+                
+                let result;
+                if (applicationId && applicationId !== 'new') {
+                    // Update existing application
+                    result = await ApplicationAPI.updateApplication(applicationId, formData);
+                    showNotification('申請情報を更新しました', 'success');
+                    console.log('✅ 申請更新成功:', result);
+                } else {
+                    // Create new application
+                    result = await ApplicationAPI.createApplication(formData);
+                    showNotification('新規申請を作成しました', 'success');
+                    console.log('✅ 申請作成成功:', result);
+                    
+                    // Redirect to edit mode with new ID
+                    if (result && result.application && result.application.id) {
+                        setTimeout(() => {
+                            window.location.href = `project-unified.html?edit=${result.application.id}`;
+                        }, 1500);
+                        return;
+                    }
+                }
+                
+                // Reload application data to reflect changes
+                if (applicationId && applicationId !== 'new') {
+                    await loadApplicationData(applicationId);
+                }
+                
+            } catch (error) {
+                console.error('❌ 申請保存エラー:', error);
+                
+                // Display specific error message
+                let errorMsg = '保存中にエラーが発生しました';
+                if (error.message) {
+                    if (error.message.includes('network') || error.message.includes('fetch')) {
+                        errorMsg = 'ネットワークエラー: サーバーに接続できません';
+                    } else if (error.message.includes('401')) {
+                        errorMsg = '認証エラー: ログインが必要です';
+                    } else if (error.message.includes('400')) {
+                        errorMsg = '入力エラー: 入力内容を確認してください';
+                    } else if (error.message.includes('500')) {
+                        errorMsg = 'サーバーエラー: しばらく時間をおいて再度お試しください';
+                    } else {
+                        errorMsg = `エラー: ${error.message}`;
+                    }
+                }
+                
+                showNotification(errorMsg, 'error');
+            }
+        }
+
+        // フォームデータを収集する関数（application-api.jsのcollectFormDataと同様）
+        function collectFormData() {
+            const formData = {
+                // Basic information
+                applicantName: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
+                applicantNameKana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
+                birthDate: document.querySelectorAll('input[type="date"]')[0]?.value || '',
+                gender: document.querySelectorAll('select')[0]?.value || 'male',
                 pensionNumber: document.querySelector('input[placeholder="1234-567890"]')?.value || '',
-                phone: document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
-                email: document.querySelector('input[placeholder="example@email.com"]')?.value || '',
+                phoneNumber: document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
+                email: document.querySelector('input[placeholder="example@email.com"]')?.value || null,
+                postalCode: document.querySelector('input[placeholder="123-4567"]')?.value || '',
                 address: document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
-                hasSpouse: document.querySelector('input[name="spouse"]:checked')?.value || 'no',
-                disease: document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || '',
+                
+                // Disability information - provide defaults for required fields
+                disabilityType: document.querySelectorAll('select')[1]?.value || 'mental',
+                disabilityDescription: document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || '',
+                onsetDate: document.querySelectorAll('input[type="date"]')[1]?.value || '',
+                disabilityGrade: document.querySelectorAll('select')[2]?.value || null,
+                
+                // Medical information
+                hospitalName: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
+                doctorName: document.querySelector('input[placeholder="田中医師"]')?.value || '',
+                
+                // Additional form fields specific to this form
                 currentSymptoms: document.getElementById('currentSymptoms')?.value || '',
                 firstVisit: document.getElementById('initialVisitDateWestern')?.value || '',
-                disabilityDate: document.querySelectorAll('input[type="date"]')[2]?.value || '',
-                hospital: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
-                doctor: document.querySelector('input[placeholder="田中医師"]')?.value || '',
-                grade: document.querySelectorAll('select')[2]?.value || '',
                 symptoms: document.querySelector('textarea[placeholder="具体的な症状を記載してください"]')?.value || '',
                 treatment: document.querySelector('textarea[placeholder="通院频度、治療内容など"]')?.value || '',
                 medication: document.querySelector('textarea[placeholder="服用中の薬剤名、用量など"]')?.value || '',
                 dailyLife: document.querySelector('textarea[placeholder="食事、入浴、外出等への影響"]')?.value || '',
                 work: document.querySelector('textarea[placeholder="就労状況、業務への影響など"]')?.value || '',
-                hasChildren: document.querySelector('input[name="children"]:checked')?.value || 'false',
-                status: 'draft',
-                createdAt: new Date().toISOString()
+                
+                // Family members
+                familyMembers: collectFamilyMembers()
             };
             
-            // ローカルストレージから既存のプロジェクトを取得
-            let projects = JSON.parse(localStorage.getItem('pensionProjects') || '[]');
+            // Convert empty strings to null for optional fields
+            Object.keys(formData).forEach(key => {
+                if (formData[key] === '' && !['applicantName', 'applicantNameKana', 'birthDate', 'gender', 'disabilityType'].includes(key)) {
+                    formData[key] = null;
+                }
+                // Convert email empty string to null specifically
+                if (key === 'email' && formData[key] === '') {
+                    formData[key] = null;
+                }
+            });
             
-            // 新しいプロジェクトを追加
-            projects.push(projectData);
+            console.log('📋 収集されたフォームデータ:', formData);
+            return formData;
+        }
+
+        // Collect family members data
+        function collectFamilyMembers() {
+            const familyMembers = [];
             
-            // ローカルストレージに保存
-            localStorage.setItem('pensionProjects', JSON.stringify(projects));
+            // Collect spouse data if exists
+            const hasSpouse = document.querySelector('input[name="spouse"]:checked')?.value === 'yes';
+            if (hasSpouse) {
+                const spouseInputs = document.getElementById('spouseInfo')?.querySelectorAll('input, select') || [];
+                if (spouseInputs.length >= 5) {
+                    familyMembers.push({
+                        memberType: 'spouse',
+                        name: spouseInputs[0].value || '',
+                        nameKana: spouseInputs[1].value || '',
+                        myNumber: spouseInputs[2].value || '',
+                        basicPensionNumber: spouseInputs[3].value || '',
+                        birthDate: spouseInputs[4].value || ''
+                    });
+                }
+            }
             
-            console.log('Saving application...', projectData);
+            // Collect children data
+            const childrenList = document.getElementById('childrenList');
+            if (childrenList) {
+                const childCards = childrenList.querySelectorAll('.border.border-notion-gray-200');
+                
+                childCards.forEach(card => {
+                    const inputs = card.querySelectorAll('input, select');
+                    if (inputs.length >= 4) {
+                        familyMembers.push({
+                            memberType: 'child',
+                            name: inputs[0].value || '',
+                            nameKana: inputs[1].value || '',
+                            myNumber: inputs[2].value || '',
+                            birthDate: inputs[3].value || ''
+                        });
+                    }
+                });
+            }
             
-            // 成功メッセージを表示
+            return familyMembers;
+        }
+
+        // Load application data using the existing loadApplication function
+        async function loadApplicationData(applicationId) {
+            try {
+                await loadApplication(applicationId);
+                console.log('✅ Application data reloaded');
+            } catch (error) {
+                console.error('❌ Failed to reload application data:', error);
+                throw error;
+            }
+        }
+
+        // Show notification function
+        function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white bg-green-500 transition-all duration-300 z-50';
-            notification.textContent = '保存しました';
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white transition-all duration-300 z-50 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            
             document.body.appendChild(notification);
             
-            // 通知を3秒後に削除
             setTimeout(() => {
                 notification.style.opacity = '0';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
-            
-            // 2秒後にプロジェクト一覧に遷移
-            setTimeout(() => {
-                window.location.href = 'projects.html';
-            }, 2000);
         }
 
         // 和暦変換機能
@@ -2471,15 +2597,15 @@ ${data.medication || ''}
                     <div class="bg-white rounded-xl p-4 shadow-sm">
                         <div class="flex items-center space-x-3 mb-3">
                             <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                                <span id="applicantInitial" class="text-blue-600 font-semibold text-lg">田</span>
+                                <span id="applicantInitial" class="text-blue-600 font-semibold text-lg">?</span>
                             </div>
                             <div>
-                                <h3 id="applicantName" class="font-semibold text-gray-900">田中太郎</h3>
-                                <p id="applicantId" class="text-xs text-gray-500">ID: APP-2024-001</p>
+                                <h3 id="applicantName" class="font-semibold text-gray-900">読み込み中...</h3>
+                                <p id="applicantId" class="text-xs text-gray-500">ID: --</p>
                             </div>
                         </div>
                         <div class="text-xs text-gray-600">
-                            <span id="applicantStatus" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">審査中</span>
+                            <span id="applicantStatus" class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">読み込み中</span>
                         </div>
                     </div>
                     
@@ -2493,45 +2619,10 @@ ${data.medication || ''}
                             </button>
                         </div>
                         <div id="progressList" class="space-y-3">
-                            <div class="flex items-center justify-between group" data-id="1">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">書類準備</p>
-                                        <p class="text-xs text-gray-500">2024/07/15 完了</p>
-                                    </div>
-                                </div>
-                                <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                    <button onclick="editProgressRecord(this)" class="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-all duration-200">編集</button>
-                                    <button onclick="deleteProgressRecord(this)" class="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition-all duration-200">削除</button>
-                                </div>
+                            <!-- 進捗データを動的に読み込み -->
+                            <div class="text-center py-4 text-gray-500 text-sm">
+                                進捗データを読み込み中...
                             </div>
-                            
-                            <div class="flex items-center justify-between group" data-id="2">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900">申請提出</p>
-                                        <p class="text-xs text-gray-500">2024/07/20 完了</p>
-                                    </div>
-                                </div>
-                                <div class="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                    <button onclick="editProgressRecord(this)" class="px-2 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-all duration-200">編集</button>
-                                    <button onclick="deleteProgressRecord(this)" class="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition-all duration-200">削除</button>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between group" data-id="3">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
                                         <div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
                                     </div>
                                     <div>
@@ -3066,6 +3157,7 @@ ${data.medication || ''}
         // アンケートデータを全て読み込む関数
         async function loadAllSurveyData(applicationId) {
             const surveyTypes = ['basic', 'pre_application', 'injury'];
+            let loadedCount = 0;
             
             for (const surveyType of surveyTypes) {
                 try {
@@ -3073,11 +3165,22 @@ ${data.medication || ''}
                     if (result && result.survey) {
                         // データベースからアンケートデータを読み込んで表示を更新
                         updateSurveyStatusFromDB(surveyType, result.survey);
+                        loadedCount++;
+                        console.log(`✅ ${surveyType} アンケートデータを読み込みました`);
+                    } else {
+                        console.log(`📋 ${surveyType} アンケート未作成 - 新規入力可能`);
                     }
                 } catch (error) {
-                    console.log(`📋 ${surveyType} アンケート未回答またはエラー:`, error.message);
+                    // 404エラーは正常な動作なので、詳細ログは出さない
+                    if (error.message.includes('404') || error.message.includes('not found')) {
+                        console.log(`📋 ${surveyType} アンケート未作成`);
+                    } else {
+                        console.warn(`⚠️ ${surveyType} アンケート読み込みエラー:`, error.message);
+                    }
                 }
             }
+            
+            console.log(`📊 アンケートデータ読み込み完了: ${loadedCount}/${surveyTypes.length}件`);
         }
 
         // データベースからのアンケートデータでUIを更新

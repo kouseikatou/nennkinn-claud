@@ -5,7 +5,7 @@ const getAPIBaseURL = () => {
     return '/api';  // Vercel上では相対パス
   }
   // 開発環境
-  return 'http://localhost:3001/api';
+  return 'http://localhost:3002/api';
 };
 
 const API_BASE_URL = getAPIBaseURL();
@@ -43,7 +43,16 @@ const ApplicationAPI = {
                 headers: getAuthHeaders()
             });
             
-            if (!response.ok) throw new Error('Failed to fetch applications');
+            if (!response.ok) {
+                let errorMessage = 'Failed to fetch applications';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error fetching applications:', error);
@@ -58,7 +67,16 @@ const ApplicationAPI = {
                 headers: getAuthHeaders()
             });
             
-            if (!response.ok) throw new Error('Failed to fetch application');
+            if (!response.ok) {
+                let errorMessage = 'Failed to fetch application';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error fetching application:', error);
@@ -75,7 +93,16 @@ const ApplicationAPI = {
                 body: JSON.stringify(data)
             });
             
-            if (!response.ok) throw new Error('Failed to create application');
+            if (!response.ok) {
+                let errorMessage = 'Failed to create application';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error creating application:', error);
@@ -92,7 +119,17 @@ const ApplicationAPI = {
                 body: JSON.stringify(data)
             });
             
-            if (!response.ok) throw new Error('Failed to update application');
+            if (!response.ok) {
+                let errorMessage = 'Failed to update application';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    // Use HTTP status text if JSON parsing fails
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error updating application:', error);
@@ -144,14 +181,27 @@ const SurveyAPI = {
             });
             
             if (response.status === 404) {
-                // Survey not found, return null
+                // Survey not found, return null (this is expected behavior)
+                console.log(`📋 ${surveyType} アンケート未作成 (application: ${applicationId})`);
                 return null;
             }
             
-            if (!response.ok) throw new Error('Failed to fetch survey');
+            if (!response.ok) {
+                let errorMessage = 'Failed to fetch survey';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
-            console.error('Error fetching survey:', error);
+            // Don't log 404 errors as they are expected behavior
+            if (!error.message.includes('404')) {
+                console.error('Error fetching survey:', error);
+            }
             throw error;
         }
     },
@@ -221,17 +271,18 @@ function collectFormData() {
         applicantName: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
         applicantNameKana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
         birthDate: document.querySelectorAll('input[type="date"]')[0]?.value || '',
-        gender: document.querySelectorAll('select')[0]?.value || '',
-        phoneNumber: document.querySelector('input[placeholder="03-1234-5678"]')?.value || '',
-        email: document.querySelector('input[placeholder="taro@example.com"]')?.value || '',
+        gender: document.querySelectorAll('select')[0]?.value || 'male',
+        pensionNumber: document.querySelector('input[placeholder="1234-567890"]')?.value || '',
+        phoneNumber: document.querySelector('input[placeholder="03-1234-5678"]')?.value || document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
+        email: document.querySelector('input[placeholder="taro@example.com"]')?.value || document.querySelector('input[placeholder="example@email.com"]')?.value || null,
         postalCode: document.querySelector('input[placeholder="123-4567"]')?.value || '',
-        address: document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]')?.value || '',
+        address: document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]')?.value || document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
         
-        // Disability information
-        disabilityType: document.querySelectorAll('select')[1]?.value || '',
+        // Disability information - provide defaults for required fields
+        disabilityType: document.querySelectorAll('select')[1]?.value || 'mental',
         disabilityDescription: document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || '',
         onsetDate: document.querySelectorAll('input[type="date"]')[1]?.value || '',
-        disabilityGrade: document.querySelectorAll('select')[2]?.value || '',
+        disabilityGrade: document.querySelectorAll('select')[2]?.value || null,
         
         // Medical information
         hospitalName: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
@@ -241,6 +292,14 @@ function collectFormData() {
         familyMembers: collectFamilyMembers()
     };
     
+    // Convert empty strings to null for optional fields
+    Object.keys(formData).forEach(key => {
+        if (formData[key] === '' && !['applicantName', 'applicantNameKana', 'birthDate', 'gender', 'disabilityType'].includes(key)) {
+            formData[key] = null;
+        }
+    });
+    
+    console.log('📋 収集されたフォームデータ:', formData);
     return formData;
 }
 
@@ -287,9 +346,17 @@ function collectFamilyMembers() {
 // Save application
 async function saveApplication() {
     try {
+        // Show loading notification
+        showNotification('保存中...', 'info');
+        
         const formData = collectFormData();
         const urlParams = new URLSearchParams(window.location.search);
         const applicationId = urlParams.get('edit');
+        
+        // 開発環境で認証をスキップ
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            DevAuth.skipAuth();
+        }
         
         let result;
         if (applicationId && applicationId !== 'new') {
@@ -302,17 +369,47 @@ async function saveApplication() {
             showNotification('新規申請を作成しました', 'success');
             
             // Redirect to edit mode with new ID
-            window.location.href = `project-unified.html?edit=${result.application.id}`;
+            if (result && result.application && result.application.id) {
+                window.location.href = `project-unified.html?edit=${result.application.id}`;
+            }
         }
+        
+        console.log('✅ 申請保存成功:', result);
+        return result;
+        
     } catch (error) {
-        console.error('Error saving application:', error);
-        showNotification('保存中にエラーが発生しました', 'error');
+        console.error('❌ 申請保存エラー:', error);
+        
+        // Display specific error message
+        let errorMsg = '保存中にエラーが発生しました';
+        if (error.message) {
+            // Check for common error scenarios
+            if (error.message.includes('network') || error.message.includes('fetch')) {
+                errorMsg = 'ネットワークエラー: サーバーに接続できません';
+            } else if (error.message.includes('401') || error.message.includes('authenticate')) {
+                errorMsg = '認証エラー: ログインが必要です';
+            } else if (error.message.includes('400') || error.message.includes('validation')) {
+                errorMsg = '入力エラー: 入力内容を確認してください';
+            } else if (error.message.includes('500')) {
+                errorMsg = 'サーバーエラー: しばらく時間をおいて再度お試しください';
+            } else {
+                errorMsg = `エラー: ${error.message}`;
+            }
+        }
+        
+        showNotification(errorMsg, 'error');
+        throw error; // Re-throw for debugging purposes
     }
 }
 
 // Load application data
 async function loadApplication(applicationId) {
     try {
+        // 開発環境で認証をスキップ
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            DevAuth.skipAuth();
+        }
+        
         const result = await ApplicationAPI.getApplication(applicationId);
         const application = result.application;
         
@@ -323,9 +420,22 @@ async function loadApplication(applicationId) {
         if (application.familyMembers && application.familyMembers.length > 0) {
             populateFamilyMembers(application.familyMembers);
         }
+        
+        console.log('✅ 申請データを読み込みました:', application.applicationNumber);
+        
     } catch (error) {
-        console.error('Error loading application:', error);
-        showNotification('データの読み込みに失敗しました', 'error');
+        console.error('❌ データ読み込みエラー:', error);
+        
+        let errorMsg = 'データの読み込みに失敗しました';
+        if (error.message.includes('404') || error.message.includes('not found')) {
+            errorMsg = '申請データが見つかりません';
+        } else if (error.message.includes('401') || error.message.includes('authenticate')) {
+            errorMsg = '認証エラー: ログインが必要です';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            errorMsg = 'ネットワークエラー: サーバーに接続できません';
+        }
+        
+        showNotification(errorMsg, 'error');
     }
 }
 
@@ -344,16 +454,26 @@ function populateFormFields(data) {
     const genderSelect = document.querySelectorAll('select')[0];
     if (genderSelect) genderSelect.value = data.gender || '';
     
-    const phoneInput = document.querySelector('input[placeholder="03-1234-5678"]');
+    // 基礎年金番号の追加
+    const pensionNumberInput = document.querySelector('input[placeholder="1234-567890"]');
+    if (pensionNumberInput) pensionNumberInput.value = data.pensionNumber || '';
+    
+    // 電話番号 - プレースホルダーの違いに対応
+    const phoneInput = document.querySelector('input[placeholder="03-1234-5678"]') || 
+                      document.querySelector('input[placeholder="090-1234-5678"]');
     if (phoneInput) phoneInput.value = data.phoneNumber || '';
     
-    const emailInput = document.querySelector('input[placeholder="taro@example.com"]');
+    // メールアドレス - プレースホルダーの違いに対応
+    const emailInput = document.querySelector('input[placeholder="taro@example.com"]') || 
+                      document.querySelector('input[placeholder="example@email.com"]');
     if (emailInput) emailInput.value = data.email || '';
     
     const postalCodeInput = document.querySelector('input[placeholder="123-4567"]');
     if (postalCodeInput) postalCodeInput.value = data.postalCode || '';
     
-    const addressInput = document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]');
+    // 住所 - テキストエリアとinputの両方に対応
+    const addressInput = document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]') || 
+                        document.querySelector('textarea[placeholder="東京都新宿区..."]');
     if (addressInput) addressInput.value = data.address || '';
     
     // Disability information
@@ -375,6 +495,28 @@ function populateFormFields(data) {
     
     const doctorInput = document.querySelector('input[placeholder="田中医師"]');
     if (doctorInput) doctorInput.value = data.doctorName || '';
+    
+    // Additional fields specific to project-unified.html
+    const currentSymptomsInput = document.getElementById('currentSymptoms');
+    if (currentSymptomsInput) currentSymptomsInput.value = data.currentSymptoms || '';
+    
+    const firstVisitInput = document.getElementById('initialVisitDateWestern');
+    if (firstVisitInput) firstVisitInput.value = data.firstVisit || '';
+    
+    const symptomsTextarea = document.querySelector('textarea[placeholder="具体的な症状を記載してください"]');
+    if (symptomsTextarea) symptomsTextarea.value = data.symptoms || '';
+    
+    const treatmentTextarea = document.querySelector('textarea[placeholder="通院频度、治療内容など"]');
+    if (treatmentTextarea) treatmentTextarea.value = data.treatment || '';
+    
+    const medicationTextarea = document.querySelector('textarea[placeholder="服用中の薬剤名、用量など"]');
+    if (medicationTextarea) medicationTextarea.value = data.medication || '';
+    
+    const dailyLifeTextarea = document.querySelector('textarea[placeholder="食事、入浴、外出等への影響"]');
+    if (dailyLifeTextarea) dailyLifeTextarea.value = data.dailyLife || '';
+    
+    const workTextarea = document.querySelector('textarea[placeholder="就労状況、業務への影響など"]');
+    if (workTextarea) workTextarea.value = data.work || '';
 }
 
 // Populate family members

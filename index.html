@@ -140,16 +140,16 @@
                     <p class="text-notion-gray-600">障害年金申請の統計や概要表示</p>
                 </div>
 
-                <!-- 統計カード -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- 統計カード - 動的データで更新 -->
+                <div id="stats-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- JavaScriptで動的生成 -->
                     <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6">
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-notion-gray-500 mb-1">総申請数</p>
-                                <p class="text-3xl font-bold text-notion-gray-800">42</p>
+                                <p id="total-count" class="text-3xl font-bold text-notion-gray-800">--</p>
                                 <div class="flex items-center mt-2">
-                                    <span class="text-xs text-green-600 font-medium">+8.2%</span>
-                                    <span class="text-xs text-notion-gray-400 ml-1">vs 先月</span>
+                                    <span class="text-xs text-notion-gray-400">データ読み込み中...</span>
                                 </div>
                             </div>
                             <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -165,10 +165,9 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-notion-gray-500 mb-1">審査中</p>
-                                <p class="text-3xl font-bold text-notion-gray-800">18</p>
+                                <p id="under-review-count" class="text-3xl font-bold text-notion-gray-800">--</p>
                                 <div class="flex items-center mt-2">
-                                    <span class="text-xs text-orange-600 font-medium">+2件</span>
-                                    <span class="text-xs text-notion-gray-400 ml-1">今週</span>
+                                    <span class="text-xs text-notion-gray-400">データ読み込み中...</span>
                                 </div>
                             </div>
                             <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
@@ -183,10 +182,9 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-sm font-medium text-notion-gray-500 mb-1">承認済み</p>
-                                <p class="text-3xl font-bold text-notion-gray-800">16</p>
+                                <p id="approved-count" class="text-3xl font-bold text-notion-gray-800">--</p>
                                 <div class="flex items-center mt-2">
-                                    <span class="text-xs text-green-600 font-medium">95.2%</span>
-                                    <span class="text-xs text-notion-gray-400 ml-1">成功率</span>
+                                    <span id="success-rate" class="text-xs text-notion-gray-400">データ読み込み中...</span>
                                 </div>
                             </div>
                             <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -200,11 +198,10 @@
                     <div class="bg-white rounded-xl border border-notion-gray-200 overflow-hidden shadow-sm p-6">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-notion-gray-500 mb-1">平均処理期間</p>
-                                <p class="text-3xl font-bold text-notion-gray-800">45<span class="text-lg text-notion-gray-500">日</span></p>
+                                <p class="text-sm font-medium text-notion-gray-500 mb-1">下書き</p>
+                                <p id="draft-count" class="text-3xl font-bold text-notion-gray-800">--</p>
                                 <div class="flex items-center mt-2">
-                                    <span class="text-xs text-green-600 font-medium">-3日</span>
-                                    <span class="text-xs text-notion-gray-400 ml-1">改善</span>
+                                    <span class="text-xs text-notion-gray-400">データ読み込み中...</span>
                                 </div>
                             </div>
                             <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -224,76 +221,202 @@
                             <a href="projects.html" class="text-sm text-linear-blue-600 hover:text-linear-blue-700 font-medium">すべて表示 →</a>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-0">
-                        <!-- 申請項目 1 -->
-                        <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="window.location.href='project-unified.html?edit=1'">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                                        <span class="text-blue-600 font-semibold">田</span>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-medium text-notion-gray-800">田中太郎</h3>
-                                        <p class="text-sm text-notion-gray-600">ID: APP-2024-001</p>
-                                        <p class="text-xs text-notion-gray-500">作成日: 2024/07/15</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                        報酬入金前
-                                    </span>
-                                    <p class="text-xs text-notion-gray-500 mt-1">障害等級: 2級</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 申請項目 2 -->
-                        <div class="p-6 border-b border-notion-gray-100 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="window.location.href='project-unified.html?edit=2'">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                                        <span class="text-purple-600 font-semibold">山</span>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-medium text-notion-gray-800">山田花子</h3>
-                                        <p class="text-sm text-notion-gray-600">ID: APP-2024-002</p>
-                                        <p class="text-xs text-notion-gray-500">作成日: 2024/07/18</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">
-                                        提出前
-                                    </span>
-                                    <p class="text-xs text-notion-gray-500 mt-1">障害等級: 1級</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 申請項目 3 -->
-                        <div class="p-6 hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="window.location.href='project-unified.html?edit=3'">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                                        <span class="text-indigo-600 font-semibold">佐</span>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-medium text-notion-gray-800">佐藤一郎</h3>
-                                        <p class="text-sm text-notion-gray-600">ID: APP-2024-003</p>
-                                        <p class="text-xs text-notion-gray-500">作成日: 2024/07/22</p>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
-                                        診断書前
-                                    </span>
-                                    <p class="text-xs text-notion-gray-500 mt-1">障害等級: 未定</p>
-                                </div>
-                            </div>
+                    <div id="recent-applications" class="grid grid-cols-1 gap-0">
+                        <!-- JavaScriptで動的生成 -->
+                        <div class="p-6 text-center text-notion-gray-500">
+                            データを読み込み中...
                         </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+    <script src="js/application-api.js"></script>
+    <script>
+        // ダッシュボード統計データを取得・表示
+        async function loadDashboardStats() {
+            try {
+                // 開発環境で認証をスキップ
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    DevAuth.skipAuth();
+                }
+                
+                // 申請データを取得
+                const result = await ApplicationAPI.getApplications();
+                const applications = result.applications || [];
+                
+                // ステータス別に集計
+                const stats = {
+                    total: applications.length,
+                    under_review: applications.filter(app => app.status === 'under_review').length,
+                    approved: applications.filter(app => app.status === 'approved').length,
+                    draft: applications.filter(app => app.status === 'draft').length,
+                    rejected: applications.filter(app => app.status === 'rejected').length
+                };
+                
+                // UIを更新
+                document.getElementById('total-count').textContent = stats.total;
+                document.getElementById('under-review-count').textContent = stats.under_review;
+                document.getElementById('approved-count').textContent = stats.approved;
+                document.getElementById('draft-count').textContent = stats.draft;
+                
+                // 成功率を計算・表示
+                const processedApps = stats.approved + stats.rejected;
+                const successRate = processedApps > 0 ? Math.round((stats.approved / processedApps) * 100) : 0;
+                document.getElementById('success-rate').innerHTML = `
+                    <span class="text-xs text-green-600 font-medium">${successRate}%</span>
+                    <span class="text-xs text-notion-gray-400 ml-1">成功率</span>
+                `;
+                
+                console.log('✅ ダッシュボード統計を更新しました', stats);
+                
+            } catch (error) {
+                console.warn('⚠️ 統計データの取得に失敗:', error.message);
+                // エラー表示
+                ['total-count', 'under-review-count', 'approved-count', 'draft-count'].forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.textContent = '--';
+                });
+                document.getElementById('success-rate').innerHTML = `
+                    <span class="text-xs text-red-600 font-medium">エラー</span>
+                `;
+            }
+        }
+        
+        // 最近の申請データを取得・表示
+        async function loadRecentApplications() {
+            try {
+                // 開発環境で認証をスキップ
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    DevAuth.skipAuth();
+                }
+                
+                // 最近の申請データを取得（最大3件、作成日順）
+                const result = await ApplicationAPI.getApplications({ limit: 3, sortBy: 'createdAt', sortOrder: 'DESC' });
+                const applications = result.applications || [];
+                
+                const container = document.getElementById('recent-applications');
+                
+                if (applications.length === 0) {
+                    container.innerHTML = `
+                        <div class="p-6 text-center text-notion-gray-500">
+                            申請データがありません
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 申請項目を動的に生成
+                container.innerHTML = applications.map((app, index) => {
+                    const isLast = index === applications.length - 1;
+                    const borderClass = isLast ? '' : 'border-b border-notion-gray-100';
+                    
+                    // ステータスの表示
+                    const statusConfig = getStatusConfig(app.status);
+                    
+                    // 名前の最初の文字を取得
+                    const firstChar = app.applicantName ? app.applicantName.charAt(0) : '?';
+                    
+                    // 作成日をフォーマット
+                    const createdDate = new Date(app.createdAt).toLocaleDateString('ja-JP', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+                    
+                    return `
+                        <div class="p-6 ${borderClass} hover:bg-notion-gray-50 transition-all duration-200 cursor-pointer" onclick="window.location.href='project-unified.html?edit=${app.id}'">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 ${statusConfig.bgColor} rounded-xl flex items-center justify-center">
+                                        <span class="${statusConfig.textColor} font-semibold">${firstChar}</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-medium text-notion-gray-800">${app.applicantName || '名前未設定'}</h3>
+                                        <p class="text-sm text-notion-gray-600">ID: ${app.applicationNumber}</p>
+                                        <p class="text-xs text-notion-gray-500">作成日: ${createdDate}</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusConfig.badgeColor}">
+                                        ${statusConfig.label}
+                                    </span>
+                                    ${app.disabilityGrade ? `<p class="text-xs text-notion-gray-500 mt-1">障害等級: ${app.disabilityGrade}級</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                console.log('✅ 最近の申請を更新しました', applications.length, '件');
+                
+            } catch (error) {
+                console.warn('⚠️ 最近の申請データの取得に失敗:', error.message);
+                document.getElementById('recent-applications').innerHTML = `
+                    <div class="p-6 text-center text-red-600">
+                        データの読み込みに失敗しました
+                    </div>
+                `;
+            }
+        }
+        
+        // ステータス設定を返すヘルパー関数
+        function getStatusConfig(status) {
+            const configs = {
+                'draft': {
+                    label: '下書き',
+                    bgColor: 'bg-gray-100',
+                    textColor: 'text-gray-600',
+                    badgeColor: 'bg-gray-100 text-gray-800'
+                },
+                'submitted': {
+                    label: '提出済み',
+                    bgColor: 'bg-blue-100',
+                    textColor: 'text-blue-600',
+                    badgeColor: 'bg-blue-100 text-blue-800'
+                },
+                'under_review': {
+                    label: '審査中',
+                    bgColor: 'bg-orange-100',
+                    textColor: 'text-orange-600',
+                    badgeColor: 'bg-orange-100 text-orange-800'
+                },
+                'approved': {
+                    label: '承認済み',
+                    bgColor: 'bg-green-100',
+                    textColor: 'text-green-600',
+                    badgeColor: 'bg-green-100 text-green-800'
+                },
+                'rejected': {
+                    label: '却下',
+                    bgColor: 'bg-red-100',
+                    textColor: 'text-red-600',
+                    badgeColor: 'bg-red-100 text-red-800'
+                },
+                'additional_docs_required': {
+                    label: '追加書類必要',
+                    bgColor: 'bg-yellow-100',
+                    textColor: 'text-yellow-600',
+                    badgeColor: 'bg-yellow-100 text-yellow-800'
+                },
+                'withdrawn': {
+                    label: '取り下げ',
+                    bgColor: 'bg-gray-100',
+                    textColor: 'text-gray-600',
+                    badgeColor: 'bg-gray-100 text-gray-800'
+                }
+            };
+            
+            return configs[status] || configs['draft'];
+        }
+        
+        // ページ読み込み時に統計と最近の申請を取得
+        document.addEventListener('DOMContentLoaded', async () => {
+            await Promise.all([
+                loadDashboardStats(),
+                loadRecentApplications()
+            ]);
+        });
+    </script>
 </body>
 </html>

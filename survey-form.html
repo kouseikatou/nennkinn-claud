@@ -400,6 +400,7 @@
             
             // 傷病情報
             formData.mainDisease = document.getElementById('mainDisease')?.value || '';
+            formData.disabilityDescription = formData.mainDisease; // Map to expected field
             
             // 通院履歴
             formData.hospitals = [];
@@ -419,6 +420,11 @@
         // データベースにアンケートデータを保存
         async function saveSurveyData() {
             try {
+                // 開発環境で認証をスキップ
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    DevAuth.skipAuth();
+                }
+                
                 const formData = collectFormData();
                 const urlParams = new URLSearchParams(window.location.search);
                 let applicationId = urlParams.get('id') || 1; // デフォルトID
@@ -433,8 +439,14 @@
                             applicantName: formData.fullName || '未入力',
                             applicantNameKana: formData.furigana || 'ミニュウリョク',
                             birthDate: formData.birthDate || '1990-01-01',
-                            gender: formData.gender || 'other',
-                            disabilityType: 'mental',
+                            gender: formData.gender || 'male',
+                            pensionNumber: formData.pensionNumber || '',
+                            phoneNumber: formData.phoneNumber || '',
+                            email: formData.email || null,
+                            address: formData.address || '',
+                            postalCode: formData.postalCode || '',
+                            disabilityType: 'mental', // Required field
+                            disabilityDescription: formData.disabilityDescription || formData.mainDisease || '',
                             applicationType: 'new'
                         });
                         applicationId = newApplication.application.id;
@@ -465,6 +477,11 @@
         // データベースからアンケートデータを読み込み
         async function loadSurveyData() {
             try {
+                // 開発環境で認証をスキップ
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    DevAuth.skipAuth();
+                }
+                
                 const urlParams = new URLSearchParams(window.location.search);
                 const applicationId = urlParams.get('id') || 1; // デフォルトID
                 
@@ -503,7 +520,7 @@
         function populateFormFields(data) {
             if (!data) return;
             
-            // 基本情報
+            // 基本情報 - survey dataから
             if (data.fullName) document.getElementById('fullName').value = data.fullName;
             if (data.furigana) document.getElementById('furigana').value = data.furigana;
             if (data.birthDate) document.getElementById('birthDate').value = data.birthDate;
@@ -514,8 +531,13 @@
             if (data.phoneNumber) document.getElementById('phoneNumber').value = data.phoneNumber;
             if (data.email) document.getElementById('email').value = data.email;
             
+            // Application dataから（フォールバック）
+            if (data.applicantName && !data.fullName) document.getElementById('fullName').value = data.applicantName;
+            if (data.applicantNameKana && !data.furigana) document.getElementById('furigana').value = data.applicantNameKana;
+            
             // 傷病情報
             if (data.mainDisease) document.getElementById('mainDisease').value = data.mainDisease;
+            if (data.disabilityDescription && !data.mainDisease) document.getElementById('mainDisease').value = data.disabilityDescription;
             
             // 通院履歴
             if (data.hospitals && data.hospitals.length > 0) {
@@ -585,7 +607,20 @@
             
             // 保存されたデータを読み込み
             try {
-                await loadSurveyData();
+                const surveyData = await loadSurveyData();
+                
+                // Survey dataがない場合、application dataを試行
+                if (!surveyData && id) {
+                    try {
+                        const applicationResult = await ApplicationAPI.getApplication(id);
+                        if (applicationResult && applicationResult.application) {
+                            populateFormFields(applicationResult.application);
+                            console.log('Application dataから基本情報を読み込みました');
+                        }
+                    } catch (appError) {
+                        console.log('Application data読み込みエラー:', appError);
+                    }
+                }
             } catch (error) {
                 console.log('データ読み込みエラー（新規作成の場合は正常）:', error);
             }

@@ -34,8 +34,12 @@ const Application = sequelize.define('Application', {
   email: {
     type: DataTypes.STRING(255),
     validate: {
-      isEmail: true
-    }
+      isEmail: {
+        msg: 'Valid email address is required'
+      }
+    },
+    allowNull: true,
+    defaultValue: null
   },
   address: {
     type: DataTypes.TEXT

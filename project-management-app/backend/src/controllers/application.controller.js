@@ -129,6 +129,15 @@ const applicationController = {
     try {
       const { familyMembers, ...applicationData } = req.body;
       
+      // Generate application number if not provided
+      if (!applicationData.applicationNumber) {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const count = await Application.count();
+        applicationData.applicationNumber = `DP${year}${month}${String(count + 1).padStart(5, '0')}`;
+      }
+      
       const application = await Application.create({
         ...applicationData,
         createdById: req.user.id,
@@ -207,8 +216,16 @@ const applicationController = {
         }
       });
 
+      // 空文字をnullに変換（バリデーションエラー回避）
+      const cleanedData = { ...applicationData };
+      Object.keys(cleanedData).forEach(key => {
+        if (cleanedData[key] === '') {
+          cleanedData[key] = null;
+        }
+      });
+
       await application.update({
-        ...applicationData,
+        ...cleanedData,
         lastUpdatedById: req.user.id
       }, { transaction });
 
