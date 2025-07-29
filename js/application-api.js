@@ -1,5 +1,7 @@
 // API configuration
-const API_BASE_URL = 'http://localhost:3002/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '/api'  // Vercel上では相対パス
+  : 'http://localhost:3002/api';
 
 // Application API service
 const ApplicationAPI = {
