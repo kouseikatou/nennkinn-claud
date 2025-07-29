@@ -188,6 +188,78 @@
                                placeholder="例: うつ病、統合失調症、糖尿病など">
                     </div>
 
+                    <!-- 書類の種類セクション -->
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-4">書類の種類 <span class="text-red-500">*</span></label>
+                        
+                        <!-- タブナビゲーション -->
+                        <div class="flex border-b border-gray-200 mb-4" id="document-tabs">
+                            <button type="button" onclick="switchDocumentTab(1)" 
+                                    class="document-tab active px-4 py-2 text-sm font-medium text-primary-600 border-b-2 border-primary-600 focus:outline-none" 
+                                    data-tab="1">
+                                書類1
+                            </button>
+                            <button type="button" onclick="addDocumentTab()" 
+                                    class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none ml-2">
+                                + 書類を追加
+                            </button>
+                        </div>
+
+                        <!-- タブコンテンツ -->
+                        <div id="document-content">
+                            <!-- 書類1のコンテンツ -->
+                            <div id="document-tab-1" class="document-tab-content">
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">書類種別 <span class="text-red-500">*</span></label>
+                                        <select required 
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                            <option value="">選択してください</option>
+                                            <option value="診断書">診断書</option>
+                                            <option value="意見書">意見書</option>
+                                            <option value="検査結果">検査結果</option>
+                                            <option value="投薬録">投薬録</option>
+                                            <option value="手術記録">手術記録</option>
+                                            <option value="入院記録">入院記録</option>
+                                            <option value="画像診断">画像診断（レントゲン・CT・MRI等）</option>
+                                            <option value="血液検査">血液検査結果</option>
+                                            <option value="心理検査">心理検査・知能検査</option>
+                                            <option value="リハビリ記録">リハビリテーション記録</option>
+                                            <option value="その他">その他</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">書類名・詳細</label>
+                                        <input type="text" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                                               placeholder="例: 精神科診断書、○○検査結果書など">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">発行医療機関</label>
+                                        <input type="text" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                                               placeholder="例: 新宿病院、○○クリニック">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">発行日</label>
+                                        <input type="date" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">備考</label>
+                                        <textarea rows="3"
+                                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"
+                                                  placeholder="書類に関する特記事項があればご記入ください"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <!-- 通院履歴セクション -->
                     <div class="mt-8 pt-6 border-t border-gray-200">
@@ -329,6 +401,141 @@
             button.closest('.hospital-entry').remove();
         }
 
+        // 書類タブ管理
+        let documentTabCount = 1;
+
+        function switchDocumentTab(tabNumber) {
+            // すべてのタブコンテンツを非表示
+            document.querySelectorAll('.document-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // すべてのタブボタンの active クラスを削除
+            document.querySelectorAll('.document-tab').forEach(tab => {
+                tab.classList.remove('active', 'text-primary-600', 'border-primary-600');
+                tab.classList.add('text-gray-500', 'border-transparent');
+            });
+            
+            // 選択されたタブを表示
+            const selectedContent = document.getElementById(`document-tab-${tabNumber}`);
+            if (selectedContent) {
+                selectedContent.style.display = 'block';
+            }
+            
+            // 選択されたタブボタンをアクティブに
+            const selectedTab = document.querySelector(`[data-tab="${tabNumber}"]`);
+            if (selectedTab) {
+                selectedTab.classList.add('active', 'text-primary-600', 'border-primary-600');
+                selectedTab.classList.remove('text-gray-500', 'border-transparent');
+            }
+        }
+
+        function addDocumentTab() {
+            documentTabCount++;
+            
+            // 新しいタブボタンを作成
+            const tabsContainer = document.getElementById('document-tabs');
+            const addButton = tabsContainer.querySelector('button[onclick="addDocumentTab()"]');
+            
+            const newTabButton = document.createElement('button');
+            newTabButton.type = 'button';
+            newTabButton.className = 'document-tab px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 focus:outline-none';
+            newTabButton.setAttribute('data-tab', documentTabCount);
+            newTabButton.onclick = () => switchDocumentTab(documentTabCount);
+            newTabButton.innerHTML = `
+                書類${documentTabCount}
+                <button type="button" onclick="removeDocumentTab(${documentTabCount}); event.stopPropagation();" 
+                        class="ml-2 text-red-500 hover:text-red-700">
+                    ×
+                </button>
+            `;
+            
+            // 追加ボタンの前に挿入
+            tabsContainer.insertBefore(newTabButton, addButton);
+            
+            // 新しいタブコンテンツを作成
+            const contentContainer = document.getElementById('document-content');
+            const newTabContent = document.createElement('div');
+            newTabContent.id = `document-tab-${documentTabCount}`;
+            newTabContent.className = 'document-tab-content';
+            newTabContent.style.display = 'none';
+            newTabContent.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">書類種別 <span class="text-red-500">*</span></label>
+                        <select required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                            <option value="">選択してください</option>
+                            <option value="診断書">診断書</option>
+                            <option value="意見書">意見書</option>
+                            <option value="検査結果">検査結果</option>
+                            <option value="投薬録">投薬録</option>
+                            <option value="手術記録">手術記録</option>
+                            <option value="入院記録">入院記録</option>
+                            <option value="画像診断">画像診断（レントゲン・CT・MRI等）</option>
+                            <option value="血液検査">血液検査結果</option>
+                            <option value="心理検査">心理検査・知能検査</option>
+                            <option value="リハビリ記録">リハビリテーション記録</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">書類名・詳細</label>
+                        <input type="text" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                               placeholder="例: 精神科診断書、○○検査結果書など">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">発行医療機関</label>
+                        <input type="text" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                               placeholder="例: 新宿病院、○○クリニック">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">発行日</label>
+                        <input type="date" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">備考</label>
+                        <textarea rows="3"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"
+                                  placeholder="書類に関する特記事項があればご記入ください"></textarea>
+                    </div>
+                </div>
+            `;
+            
+            contentContainer.appendChild(newTabContent);
+            
+            // 新しいタブに切り替え
+            switchDocumentTab(documentTabCount);
+        }
+
+        function removeDocumentTab(tabNumber) {
+            if (documentTabCount <= 1) {
+                alert('最低1つの書類情報は必要です。');
+                return;
+            }
+            
+            // タブボタンとコンテンツを削除
+            const tabButton = document.querySelector(`[data-tab="${tabNumber}"]`);
+            const tabContent = document.getElementById(`document-tab-${tabNumber}`);
+            
+            if (tabButton) tabButton.remove();
+            if (tabContent) tabContent.remove();
+            
+            // アクティブなタブが削除された場合、最初のタブに切り替え
+            const remainingTabs = document.querySelectorAll('.document-tab[data-tab]');
+            if (remainingTabs.length > 0) {
+                const firstTabNumber = remainingTabs[0].getAttribute('data-tab');
+                switchDocumentTab(parseInt(firstTabNumber));
+            }
+        }
+
         // フォーム送信
         document.getElementById('survey-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -340,10 +547,86 @@
             submitBtn.innerHTML = '送信中...';
             submitBtn.disabled = true;
             
+            // 回答完了をログに記録
+            recordSurveyCompletion('申請者基本情報');
+            
             setTimeout(() => {
                 document.getElementById('success-modal').classList.remove('hidden');
             }, 1500);
         });
+
+        // アンケート回答完了をログに記録
+        function recordSurveyCompletion(surveyType) {
+            // フォームデータを収集
+            const formData = collectFormData();
+            
+            // 親ウィンドウ（project-unified.html）にメッセージを送信
+            if (window.opener && window.opener.addSurveyLog) {
+                window.opener.addSurveyLog('回答完了', surveyType);
+                
+                // 回答データも送信
+                if (window.opener.recordSurveyResponse) {
+                    window.opener.recordSurveyResponse('basic', formData);
+                }
+            }
+        }
+
+        // フォームデータを収集する関数
+        function collectFormData() {
+            const formData = {};
+            
+            // 基本情報
+            formData.fullName = document.getElementById('fullName')?.value || '';
+            formData.furigana = document.getElementById('furigana')?.value || '';
+            formData.birthDate = document.getElementById('birthDate')?.value || '';
+            formData.gender = document.getElementById('gender')?.value || '';
+            formData.pensionNumber = document.getElementById('pensionNumber')?.value || '';
+            formData.address = document.getElementById('address')?.value || '';
+            formData.phoneNumber = document.getElementById('phoneNumber')?.value || '';
+            formData.email = document.getElementById('email')?.value || '';
+            
+            // 傷病情報
+            formData.mainDisease = document.getElementById('mainDisease')?.value || '';
+            
+            // 書類情報（タブ式）
+            formData.documents = [];
+            document.querySelectorAll('.document-tab-content').forEach((tabContent, index) => {
+                if (tabContent.style.display !== 'none') {
+                    const inputs = tabContent.querySelectorAll('input, select, textarea');
+                    const documentData = {};
+                    inputs.forEach(input => {
+                        if (input.type === 'select-one') {
+                            documentData.type = input.value;
+                        } else if (input.placeholder?.includes('書類名')) {
+                            documentData.name = input.value;
+                        } else if (input.placeholder?.includes('医療機関')) {
+                            documentData.institution = input.value;
+                        } else if (input.type === 'date') {
+                            documentData.issueDate = input.value;
+                        } else if (input.tagName === 'TEXTAREA') {
+                            documentData.remarks = input.value;
+                        }
+                    });
+                    if (Object.keys(documentData).length > 0) {
+                        formData.documents.push(documentData);
+                    }
+                }
+            });
+            
+            // 通院履歴
+            formData.hospitals = [];
+            document.querySelectorAll('.hospital-entry').forEach(entry => {
+                const inputs = entry.querySelectorAll('input');
+                if (inputs.length >= 2) {
+                    formData.hospitals.push({
+                        name: inputs[0].value,
+                        startDate: inputs[1].value
+                    });
+                }
+            });
+            
+            return formData;
+        }
 
         function closeSuccessModal() {
             document.getElementById('success-modal').classList.add('hidden');

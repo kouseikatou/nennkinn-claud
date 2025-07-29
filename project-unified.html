@@ -2386,6 +2386,79 @@ ${data.medication || ''}
             document.getElementById(previewId).classList.add('hidden');
         }
 
+        // 複数ファイルアップロード処理
+        function handleMultipleFileUpload(input, previewId) {
+            const files = Array.from(input.files);
+            if (files.length === 0) return;
+            
+            const previewContainer = document.getElementById(previewId);
+            
+            files.forEach((file, index) => {
+                // ファイルサイズチェック (10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`ファイル "${file.name}" のサイズが10MBを超えています。`);
+                    return;
+                }
+                
+                // ファイル形式チェック
+                const allowedTypes = [
+                    'application/pdf',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'image/png',
+                    'image/jpeg',
+                    'image/jpg'
+                ];
+                
+                if (!allowedTypes.includes(file.type)) {
+                    alert(`ファイル "${file.name}" の形式がサポートされていません。`);
+                    return;
+                }
+                
+                // ファイルプレビューを作成
+                const filePreview = document.createElement('div');
+                filePreview.className = 'flex items-center p-3 bg-notion-gray-50 rounded-lg border border-notion-gray-200';
+                filePreview.innerHTML = `
+                    <svg class="w-8 h-8 text-blue-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-5L9 2H4z" clip-rule="evenodd"/>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900">${file.name}</p>
+                        <p class="text-sm text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <button type="button" onclick="removeMultipleFile(this, '${input.id}')" class="text-red-500 hover:text-red-700">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                `;
+                
+                previewContainer.appendChild(filePreview);
+            });
+        }
+
+        // 複数ファイルの個別削除
+        function removeMultipleFile(button, inputId) {
+            const filePreview = button.closest('.flex.items-center.p-3');
+            const fileName = filePreview.querySelector('.text-gray-900').textContent;
+            
+            // ファイルプレビューを削除
+            filePreview.remove();
+            
+            // input要素から該当ファイルを削除（実際の実装では DataTransfer を使用）
+            const input = document.getElementById(inputId);
+            const dt = new DataTransfer();
+            const files = Array.from(input.files);
+            
+            files.forEach(file => {
+                if (file.name !== fileName) {
+                    dt.items.add(file);
+                }
+            });
+            
+            input.files = dt.files;
+        }
+
         // 詳細画面用のサイドバーを作成
         function createDetailSidebar() {
             const mainLayout = document.getElementById('mainLayout');
@@ -2496,32 +2569,74 @@ ${data.medication || ''}
                         
                         <div class="space-y-3">
                             <!-- Survey Status -->
-                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
-                                        <svg class="w-3 h-3 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
-                                        </svg>
+                            <div class="space-y-3">
+                                <!-- アンケート回答状況一覧 -->
+                                <div id="survey-responses" class="space-y-2">
+                                    <!-- 申請者基本情報アンケート -->
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center space-x-2">
+                                            <div id="basic-survey-status" class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                                                <svg class="w-3 h-3 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-gray-700">申請者基本情報</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span id="basic-survey-text" class="text-xs text-gray-500">未送信</span>
+                                            <button onclick="viewSurveyResponse('basic')" class="text-blue-600 hover:text-blue-800 text-xs" style="display:none;" id="basic-view-btn">
+                                                確認
+                                            </button>
+                                        </div>
                                     </div>
-                                    <span class="text-sm text-gray-700">未送信</span>
+
+                                    <!-- 申請前アンケート -->
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div class="flex items-center space-x-2">
+                                            <div id="pre-survey-status" class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                                                <svg class="w-3 h-3 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                                                </svg>
+                                            </div>
+                                            <span class="text-sm text-gray-700">申請前アンケート</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span id="pre-survey-text" class="text-xs text-gray-500">未送信</span>
+                                            <button onclick="viewSurveyResponse('pre')" class="text-blue-600 hover:text-blue-800 text-xs" style="display:none;" id="pre-view-btn">
+                                                確認
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="text-xs text-gray-500">待機中</span>
                             </div>
                             
-                            <!-- Generate Survey Button -->
-                            <button onclick="generateSurveyLink()" 
-                                    class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center justify-center space-x-2">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
-                                </svg>
-                                <span>申請者基本情報のアンケートフォーム</span>
-                            </button>
+                            <!-- アンケート発行ボタン群 -->
+                            <div class="space-y-3">
+                                <button onclick="generateSurveyLink()" 
+                                    class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center space-x-2">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 3a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/>
+                                    </svg>
+                                    <span>申請者基本情報のアンケートフォーム</span>
+                                </button>
+                                
+                                
+                                <button onclick="generatePreApplicationSurveyLink()" 
+                                    class="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium flex items-center justify-center space-x-2">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                                    </svg>
+                                    <span>申請前アンケートフォーム</span>
+                                </button>
+                            </div>
                             
-                            <!-- Survey History (placeholder) -->
+                            <!-- Survey History -->
                             <div class="text-xs text-gray-500 pt-2 border-t border-gray-200">
                                 <p class="mb-1">履歴:</p>
-                                <div class="text-gray-400">まだアンケートが送信されていません</div>
+                                <div id="survey-history" class="space-y-1">
+                                    <div class="text-gray-400">まだアンケートが送信されていません</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -2655,13 +2770,26 @@ ${data.medication || ''}
         // アンケートリンク生成機能
         function generateSurveyLink() {
             const surveyUrl = `survey-form.html?id=APP-2024-001&name=田中太郎`;
+            showSurveyModal('申請者基本情報のアンケートリンクを生成しました', surveyUrl);
+        }
+
+
+        function generatePreApplicationSurveyLink() {
+            const surveyUrl = `survey-pre-application.html?id=APP-2024-001&name=田中太郎`;
+            showSurveyModal('申請前アンケートリンクを生成しました', surveyUrl);
+        }
+
+
+        function showSurveyModal(title, surveyUrl) {
+            // アンケート発行をログに記録
+            addSurveyLog('発行', title.replace('のアンケートリンクを生成しました', ''));
             
             // モーダルを表示
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
             modal.innerHTML = `
                 <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">アンケートリンクを生成しました</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">${title}</h3>
                     <div class="bg-gray-50 p-3 rounded-lg mb-4">
                         <p class="text-sm text-gray-600 mb-2">以下のリンクを申請者に送信してください：</p>
                         <div class="flex items-center space-x-2">
@@ -2686,6 +2814,197 @@ ${data.medication || ''}
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+
+        // アンケートログ管理
+        let surveyLogs = JSON.parse(localStorage.getItem('surveyLogs') || '[]');
+
+        function addSurveyLog(action, surveyType) {
+            const now = new Date();
+            const log = {
+                id: Date.now(),
+                action: action,
+                surveyType: surveyType,
+                timestamp: now.toISOString(),
+                date: now.toLocaleDateString('ja-JP'),
+                time: now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            surveyLogs.unshift(log);
+            if (surveyLogs.length > 10) {
+                surveyLogs = surveyLogs.slice(0, 10); // 最新10件まで保持
+            }
+            
+            localStorage.setItem('surveyLogs', JSON.stringify(surveyLogs));
+            updateSurveyHistory();
+        }
+
+        function updateSurveyHistory() {
+            const historyDiv = document.getElementById('survey-history');
+            if (!historyDiv) return;
+
+            if (surveyLogs.length === 0) {
+                historyDiv.innerHTML = '<div class="text-gray-400">まだアンケートが送信されていません</div>';
+                return;
+            }
+
+            historyDiv.innerHTML = surveyLogs.map(log => `
+                <div class="flex items-center justify-between py-1 ${log.action === '発行' ? 'text-blue-600' : 'text-green-600'}">
+                    <span>${log.surveyType} - ${log.action}</span>
+                    <span class="text-gray-400">${log.date} ${log.time}</span>
+                </div>
+            `).join('');
+        }
+
+        // ページ読み込み時にログを表示
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSurveyHistory();
+            updateSurveyStatus();
+        });
+
+        // アンケート回答状況の管理
+        let surveyResponses = JSON.parse(localStorage.getItem('surveyResponses') || '{}');
+
+        function updateSurveyStatus() {
+            // 申請者基本情報アンケートの状況更新
+            const basicStatus = surveyResponses.basic;
+            updateSurveyStatusUI('basic', basicStatus);
+            
+            // 申請前アンケートの状況更新
+            const preStatus = surveyResponses.pre;
+            updateSurveyStatusUI('pre', preStatus);
+        }
+
+        function updateSurveyStatusUI(surveyType, status) {
+            const statusIcon = document.getElementById(`${surveyType}-survey-status`);
+            const statusText = document.getElementById(`${surveyType}-survey-text`);
+            const viewButton = document.getElementById(`${surveyType}-view-btn`);
+
+            if (status && status.completed) {
+                // 回答完了状態
+                statusIcon.className = 'w-6 h-6 bg-green-100 rounded-full flex items-center justify-center';
+                statusIcon.innerHTML = `
+                    <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+                    </svg>
+                `;
+                statusText.textContent = `回答完了 (${status.completedDate})`;
+                statusText.className = 'text-xs text-green-600';
+                viewButton.style.display = 'block';
+            } else if (surveyLogs.some(log => log.surveyType.includes(surveyType === 'basic' ? '申請者基本情報' : '申請前') && log.action === '発行')) {
+                // 発行済み・未回答状態
+                statusIcon.className = 'w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center';
+                statusIcon.innerHTML = `
+                    <svg class="w-3 h-3 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/>
+                    </svg>
+                `;
+                statusText.textContent = '回答待ち';
+                statusText.className = 'text-xs text-yellow-600';
+                viewButton.style.display = 'none';
+            } else {
+                // 未送信状態
+                statusIcon.className = 'w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center';
+                statusIcon.innerHTML = `
+                    <svg class="w-3 h-3 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                    </svg>
+                `;
+                statusText.textContent = '未送信';
+                statusText.className = 'text-xs text-gray-500';
+                viewButton.style.display = 'none';
+            }
+        }
+
+        // アンケート回答を記録する関数（アンケートフォームから呼び出される）
+        function recordSurveyResponse(surveyType, responseData) {
+            const now = new Date();
+            surveyResponses[surveyType] = {
+                completed: true,
+                completedDate: now.toLocaleDateString('ja-JP'),
+                completedTime: now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }),
+                data: responseData
+            };
+            
+            localStorage.setItem('surveyResponses', JSON.stringify(surveyResponses));
+            updateSurveyStatus();
+            
+            // ログにも記録
+            addSurveyLog('回答完了', surveyType === 'basic' ? '申請者基本情報' : '申請前アンケート');
+        }
+
+        // アンケート回答内容を表示
+        function viewSurveyResponse(surveyType) {
+            const response = surveyResponses[surveyType];
+            if (!response || !response.completed) {
+                alert('回答データが見つかりません。');
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            ${surveyType === 'basic' ? '申請者基本情報' : '申請前アンケート'}の回答内容
+                        </h3>
+                        <button onclick="closeSurveyModal()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="border-b border-gray-200 pb-4 mb-4">
+                        <p class="text-sm text-gray-600">
+                            回答日時: ${response.completedDate} ${response.completedTime}
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-900 mb-2">回答データ</h4>
+                            <pre class="text-sm text-gray-700 whitespace-pre-wrap">${JSON.stringify(response.data, null, 2)}</pre>
+                        </div>
+                        
+                        <div class="flex space-x-3">
+                            <button onclick="exportSurveyResponse('${surveyType}')" 
+                                    class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                エクスポート
+                            </button>
+                            <button onclick="closeSurveyModal()" 
+                                    class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                                閉じる
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // アンケート回答をエクスポート
+        function exportSurveyResponse(surveyType) {
+            const response = surveyResponses[surveyType];
+            if (!response) return;
+
+            const data = {
+                surveyType: surveyType === 'basic' ? '申請者基本情報アンケート' : '申請前アンケート',
+                completedDate: response.completedDate,
+                completedTime: response.completedTime,
+                responses: response.data
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${data.surveyType}_${response.completedDate.replace(/\//g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function copyToClipboard(text) {
