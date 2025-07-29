@@ -1556,66 +1556,6 @@ ${data.medication || ''}
             childrenList.appendChild(childItem);
         }
 
-        // 申請データを保存する関数
-        function saveApplication() {
-            // フォームデータを収集
-            const projectData = {
-                id: Date.now(),
-                name: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
-                furigana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
-                age: parseInt(document.querySelector('input[placeholder="45"]')?.value) || 0,
-                gender: document.querySelector('select')?.value || '',
-                birthday: document.querySelector('input[type="date"]')?.value || '',
-                pensionNumber: document.querySelector('input[placeholder="1234-567890"]')?.value || '',
-                phone: document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
-                email: document.querySelector('input[placeholder="example@email.com"]')?.value || '',
-                address: document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
-                hasSpouse: document.querySelector('input[name="spouse"]:checked')?.value || 'no',
-                disease: document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || '',
-                currentSymptoms: document.getElementById('currentSymptoms')?.value || '',
-                firstVisit: document.getElementById('initialVisitDateWestern')?.value || '',
-                disabilityDate: document.querySelectorAll('input[type="date"]')[2]?.value || '',
-                hospital: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
-                doctor: document.querySelector('input[placeholder="田中医師"]')?.value || '',
-                grade: document.querySelectorAll('select')[2]?.value || '',
-                symptoms: document.querySelector('textarea[placeholder="具体的な症状を記載してください"]')?.value || '',
-                treatment: document.querySelector('textarea[placeholder="通院频度、治療内容など"]')?.value || '',
-                medication: document.querySelector('textarea[placeholder="服用中の薬剤名、用量など"]')?.value || '',
-                dailyLife: document.querySelector('textarea[placeholder="食事、入浴、外出等への影響"]')?.value || '',
-                work: document.querySelector('textarea[placeholder="就労状況、業務への影響など"]')?.value || '',
-                hasChildren: document.querySelector('input[name="children"]:checked')?.value || 'false',
-                status: 'draft',
-                createdAt: new Date().toISOString()
-            };
-            
-            // ローカルストレージから既存のプロジェクトを取得
-            let projects = JSON.parse(localStorage.getItem('pensionProjects') || '[]');
-            
-            // 新しいプロジェクトを追加
-            projects.push(projectData);
-            
-            // ローカルストレージに保存
-            localStorage.setItem('pensionProjects', JSON.stringify(projects));
-            
-            console.log('Saving application...', projectData);
-            
-            // 成功メッセージを表示
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white bg-green-500 transition-all duration-300 z-50';
-            notification.textContent = '保存しました';
-            document.body.appendChild(notification);
-            
-            // 通知を3秒後に削除
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-            
-            // 2秒後にプロジェクト一覧に遷移
-            setTimeout(() => {
-                window.location.href = 'projects.html';
-            }, 2000);
-        }
 
         // 和暦変換機能
         function convertToJapaneseDate(westernDate) {
@@ -3026,5 +2966,8 @@ ${data.medication || ''}
             if (modal) modal.remove();
         }
     </script>
+    
+    <!-- Load API integration -->
+    <script src="js/application-api.js"></script>
 </body>
 </html>// Cache busting: 2025年 7月28日 月曜日 09時58分41秒 JST

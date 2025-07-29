@@ -1,0 +1,40 @@
+runtime: nodejs18
+
+env_variables:
+  NODE_ENV: production
+  DB_HOST: /cloudsql/nennkinn-claude:asia-northeast1:pension-db
+  DB_NAME: pension_management
+  DB_USER: postgres
+  DB_PASSWORD: your-secure-password
+  JWT_SECRET: your-jwt-secret-key
+
+# Cloud SQLインスタンスへの接続
+beta_settings:
+  cloud_sql_instances: nennkinn-claude:asia-northeast1:pension-db
+
+# 静的ファイルの設定
+handlers:
+  # Static files (CSS, JS, images)
+  - url: /css
+    static_dir: css
+  - url: /js
+    static_dir: js
+  - url: /images
+    static_dir: images
+  - url: /.*\.(html|ico|txt)$
+    static_files: \1
+    upload: .*\.(html|ico|txt)$
+  
+  # API routes
+  - url: /api/.*
+    script: auto
+    
+  # Default handler
+  - url: /.*
+    script: auto
+
+# リソース設定
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_utilization: 0.6
