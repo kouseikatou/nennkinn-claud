@@ -1,5 +1,5 @@
 // API configuration
-const API_BASE_URL = '/api';
+const API_BASE_URL = 'http://localhost:3002/api';
 
 // Application API service
 const ApplicationAPI = {
