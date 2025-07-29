@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>データベース連結テスト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-2xl font-bold mb-6">🔗 データベース連結テスト</h1>
+        
+        <!-- テスト結果表示エリア -->
+        <div id="test-results" class="space-y-4">
+            <div class="text-gray-600">テストを開始してください...</div>
+        </div>
+        
+        <!-- 認証スキップボタン -->
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+            <h3 class="font-semibold text-yellow-800 mb-2">開発環境設定</h3>
+            <button onclick="DevAuth.skipAuth()" class="bg-yellow-500 text-white px-4 py-2 rounded mr-2">
+                認証をスキップ
+            </button>
+            <button onclick="DevAuth.enableAuth()" class="bg-gray-500 text-white px-4 py-2 rounded">
+                認証を有効化
+            </button>
+            <div class="text-sm text-yellow-700 mt-2">
+                認証スキップ状態: <span id="auth-status">確認中...</span>
+            </div>
+        </div>
+        
+        <!-- テスト実行ボタン -->
+        <div class="mt-6">
+            <button onclick="runAllTests()" class="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold">
+                🧪 データベース連結テストを実行
+            </button>
+        </div>
+    </div>
+
+    <!-- API連携スクリプト -->
+    <script src="js/application-api.js"></script>
+    <script src="js/survey-integration.js"></script>
+    
+    <script>
+        // テスト結果を表示する関数
+        function addTestResult(testName, status, message) {
+            const resultsDiv = document.getElementById('test-results');
+            const statusIcon = status === 'success' ? '✅' : status === 'warning' ? '⚠️' : '❌';
+            const statusColor = status === 'success' ? 'text-green-600' : status === 'warning' ? 'text-yellow-600' : 'text-red-600';
+            
+            const testResult = document.createElement('div');
+            testResult.className = 'border-l-4 pl-4 py-2 ' + (status === 'success' ? 'border-green-500' : status === 'warning' ? 'border-yellow-500' : 'border-red-500');
+            testResult.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2">${statusIcon}</span>
+                    <span class="font-semibold">${testName}</span>
+                </div>
+                <div class="${statusColor} text-sm mt-1">${message}</div>
+            `;
+            
+            resultsDiv.appendChild(testResult);
+        }
+
+        // 認証状態を更新
+        function updateAuthStatus() {
+            const authStatus = document.getElementById('auth-status');
+            if (DevAuth.isAuthSkipped()) {
+                authStatus.textContent = 'スキップ中 (開発モード)';
+                authStatus.className = 'text-green-600 font-semibold';
+            } else {
+                authStatus.textContent = '有効';
+                authStatus.className = 'text-gray-600';
+            }
+        }
+
+        // 全てのテストを実行
+        async function runAllTests() {
+            // テスト結果をクリア
+            document.getElementById('test-results').innerHTML = '';
+            
+            addTestResult('テスト開始', 'success', '🚀 データベース連結テストを開始します...');
+            
+            // 1. API Base URL テスト
+            addTestResult('API Base URL 設定', 'success', `設定値: ${API_BASE_URL}`);
+            
+            // 2. バックエンド接続テスト
+            try {
+                const healthUrl = API_BASE_URL.replace('/api', '') + '/health';
+                addTestResult('バックエンド接続テスト', 'success', `接続先: ${healthUrl}`);
+                
+                const healthResponse = await fetch(healthUrl);
+                if (healthResponse.ok) {
+                    const healthData = await healthResponse.json();
+                    addTestResult('Health Check', 'success', `サーバー正常稼働中 (アップタイム: ${Math.round(healthData.uptime)}秒)`);
+                } else {
+                    addTestResult('Health Check', 'error', `HTTP ${healthResponse.status}: サーバーエラー`);
+                    return;
+                }
+            } catch (error) {
+                addTestResult('Health Check', 'error', `接続失敗: ${error.message}`);
+                return;
+            }
+            
+            // 3. API エンドポイント一覧テスト
+            try {
+                const apiListResponse = await fetch(API_BASE_URL.replace('/api', ''));
+                if (apiListResponse.ok) {
+                    const apiData = await apiListResponse.json();
+                    addTestResult('API エンドポイント', 'success', `利用可能: ${Object.keys(apiData.endpoints).join(', ')}`);
+                } else {
+                    addTestResult('API エンドポイント', 'warning', 'エンドポイント一覧の取得に失敗');
+                }
+            } catch (error) {
+                addTestResult('API エンドポイント', 'warning', `エンドポイント確認エラー: ${error.message}`);
+            }
+            
+            // 4. 申請データ取得テスト（田中太郎のデータ）
+            try {
+                const applications = await ApplicationAPI.getApplications();
+                if (applications && applications.applications && applications.applications.length > 0) {
+                    const tanakaApp = applications.applications.find(app => app.applicantName === '田中太郎');
+                    if (tanakaApp) {
+                        addTestResult('申請データ取得', 'success', `田中太郎の申請データ取得成功 (ID: ${tanakaApp.id})`);
+                        
+                        // 5. アンケートデータテスト
+                        await testSurveyData(tanakaApp.id);
+                    } else {
+                        addTestResult('申請データ取得', 'warning', '田中太郎の申請データが見つかりません');
+                    }
+                } else {
+                    addTestResult('申請データ取得', 'warning', '申請データが存在しません');
+                }
+            } catch (error) {
+                addTestResult('申請データ取得', 'error', `申請データ取得エラー: ${error.message}`);
+            }
+            
+            addTestResult('テスト完了', 'success', '🎉 全てのテストが完了しました！');
+        }
+
+        // アンケートデータのテスト
+        async function testSurveyData(applicationId) {
+            const surveyTypes = ['basic', 'pre_application', 'injury'];
+            
+            for (const surveyType of surveyTypes) {
+                try {
+                    const surveyResult = await SurveyAPI.getSurvey(applicationId, surveyType);
+                    if (surveyResult && surveyResult.survey) {
+                        addTestResult(`アンケート取得 (${surveyType})`, 'success', 
+                            `ステータス: ${surveyResult.survey.status}, 作成日: ${new Date(surveyResult.survey.createdAt).toLocaleString('ja-JP')}`);
+                    } else {
+                        addTestResult(`アンケート取得 (${surveyType})`, 'warning', 'アンケートデータなし');
+                    }
+                } catch (error) {
+                    addTestResult(`アンケート取得 (${surveyType})`, 'warning', `エラー: ${error.message}`);
+                }
+            }
+            
+            // テスト用アンケートデータの保存テスト
+            try {
+                const testData = {
+                    personalInfo: {
+                        name: 'テストユーザー',
+                        email: 'test@example.com',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                const saveResult = await SurveyAPI.saveSurvey(applicationId, 'basic', testData, 'draft');
+                if (saveResult) {
+                    addTestResult('アンケート保存テスト', 'success', 'テストデータの保存に成功しました');
+                }
+            } catch (error) {
+                addTestResult('アンケート保存テスト', 'error', `保存エラー: ${error.message}`);
+            }
+        }
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthStatus();
+            
+            // 認証状態の変更を監視
+            const originalSkipAuth = DevAuth.skipAuth;
+            const originalEnableAuth = DevAuth.enableAuth;
+            
+            DevAuth.skipAuth = function() {
+                originalSkipAuth.call(this);
+                updateAuthStatus();
+            };
+            
+            DevAuth.enableAuth = function() {
+                originalEnableAuth.call(this);
+                updateAuthStatus();
+            };
+        });
+    </script>
+</body>
+</html>

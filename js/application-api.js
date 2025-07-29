@@ -1,7 +1,37 @@
 // API configuration
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api'  // Vercel上では相対パス
-  : 'http://localhost:3002/api';
+const getAPIBaseURL = () => {
+  // 本番環境判定（ドメインベースで判定）
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return '/api';  // Vercel上では相対パス
+  }
+  // 開発環境
+  return 'http://localhost:3001/api';
+};
+
+const API_BASE_URL = getAPIBaseURL();
+
+// 認証ヘッダーを取得（開発環境では認証をスキップ可能）
+const getAuthHeaders = () => {
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    // 開発環境で認証をスキップする場合の設定
+    const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const skipAuth = isDevMode && localStorage.getItem('skipAuth') === 'true';
+    
+    if (skipAuth) {
+        // テストモードヘッダーを追加
+        headers['X-Test-Mode'] = 'true';
+    } else {
+        const token = localStorage.getItem('token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    
+    return headers;
+};
 
 // Application API service
 const ApplicationAPI = {
@@ -10,9 +40,7 @@ const ApplicationAPI = {
         try {
             const queryString = new URLSearchParams(params).toString();
             const response = await fetch(`${API_BASE_URL}/applications?${queryString}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to fetch applications');
@@ -27,9 +55,7 @@ const ApplicationAPI = {
     async getApplication(id) {
         try {
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to fetch application');
@@ -45,10 +71,7 @@ const ApplicationAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/applications`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(data)
             });
             
@@ -65,10 +88,7 @@ const ApplicationAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(data)
             });
             
@@ -85,9 +105,7 @@ const ApplicationAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to delete application');
@@ -106,10 +124,7 @@ const SurveyAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ data, status })
             });
             
@@ -125,9 +140,7 @@ const SurveyAPI = {
     async getSurvey(applicationId, surveyType) {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (response.status === 404) {
@@ -147,9 +160,7 @@ const SurveyAPI = {
     async getAllSurveys(applicationId) {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to fetch surveys');
@@ -165,9 +176,7 @@ const SurveyAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to delete survey');
@@ -176,6 +185,32 @@ const SurveyAPI = {
             console.error('Error deleting survey:', error);
             throw error;
         }
+    }
+};
+
+// 開発環境での認証スキップ機能
+const DevAuth = {
+    // 認証をスキップする（開発環境のみ）
+    skipAuth() {
+        const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isDevMode) {
+            localStorage.setItem('skipAuth', 'true');
+            console.log('🔓 開発環境：認証をスキップしました');
+        } else {
+            console.warn('⚠️ 本番環境では認証スキップは無効です');
+        }
+    },
+    
+    // 認証を有効にする
+    enableAuth() {
+        localStorage.removeItem('skipAuth');
+        console.log('🔒 認証を有効にしました');
+    },
+    
+    // 認証状態を確認
+    isAuthSkipped() {
+        const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        return isDevMode && localStorage.getItem('skipAuth') === 'true';
     }
 };
 

@@ -6,8 +6,46 @@ const logger = require('../utils/logger');
 
 const router = express.Router();
 
+// 開発環境では認証をオプショナルに
+const optionalAuth = async (req, res, next) => {
+  // 開発環境でテストモードをチェック
+  const isDev = process.env.NODE_ENV === 'development';
+  const testMode = req.headers['x-test-mode'] === 'true';
+  
+  if (isDev && testMode) {
+    // テストモードでは認証をスキップし、テストユーザーを確保
+    try {
+      const { User } = require('../models');
+      let testUser = await User.findByPk(1);
+      
+      if (!testUser) {
+        // テストユーザーが存在しない場合は作成
+        testUser = await User.create({
+          id: 1,
+          email: 'test@example.com',
+          password: '$2a$10$dummyhash', // ダミーハッシュ
+          name: 'テストユーザー',
+          role: 'admin'
+        });
+        console.log('テスト用ユーザーを作成しました');
+      }
+      
+      req.user = { id: testUser.id, role: testUser.role };
+      next();
+    } catch (error) {
+      console.error('テストユーザー作成エラー:', error);
+      // エラーが発生してもデフォルトユーザーで続行
+      req.user = { id: 1, role: 'admin' };
+      next();
+    }
+  } else {
+    // 通常の認証処理
+    auth(req, res, next);
+  }
+};
+
 // アンケートデータの保存/更新
-router.post('/:applicationId/:surveyType', [
+router.post('/:applicationId/:surveyType', optionalAuth, [
   body('data').isObject().withMessage('データはオブジェクト形式である必要があります'),
   body('status').optional().isIn(['draft', 'completed', 'submitted']).withMessage('無効なステータスです')
 ], async (req, res) => {
@@ -89,7 +127,7 @@ router.post('/:applicationId/:surveyType', [
 });
 
 // アンケートデータの取得
-router.get('/:applicationId/:surveyType', async (req, res) => {
+router.get('/:applicationId/:surveyType', optionalAuth, async (req, res) => {
   try {
     const { applicationId, surveyType } = req.params;
 
@@ -120,7 +158,7 @@ router.get('/:applicationId/:surveyType', async (req, res) => {
 });
 
 // 申請に関連するすべてのアンケートの取得
-router.get('/:applicationId', async (req, res) => {
+router.get('/:applicationId', optionalAuth, async (req, res) => {
   try {
     const { applicationId } = req.params;
 
@@ -145,7 +183,7 @@ router.get('/:applicationId', async (req, res) => {
 });
 
 // アンケートの削除
-router.delete('/:applicationId/:surveyType', async (req, res) => {
+router.delete('/:applicationId/:surveyType', optionalAuth, async (req, res) => {
   try {
     const { applicationId, surveyType } = req.params;
 

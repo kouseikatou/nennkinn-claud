@@ -3026,5 +3026,88 @@ ${data.medication || ''}
             if (modal) modal.remove();
         }
     </script>
+
+    <!-- API連携スクリプト -->
+    <script src="js/application-api.js"></script>
+    <script src="js/survey-integration.js"></script>
+    
+    <!-- データベース連結の初期化 -->
+    <script>
+        // ページ読み込み時にデータベース接続をテスト
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // API接続テスト
+                const response = await fetch(API_BASE_URL.replace('/api', '') + '/health');
+                if (response.ok) {
+                    console.log('✅ バックエンドAPI接続成功');
+                    
+                    // URLパラメータから申請IDを取得
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const applicationId = urlParams.get('edit');
+                    
+                    if (applicationId && applicationId !== 'new') {
+                        console.log('📊 申請データ読み込み開始:', applicationId);
+                        // 既存の申請データを読み込み
+                        await loadApplication(applicationId);
+                        
+                        // アンケートデータも読み込み
+                        await loadAllSurveyData(applicationId);
+                    } else {
+                        console.log('📝 新規申請モード');
+                    }
+                } else {
+                    console.warn('⚠️ バックエンドAPI接続失敗 - オフラインモードで動作');
+                }
+            } catch (error) {
+                console.warn('⚠️ バックエンド接続エラー:', error.message, '- ローカルストレージのみ使用');
+            }
+        });
+
+        // アンケートデータを全て読み込む関数
+        async function loadAllSurveyData(applicationId) {
+            const surveyTypes = ['basic', 'pre_application', 'injury'];
+            
+            for (const surveyType of surveyTypes) {
+                try {
+                    const result = await SurveyAPI.getSurvey(applicationId, surveyType);
+                    if (result && result.survey) {
+                        // データベースからアンケートデータを読み込んで表示を更新
+                        updateSurveyStatusFromDB(surveyType, result.survey);
+                    }
+                } catch (error) {
+                    console.log(`📋 ${surveyType} アンケート未回答またはエラー:`, error.message);
+                }
+            }
+        }
+
+        // データベースからのアンケートデータでUIを更新
+        function updateSurveyStatusFromDB(surveyType, survey) {
+            const status = {
+                completed: survey.status === 'completed',
+                completedDate: survey.completedAt ? new Date(survey.completedAt).toLocaleString('ja-JP') : null,
+                data: getSurveyDataByType(survey, surveyType)
+            };
+            
+            updateSurveyStatusUI(surveyType, status);
+            
+            // ローカルストレージにも保存（オフライン時のフォールバック）
+            surveyResponses[surveyType] = status;
+            localStorage.setItem('surveyResponses', JSON.stringify(surveyResponses));
+        }
+
+        // データベースからアンケートデータを取得するヘルパー関数
+        function getSurveyDataByType(survey, surveyType) {
+            switch (surveyType) {
+                case 'basic':
+                    return survey.basicInfo;
+                case 'pre_application':
+                    return survey.preApplicationInfo;
+                case 'injury':
+                    return survey.injuryInfo;
+                default:
+                    return null;
+            }
+        }
+    </script>
 </body>
-</html>// Cache busting: 2025年 7月28日 月曜日 09時58分41秒 JST
+</html>// Cache busting: 2025年 7月29日 火曜日 18時05分00秒 JST
