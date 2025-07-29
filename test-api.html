@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API接続テスト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">バックエンドAPI接続テスト</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">APIエンドポイントテスト</h2>
+            
+            <div class="space-y-4">
+                <button onclick="testHealth()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    ヘルスチェック
+                </button>
+                
+                <button onclick="testLogin()" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+                    ログインテスト
+                </button>
+                
+                <button onclick="testApplications()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    申請一覧取得
+                </button>
+                
+                <button onclick="testCreateApplication()" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                    申請作成テスト
+                </button>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">実行結果</h2>
+            <pre id="results" class="bg-gray-100 p-4 rounded overflow-auto max-h-96 text-sm"></pre>
+        </div>
+    </div>
+
+    <script src="js/application-api.js"></script>
+    <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            results.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            results.scrollTop = results.scrollHeight;
+        }
+
+        async function testHealth() {
+            try {
+                log('ヘルスチェック開始...');
+                const response = await fetch('http://localhost:3002/health');
+                const data = await response.json();
+                log('✅ ヘルスチェック成功: ' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                log('❌ ヘルスチェック失敗: ' + error.message);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                log('ログインテスト開始...');
+                const response = await fetch('http://localhost:3002/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@disability-pension.jp',
+                        password: 'admin123'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    log('✅ ログイン成功: ' + JSON.stringify(data, null, 2));
+                } else {
+                    log('⚠️ ログイン失敗: ' + response.status + ' - ' + await response.text());
+                }
+            } catch (error) {
+                log('❌ ログイン失敗: ' + error.message);
+            }
+        }
+
+        async function testApplications() {
+            try {
+                log('申請一覧取得開始...');
+                const token = localStorage.getItem('token') || 'dummy-token';
+                const response = await fetch('http://localhost:3002/api/applications', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ 申請一覧取得成功: ' + JSON.stringify(data, null, 2));
+                } else {
+                    log('⚠️ 申請一覧取得: ' + response.status + ' - ' + await response.text());
+                }
+            } catch (error) {
+                log('❌ 申請一覧取得失敗: ' + error.message);
+            }
+        }
+
+        async function testCreateApplication() {
+            try {
+                log('申請作成テスト開始...');
+                const token = localStorage.getItem('token') || 'dummy-token';
+                const testData = {
+                    applicantName: 'テスト太郎',
+                    applicantNameKana: 'テストタロウ',
+                    email: 'test@example.com',
+                    phoneNumber: '03-1234-5678',
+                    disabilityType: 'mental',
+                    disabilityDescription: 'テスト用障害'
+                };
+                
+                const response = await fetch('http://localhost:3002/api/applications', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ 申請作成成功: ' + JSON.stringify(data, null, 2));
+                } else {
+                    log('⚠️ 申請作成: ' + response.status + ' - ' + await response.text());
+                }
+            } catch (error) {
+                log('❌ 申請作成失敗: ' + error.message);
+            }
+        }
+
+        // ページロード時の初期テスト
+        document.addEventListener('DOMContentLoaded', () => {
+            log('API接続テストページ読み込み完了');
+            testHealth();
+        });
+    </script>
+</body>
+</html>
