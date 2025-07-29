@@ -48,9 +48,14 @@ app.use(morgan('combined', { stream: logger.stream }));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100,
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || (process.env.NODE_ENV === 'development' ? 1000 : 100), // 開発環境では1000リクエスト
   standardHeaders: true,
   legacyHeaders: false,
+  message: 'リクエストが多すぎます。しばらく待ってから再度お試しください。',
+  skip: (req) => {
+    // 開発環境でのテストモードはレート制限をスキップ
+    return process.env.NODE_ENV === 'development' && req.headers['x-test-mode'] === 'true';
+  }
 });
 app.use('/api/', limiter);
 
@@ -111,13 +116,32 @@ const startServer = async () => {
 
     // Sync database models
     if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true });
+      await sequelize.sync({ force: true }); // 強制的に新しいDBを作成
       logger.info('Database models synchronized.');
     }
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       logger.info(`Server is running on port ${PORT} in ${process.env.NODE_ENV} mode`);
     });
+
+    // Graceful shutdown handling
+    const gracefulShutdown = () => {
+      logger.info('Received shutdown signal, closing server gracefully...');
+      server.close(() => {
+        logger.info('Server closed successfully');
+        process.exit(0);
+      });
+      
+      // Force close after 10 seconds
+      setTimeout(() => {
+        logger.error('Forced shutdown after timeout');
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on('SIGTERM', gracefulShutdown);
+    process.on('SIGINT', gracefulShutdown);
+
   } catch (error) {
     logger.error('Unable to start server:', error);
     process.exit(1);

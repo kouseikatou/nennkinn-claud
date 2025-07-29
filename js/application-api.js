@@ -1,7 +1,41 @@
 // API configuration
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api'  // Vercel上では相対パス
-  : 'http://localhost:3002/api';
+const getAPIBaseURL = () => {
+  // 本番環境判定（ドメインベースで判定）
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return '/api';  // Vercel上では相対パス
+  }
+  // 開発環境
+  return 'http://localhost:3002/api';
+};
+
+const API_BASE_URL = getAPIBaseURL();
+
+// 認証ヘッダーを取得（開発環境では認証をスキップ可能）
+const getAuthHeaders = () => {
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    // 開発環境で認証をスキップする場合の設定
+    const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const skipAuth = isDevMode && localStorage.getItem('skipAuth') === 'true';
+    
+    console.log('🔧 認証ヘッダー生成:', { isDevMode, skipAuth, skipAuthValue: localStorage.getItem('skipAuth') });
+    
+    if (skipAuth) {
+        // テストモードヘッダーを追加
+        headers['X-Test-Mode'] = 'true';
+        console.log('🔧 テストモードヘッダーを追加');
+    } else {
+        const token = localStorage.getItem('token');
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        console.log('🔧 認証トークン:', token ? 'あり' : 'なし');
+    }
+    
+    return headers;
+};
 
 // Application API service
 const ApplicationAPI = {
@@ -10,12 +44,19 @@ const ApplicationAPI = {
         try {
             const queryString = new URLSearchParams(params).toString();
             const response = await fetch(`${API_BASE_URL}/applications?${queryString}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
-            if (!response.ok) throw new Error('Failed to fetch applications');
+            if (!response.ok) {
+                let errorMessage = 'Failed to fetch applications';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error fetching applications:', error);
@@ -26,13 +67,23 @@ const ApplicationAPI = {
     // Get single application
     async getApplication(id) {
         try {
+            const headers = getAuthHeaders();
+            console.log('🔧 getApplication リクエスト:', `${API_BASE_URL}/applications/${id}`, headers);
+            
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: headers
             });
             
-            if (!response.ok) throw new Error('Failed to fetch application');
+            if (!response.ok) {
+                let errorMessage = 'Failed to fetch application';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error fetching application:', error);
@@ -45,14 +96,20 @@ const ApplicationAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/applications`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(data)
             });
             
-            if (!response.ok) throw new Error('Failed to create application');
+            if (!response.ok) {
+                let errorMessage = 'Failed to create application';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error creating application:', error);
@@ -65,14 +122,21 @@ const ApplicationAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(data)
             });
             
-            if (!response.ok) throw new Error('Failed to update application');
+            if (!response.ok) {
+                let errorMessage = 'Failed to update application';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    // Use HTTP status text if JSON parsing fails
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
             console.error('Error updating application:', error);
@@ -85,9 +149,7 @@ const ApplicationAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to delete application');
@@ -106,10 +168,7 @@ const SurveyAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ data, status })
             });
             
@@ -125,20 +184,31 @@ const SurveyAPI = {
     async getSurvey(applicationId, surveyType) {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (response.status === 404) {
-                // Survey not found, return null
+                // Survey not found, return null (this is expected behavior)
+                console.log(`📋 ${surveyType} アンケート未作成 (application: ${applicationId})`);
                 return null;
             }
             
-            if (!response.ok) throw new Error('Failed to fetch survey');
+            if (!response.ok) {
+                let errorMessage = 'Failed to fetch survey';
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorMessage;
+                } catch (e) {
+                    errorMessage = `${response.status} ${response.statusText}`;
+                }
+                throw new Error(errorMessage);
+            }
             return await response.json();
         } catch (error) {
-            console.error('Error fetching survey:', error);
+            // Don't log 404 errors as they are expected behavior
+            if (!error.message.includes('404')) {
+                console.error('Error fetching survey:', error);
+            }
             throw error;
         }
     },
@@ -147,9 +217,7 @@ const SurveyAPI = {
     async getAllSurveys(applicationId) {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to fetch surveys');
@@ -165,9 +233,7 @@ const SurveyAPI = {
         try {
             const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
                 method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                headers: getAuthHeaders()
             });
             
             if (!response.ok) throw new Error('Failed to delete survey');
@@ -179,33 +245,73 @@ const SurveyAPI = {
     }
 };
 
+// 開発環境での認証スキップ機能
+const DevAuth = {
+    // 認証をスキップする（開発環境のみ）
+    skipAuth() {
+        const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isDevMode) {
+            localStorage.setItem('skipAuth', 'true');
+            console.log('🔓 開発環境：認証をスキップしました');
+        } else {
+            console.warn('⚠️ 本番環境では認証スキップは無効です');
+        }
+    },
+    
+    // 認証を有効にする
+    enableAuth() {
+        localStorage.removeItem('skipAuth');
+        console.log('🔒 認証を有効にしました');
+    },
+    
+    // 認証状態を確認
+    isAuthSkipped() {
+        const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        return isDevMode && localStorage.getItem('skipAuth') === 'true';
+    }
+};
+
 // Form data collection helper
 function collectFormData() {
     const formData = {
         // Basic information
-        applicantName: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
-        applicantNameKana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
-        birthDate: document.querySelectorAll('input[type="date"]')[0]?.value || '',
-        gender: document.querySelectorAll('select')[0]?.value || '',
-        phoneNumber: document.querySelector('input[placeholder="03-1234-5678"]')?.value || '',
-        email: document.querySelector('input[placeholder="taro@example.com"]')?.value || '',
+        applicantName: document.getElementById('applicantName')?.value || document.querySelector('input[placeholder="田中太郎"]')?.value || '',
+        applicantNameKana: document.getElementById('applicantNameKana')?.value || document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
+        birthDate: document.getElementById('birthDate')?.value || document.querySelectorAll('input[type="date"]')[0]?.value || '',
+        gender: document.getElementById('gender')?.value || document.querySelectorAll('select')[0]?.value || 'male',
+        pensionNumber: document.getElementById('pensionNumber')?.value || document.querySelector('input[placeholder="1234-567890"]')?.value || '',
+        myNumber: document.getElementById('myNumber')?.value || document.querySelector('input[placeholder="123456789012"]')?.value || '',
+        phoneNumber: document.getElementById('phoneNumber')?.value || document.querySelector('input[placeholder="03-1234-5678"]')?.value || document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
+        email: document.getElementById('email')?.value || document.querySelector('input[placeholder="taro@example.com"]')?.value || document.querySelector('input[placeholder="example@email.com"]')?.value || null,
         postalCode: document.querySelector('input[placeholder="123-4567"]')?.value || '',
-        address: document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]')?.value || '',
+        address: document.getElementById('address')?.value || document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]')?.value || document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
         
-        // Disability information
-        disabilityType: document.querySelectorAll('select')[1]?.value || '',
+        // Disability information - provide defaults for required fields
+        disabilityType: document.querySelectorAll('select')[1]?.value || 'mental',
         disabilityDescription: document.querySelector('input[placeholder="うつ病、統合失調症など"]')?.value || '',
         onsetDate: document.querySelectorAll('input[type="date"]')[1]?.value || '',
-        disabilityGrade: document.querySelectorAll('select')[2]?.value || '',
+        disabilityGrade: document.querySelectorAll('select')[2]?.value || null,
         
         // Medical information
         hospitalName: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
         doctorName: document.querySelector('input[placeholder="田中医師"]')?.value || '',
+        diagnosisDate: document.querySelectorAll('input[type="date"]')[2]?.value || null,
+        
+        // Financial information
+        monthlyIncome: document.querySelector('input[placeholder="0"]')?.value || null,
         
         // Family members
         familyMembers: collectFamilyMembers()
     };
     
+    // Convert empty strings to null for optional fields
+    Object.keys(formData).forEach(key => {
+        if (formData[key] === '' && !['applicantName', 'applicantNameKana', 'birthDate', 'gender', 'disabilityType'].includes(key)) {
+            formData[key] = null;
+        }
+    });
+    
+    console.log('📋 収集されたフォームデータ:', formData);
     return formData;
 }
 
@@ -220,11 +326,11 @@ function collectFamilyMembers() {
         if (spouseInputs.length >= 5) {
             familyMembers.push({
                 memberType: 'spouse',
-                name: spouseInputs[0].value,
-                nameKana: spouseInputs[1].value,
-                myNumber: spouseInputs[2].value,
-                basicPensionNumber: spouseInputs[3].value,
-                birthDate: spouseInputs[4].value
+                name: spouseInputs[0].value || '',
+                nameKana: spouseInputs[1].value || '',
+                myNumber: spouseInputs[2].value?.trim() || null,
+                basicPensionNumber: spouseInputs[3].value?.trim() || null,
+                birthDate: spouseInputs[4].value || null
             });
         }
     }
@@ -238,10 +344,10 @@ function collectFamilyMembers() {
         if (inputs.length >= 4) {
             familyMembers.push({
                 memberType: 'child',
-                name: inputs[0].value,
-                nameKana: inputs[1].value,
-                myNumber: inputs[2].value,
-                birthDate: inputs[3].value
+                name: inputs[0].value || '',
+                nameKana: inputs[1].value || '',
+                myNumber: inputs[2].value?.trim() || null,
+                birthDate: inputs[3].value || null
             });
         }
     });
@@ -252,9 +358,19 @@ function collectFamilyMembers() {
 // Save application
 async function saveApplication() {
     try {
+        // Show loading notification
+        showNotification('保存中...', 'info');
+        
         const formData = collectFormData();
+        console.log('🔧 保存するフォームデータ:', formData);
+        
         const urlParams = new URLSearchParams(window.location.search);
         const applicationId = urlParams.get('edit');
+        
+        // 開発環境で認証をスキップ
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            DevAuth.skipAuth();
+        }
         
         let result;
         if (applicationId && applicationId !== 'new') {
@@ -267,58 +383,131 @@ async function saveApplication() {
             showNotification('新規申請を作成しました', 'success');
             
             // Redirect to edit mode with new ID
-            window.location.href = `project-unified.html?edit=${result.application.id}`;
+            if (result && result.application && result.application.id) {
+                window.location.href = `project-unified.html?edit=${result.application.id}`;
+            }
         }
+        
+        console.log('✅ 申請保存成功:', result);
+        return result;
+        
     } catch (error) {
-        console.error('Error saving application:', error);
-        showNotification('保存中にエラーが発生しました', 'error');
+        console.error('❌ 申請保存エラー:', error);
+        
+        // Display specific error message
+        let errorMsg = '保存中にエラーが発生しました';
+        if (error.message) {
+            // Check for common error scenarios
+            if (error.message.includes('network') || error.message.includes('fetch')) {
+                errorMsg = 'ネットワークエラー: サーバーに接続できません';
+            } else if (error.message.includes('401') || error.message.includes('authenticate')) {
+                errorMsg = '認証エラー: ログインが必要です';
+            } else if (error.message.includes('400') || error.message.includes('validation')) {
+                errorMsg = '入力エラー: 入力内容を確認してください';
+            } else if (error.message.includes('500')) {
+                errorMsg = 'サーバーエラー: しばらく時間をおいて再度お試しください';
+            } else {
+                errorMsg = `エラー: ${error.message}`;
+            }
+        }
+        
+        showNotification(errorMsg, 'error');
+        throw error; // Re-throw for debugging purposes
     }
 }
 
 // Load application data
 async function loadApplication(applicationId) {
     try {
+        // 開発環境で認証をスキップ
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            DevAuth.skipAuth();
+            console.log('🔧 認証スキップ設定:', localStorage.getItem('skipAuth'));
+            console.log('🔧 APIベースURL:', API_BASE_URL);
+        }
+        
         const result = await ApplicationAPI.getApplication(applicationId);
         const application = result.application;
         
+        console.log('🔧 読み込んだアプリケーションデータ:', application);
+        
         // Populate form fields
         populateFormFields(application);
+        
+        // デバッグ：フィールドが正しく設定されたか確認
+        setTimeout(() => {
+            console.log('🔧 フィールド設定後の値確認:');
+            console.log('名前:', document.getElementById('applicantName')?.value);
+            console.log('電話番号:', document.getElementById('phoneNumber')?.value);
+            console.log('メール:', document.getElementById('email')?.value);
+            console.log('住所:', document.getElementById('address')?.value);
+        }, 100);
         
         // Populate family members
         if (application.familyMembers && application.familyMembers.length > 0) {
             populateFamilyMembers(application.familyMembers);
         }
+        
+        console.log('✅ 申請データを読み込みました:', application.applicationNumber);
+        
     } catch (error) {
-        console.error('Error loading application:', error);
-        showNotification('データの読み込みに失敗しました', 'error');
+        console.error('❌ データ読み込みエラー:', error);
+        
+        let errorMsg = 'データの読み込みに失敗しました';
+        if (error.message.includes('404') || error.message.includes('not found')) {
+            errorMsg = '申請データが見つかりません';
+        } else if (error.message.includes('401') || error.message.includes('authenticate')) {
+            errorMsg = '認証エラー: ログインが必要です';
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            errorMsg = 'ネットワークエラー: サーバーに接続できません';
+        }
+        
+        showNotification(errorMsg, 'error');
     }
 }
 
 // Populate form fields
 function populateFormFields(data) {
-    // Basic information
-    const nameInput = document.querySelector('input[placeholder="田中太郎"]');
+    // Basic information - Use ID first, then fallback to placeholder
+    const nameInput = document.getElementById('applicantName') || document.querySelector('input[placeholder="田中太郎"]');
     if (nameInput) nameInput.value = data.applicantName || '';
     
-    const kanaInput = document.querySelector('input[placeholder="タナカタロウ"]');
+    const kanaInput = document.getElementById('applicantNameKana') || document.querySelector('input[placeholder="タナカタロウ"]');
     if (kanaInput) kanaInput.value = data.applicantNameKana || '';
     
-    const birthDateInput = document.querySelectorAll('input[type="date"]')[0];
+    const birthDateInput = document.getElementById('birthDate') || document.querySelectorAll('input[type="date"]')[0];
     if (birthDateInput) birthDateInput.value = data.birthDate || '';
     
-    const genderSelect = document.querySelectorAll('select')[0];
+    const genderSelect = document.getElementById('gender') || document.querySelectorAll('select')[0];
     if (genderSelect) genderSelect.value = data.gender || '';
     
-    const phoneInput = document.querySelector('input[placeholder="03-1234-5678"]');
+    // 基礎年金番号の追加
+    const pensionNumberInput = document.getElementById('pensionNumber') || document.querySelector('input[placeholder="1234-567890"]');
+    if (pensionNumberInput) pensionNumberInput.value = data.pensionNumber || '';
+    
+    // マイナンバーの追加
+    const myNumberInput = document.getElementById('myNumber') || document.querySelector('input[placeholder="123456789012"]');
+    if (myNumberInput) myNumberInput.value = data.myNumber || '';
+    
+    // 電話番号 - ID属性を優先使用
+    const phoneInput = document.getElementById('phoneNumber') || 
+                      document.querySelector('input[placeholder="03-1234-5678"]') || 
+                      document.querySelector('input[placeholder="090-1234-5678"]');
     if (phoneInput) phoneInput.value = data.phoneNumber || '';
     
-    const emailInput = document.querySelector('input[placeholder="taro@example.com"]');
+    // メールアドレス - ID属性を優先使用
+    const emailInput = document.getElementById('email') || 
+                      document.querySelector('input[placeholder="taro@example.com"]') || 
+                      document.querySelector('input[placeholder="example@email.com"]');
     if (emailInput) emailInput.value = data.email || '';
     
     const postalCodeInput = document.querySelector('input[placeholder="123-4567"]');
     if (postalCodeInput) postalCodeInput.value = data.postalCode || '';
     
-    const addressInput = document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]');
+    // 住所 - ID属性を優先使用
+    const addressInput = document.getElementById('address') || 
+                        document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]') || 
+                        document.querySelector('textarea[placeholder="東京都新宿区..."]');
     if (addressInput) addressInput.value = data.address || '';
     
     // Disability information
@@ -340,6 +529,35 @@ function populateFormFields(data) {
     
     const doctorInput = document.querySelector('input[placeholder="田中医師"]');
     if (doctorInput) doctorInput.value = data.doctorName || '';
+    
+    const diagnosisDateInput = document.querySelectorAll('input[type="date"]')[2];
+    if (diagnosisDateInput) diagnosisDateInput.value = data.diagnosisDate || '';
+    
+    // Financial information
+    const monthlyIncomeInput = document.querySelector('input[placeholder="0"]');
+    if (monthlyIncomeInput) monthlyIncomeInput.value = data.monthlyIncome || '';
+    
+    // Additional fields specific to project-unified.html
+    const currentSymptomsInput = document.getElementById('currentSymptoms');
+    if (currentSymptomsInput) currentSymptomsInput.value = data.currentSymptoms || '';
+    
+    const firstVisitInput = document.getElementById('initialVisitDateWestern');
+    if (firstVisitInput) firstVisitInput.value = data.firstVisit || '';
+    
+    const symptomsTextarea = document.querySelector('textarea[placeholder="具体的な症状を記載してください"]');
+    if (symptomsTextarea) symptomsTextarea.value = data.symptoms || '';
+    
+    const treatmentTextarea = document.querySelector('textarea[placeholder="通院频度、治療内容など"]');
+    if (treatmentTextarea) treatmentTextarea.value = data.treatment || '';
+    
+    const medicationTextarea = document.querySelector('textarea[placeholder="服用中の薬剤名、用量など"]');
+    if (medicationTextarea) medicationTextarea.value = data.medication || '';
+    
+    const dailyLifeTextarea = document.querySelector('textarea[placeholder="食事、入浴、外出等への影響"]');
+    if (dailyLifeTextarea) dailyLifeTextarea.value = data.dailyLife || '';
+    
+    const workTextarea = document.querySelector('textarea[placeholder="就労状況、業務への影響など"]');
+    if (workTextarea) workTextarea.value = data.work || '';
 }
 
 // Populate family members

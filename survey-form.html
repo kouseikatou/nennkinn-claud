@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- API連携スクリプト -->
+    <script src="js/application-api.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -188,77 +191,6 @@
                                placeholder="例: うつ病、統合失調症、糖尿病など">
                     </div>
 
-                    <!-- 書類の種類セクション -->
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-4">書類の種類 <span class="text-red-500">*</span></label>
-                        
-                        <!-- タブナビゲーション -->
-                        <div class="flex border-b border-gray-200 mb-4" id="document-tabs">
-                            <button type="button" onclick="switchDocumentTab(1)" 
-                                    class="document-tab active px-4 py-2 text-sm font-medium text-primary-600 border-b-2 border-primary-600 focus:outline-none" 
-                                    data-tab="1">
-                                書類1
-                            </button>
-                            <button type="button" onclick="addDocumentTab()" 
-                                    class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none ml-2">
-                                + 書類を追加
-                            </button>
-                        </div>
-
-                        <!-- タブコンテンツ -->
-                        <div id="document-content">
-                            <!-- 書類1のコンテンツ -->
-                            <div id="document-tab-1" class="document-tab-content">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">書類種別 <span class="text-red-500">*</span></label>
-                                        <select required 
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
-                                            <option value="">選択してください</option>
-                                            <option value="診断書">診断書</option>
-                                            <option value="意見書">意見書</option>
-                                            <option value="検査結果">検査結果</option>
-                                            <option value="投薬録">投薬録</option>
-                                            <option value="手術記録">手術記録</option>
-                                            <option value="入院記録">入院記録</option>
-                                            <option value="画像診断">画像診断（レントゲン・CT・MRI等）</option>
-                                            <option value="血液検査">血液検査結果</option>
-                                            <option value="心理検査">心理検査・知能検査</option>
-                                            <option value="リハビリ記録">リハビリテーション記録</option>
-                                            <option value="その他">その他</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">書類名・詳細</label>
-                                        <input type="text" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                                               placeholder="例: 精神科診断書、○○検査結果書など">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">発行医療機関</label>
-                                        <input type="text" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                                               placeholder="例: 新宿病院、○○クリニック">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">発行日</label>
-                                        <input type="date" 
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">備考</label>
-                                        <textarea rows="3"
-                                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"
-                                                  placeholder="書類に関する特記事項があればご記入ください"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
 
                     <!-- 通院履歴セクション -->
@@ -401,158 +333,59 @@
             button.closest('.hospital-entry').remove();
         }
 
-        // 書類タブ管理
-        let documentTabCount = 1;
 
-        function switchDocumentTab(tabNumber) {
-            // すべてのタブコンテンツを非表示
-            document.querySelectorAll('.document-tab-content').forEach(content => {
-                content.style.display = 'none';
-            });
-            
-            // すべてのタブボタンの active クラスを削除
-            document.querySelectorAll('.document-tab').forEach(tab => {
-                tab.classList.remove('active', 'text-primary-600', 'border-primary-600');
-                tab.classList.add('text-gray-500', 'border-transparent');
-            });
-            
-            // 選択されたタブを表示
-            const selectedContent = document.getElementById(`document-tab-${tabNumber}`);
-            if (selectedContent) {
-                selectedContent.style.display = 'block';
-            }
-            
-            // 選択されたタブボタンをアクティブに
-            const selectedTab = document.querySelector(`[data-tab="${tabNumber}"]`);
-            if (selectedTab) {
-                selectedTab.classList.add('active', 'text-primary-600', 'border-primary-600');
-                selectedTab.classList.remove('text-gray-500', 'border-transparent');
-            }
-        }
+        // 送信処理中フラグ
+        let isSubmitting = false;
 
-        function addDocumentTab() {
-            documentTabCount++;
+        // フォーム送信
+        document.getElementById('survey-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            // 新しいタブボタンを作成
-            const tabsContainer = document.getElementById('document-tabs');
-            const addButton = tabsContainer.querySelector('button[onclick="addDocumentTab()"]');
-            
-            const newTabButton = document.createElement('button');
-            newTabButton.type = 'button';
-            newTabButton.className = 'document-tab px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 focus:outline-none';
-            newTabButton.setAttribute('data-tab', documentTabCount);
-            newTabButton.onclick = () => switchDocumentTab(documentTabCount);
-            newTabButton.innerHTML = `
-                書類${documentTabCount}
-                <button type="button" onclick="removeDocumentTab(${documentTabCount}); event.stopPropagation();" 
-                        class="ml-2 text-red-500 hover:text-red-700">
-                    ×
-                </button>
-            `;
-            
-            // 追加ボタンの前に挿入
-            tabsContainer.insertBefore(newTabButton, addButton);
-            
-            // 新しいタブコンテンツを作成
-            const contentContainer = document.getElementById('document-content');
-            const newTabContent = document.createElement('div');
-            newTabContent.id = `document-tab-${documentTabCount}`;
-            newTabContent.className = 'document-tab-content';
-            newTabContent.style.display = 'none';
-            newTabContent.innerHTML = `
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">書類種別 <span class="text-red-500">*</span></label>
-                        <select required 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
-                            <option value="">選択してください</option>
-                            <option value="診断書">診断書</option>
-                            <option value="意見書">意見書</option>
-                            <option value="検査結果">検査結果</option>
-                            <option value="投薬録">投薬録</option>
-                            <option value="手術記録">手術記録</option>
-                            <option value="入院記録">入院記録</option>
-                            <option value="画像診断">画像診断（レントゲン・CT・MRI等）</option>
-                            <option value="血液検査">血液検査結果</option>
-                            <option value="心理検査">心理検査・知能検査</option>
-                            <option value="リハビリ記録">リハビリテーション記録</option>
-                            <option value="その他">その他</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">書類名・詳細</label>
-                        <input type="text" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                               placeholder="例: 精神科診断書、○○検査結果書など">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">発行医療機関</label>
-                        <input type="text" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                               placeholder="例: 新宿病院、○○クリニック">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">発行日</label>
-                        <input type="date" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">備考</label>
-                        <textarea rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"
-                                  placeholder="書類に関する特記事項があればご記入ください"></textarea>
-                    </div>
-                </div>
-            `;
-            
-            contentContainer.appendChild(newTabContent);
-            
-            // 新しいタブに切り替え
-            switchDocumentTab(documentTabCount);
-        }
-
-        function removeDocumentTab(tabNumber) {
-            if (documentTabCount <= 1) {
-                alert('最低1つの書類情報は必要です。');
+            // 二重送信防止
+            if (isSubmitting) {
+                console.log('⚠️ 送信処理中です。完了までお待ちください。');
+                showNotification('送信処理中です。完了までお待ちください。', 'warning');
                 return;
             }
             
-            // タブボタンとコンテンツを削除
-            const tabButton = document.querySelector(`[data-tab="${tabNumber}"]`);
-            const tabContent = document.getElementById(`document-tab-${tabNumber}`);
-            
-            if (tabButton) tabButton.remove();
-            if (tabContent) tabContent.remove();
-            
-            // アクティブなタブが削除された場合、最初のタブに切り替え
-            const remainingTabs = document.querySelectorAll('.document-tab[data-tab]');
-            if (remainingTabs.length > 0) {
-                const firstTabNumber = remainingTabs[0].getAttribute('data-tab');
-                switchDocumentTab(parseInt(firstTabNumber));
-            }
-        }
-
-        // フォーム送信
-        document.getElementById('survey-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
             if (!validateSection(2)) return;
+            
+            isSubmitting = true;
             
             // 送信アニメーション
             const submitBtn = document.querySelector('[type="submit"]');
+            const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '送信中...';
             submitBtn.disabled = true;
             
-            // 回答完了をログに記録
-            recordSurveyCompletion('申請者基本情報');
-            
-            setTimeout(() => {
-                document.getElementById('success-modal').classList.remove('hidden');
-            }, 1500);
+            try {
+                // データベースに保存
+                await saveSurveyData();
+                
+                // 回答完了をログに記録
+                recordSurveyCompletion('申請者基本情報');
+                
+                // 成功モーダルを表示
+                setTimeout(() => {
+                    document.getElementById('success-modal').classList.remove('hidden');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    isSubmitting = false;
+                }, 1000);
+                
+            } catch (error) {
+                console.error('データ保存エラー:', error);
+                
+                let errorMsg = '保存中にエラーが発生しました。';
+                if (error.message && error.message.includes('429')) {
+                    errorMsg = 'リクエストが多すぎます。しばらく待ってから再度お試しください。';
+                }
+                
+                alert(errorMsg);
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                isSubmitting = false;
+            }
         });
 
         // アンケート回答完了をログに記録
@@ -581,37 +414,14 @@
             formData.birthDate = document.getElementById('birthDate')?.value || '';
             formData.gender = document.getElementById('gender')?.value || '';
             formData.pensionNumber = document.getElementById('pensionNumber')?.value || '';
+            formData.postalCode = document.getElementById('postalCode')?.value || '';
             formData.address = document.getElementById('address')?.value || '';
             formData.phoneNumber = document.getElementById('phoneNumber')?.value || '';
             formData.email = document.getElementById('email')?.value || '';
             
             // 傷病情報
             formData.mainDisease = document.getElementById('mainDisease')?.value || '';
-            
-            // 書類情報（タブ式）
-            formData.documents = [];
-            document.querySelectorAll('.document-tab-content').forEach((tabContent, index) => {
-                if (tabContent.style.display !== 'none') {
-                    const inputs = tabContent.querySelectorAll('input, select, textarea');
-                    const documentData = {};
-                    inputs.forEach(input => {
-                        if (input.type === 'select-one') {
-                            documentData.type = input.value;
-                        } else if (input.placeholder?.includes('書類名')) {
-                            documentData.name = input.value;
-                        } else if (input.placeholder?.includes('医療機関')) {
-                            documentData.institution = input.value;
-                        } else if (input.type === 'date') {
-                            documentData.issueDate = input.value;
-                        } else if (input.tagName === 'TEXTAREA') {
-                            documentData.remarks = input.value;
-                        }
-                    });
-                    if (Object.keys(documentData).length > 0) {
-                        formData.documents.push(documentData);
-                    }
-                }
-            });
+            formData.disabilityDescription = formData.mainDisease; // Map to expected field
             
             // 通院履歴
             formData.hospitals = [];
@@ -628,9 +438,240 @@
             return formData;
         }
 
+        // データベースにアンケートデータを保存
+        async function saveSurveyData() {
+            try {
+                // 開発環境で認証をスキップ
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    DevAuth.skipAuth();
+                }
+                
+                const formData = collectFormData();
+                const urlParams = new URLSearchParams(window.location.search);
+                let applicationId = urlParams.get('id');
+                
+                // applicationIdが申請番号形式（APP-XXXX-XXX）の場合は、数値IDに変換を試みる
+                if (applicationId && isNaN(applicationId)) {
+                    console.log('📋 申請番号から申請を検索:', applicationId);
+                    try {
+                        // 申請番号で検索（searchパラメータを使用）
+                        const result = await ApplicationAPI.getApplications({ search: applicationId });
+                        if (result.applications && result.applications.length > 0) {
+                            applicationId = result.applications[0].id;
+                            console.log('✅ 申請IDを取得:', applicationId);
+                        } else {
+                            throw new Error('申請が見つかりません');
+                        }
+                    } catch (searchError) {
+                        console.error('申請番号での検索に失敗:', searchError);
+                        applicationId = null;
+                    }
+                }
+                
+                // 申請IDがない場合、URLパラメータから申請者情報を取得して新規作成
+                if (!applicationId) {
+                    const applicantName = urlParams.get('name') || formData.fullName || '未入力';
+                    console.log('📝 新規申請を作成します:', applicantName);
+                    
+                    const newApplication = await ApplicationAPI.createApplication({
+                        applicantName: applicantName,
+                        applicantNameKana: formData.furigana || 'ミニュウリョク',
+                        birthDate: formData.birthDate || '1990-01-01',
+                        gender: formData.gender || 'male',
+                        pensionNumber: formData.pensionNumber || '',
+                        phoneNumber: formData.phoneNumber || '',
+                        email: formData.email || null,
+                        address: formData.address || '',
+                        postalCode: formData.postalCode || '',
+                        disabilityType: 'mental', // Required field
+                        disabilityDescription: formData.disabilityDescription || formData.mainDisease || '',
+                        applicationType: 'new'
+                    });
+                    applicationId = newApplication.application.id;
+                    console.log('✅ 新規申請を作成しました:', applicationId);
+                } else {
+                    // 既存の申請が存在するか確認
+                    try {
+                        await ApplicationAPI.getApplication(applicationId);
+                    } catch (error) {
+                        if (error.message.includes('not found')) {
+                        // 申請が存在しない場合、新規作成
+                        const newApplication = await ApplicationAPI.createApplication({
+                            applicantName: formData.fullName || '未入力',
+                            applicantNameKana: formData.furigana || 'ミニュウリョク',
+                            birthDate: formData.birthDate || '1990-01-01',
+                            gender: formData.gender || 'male',
+                            pensionNumber: formData.pensionNumber || '',
+                            phoneNumber: formData.phoneNumber || '',
+                            email: formData.email || null,
+                            address: formData.address || '',
+                            postalCode: formData.postalCode || '',
+                            disabilityType: 'mental', // Required field
+                            disabilityDescription: formData.disabilityDescription || formData.mainDisease || '',
+                            applicationType: 'new'
+                        });
+                        applicationId = newApplication.application.id;
+                        console.log('新規申請を作成しました:', applicationId);
+                    } else {
+                        throw error;
+                    }
+                }
+                
+                // Survey APIを使用してデータを保存
+                const result = await SurveyAPI.saveSurvey(applicationId, 'basic', formData, 'completed');
+                
+                if (result) {
+                    console.log('アンケートデータを保存しました:', result);
+                    return true;
+                }
+            } catch (error) {
+                console.error('アンケートデータの保存に失敗しました:', error);
+                
+                // フォールバック: LocalStorageに保存
+                const formData = collectFormData();
+                localStorage.setItem('survey_basic_data', JSON.stringify(formData));
+                console.log('LocalStorageにフォールバック保存しました');
+                return true;
+            }
+        }
+
+        // データベースからアンケートデータを読み込み
+        async function loadSurveyData() {
+            try {
+                // 開発環境で認証をスキップ
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    DevAuth.skipAuth();
+                }
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const applicationId = urlParams.get('id') || 1; // デフォルトID
+                
+                // Survey APIを使用してデータを取得
+                const result = await SurveyAPI.getSurvey(applicationId, 'basic');
+                
+                if (result && result.data) {
+                    populateFormFields(result.data);
+                    console.log('アンケートデータを読み込みました:', result.data);
+                    return result.data;
+                } else {
+                    console.log('保存されたアンケートデータが見つかりませんでした');
+                    return null;
+                }
+            } catch (error) {
+                console.error('データベース読み込みエラー:', error);
+                
+                // フォールバック: LocalStorageから読み込み
+                try {
+                    const localData = localStorage.getItem('survey_basic_data');
+                    if (localData) {
+                        const data = JSON.parse(localData);
+                        populateFormFields(data);
+                        console.log('LocalStorageからデータを読み込みました:', data);
+                        return data;
+                    }
+                } catch (localError) {
+                    console.error('LocalStorage読み込みエラー:', localError);
+                }
+                
+                return null;
+            }
+        }
+
+        // フォームフィールドにデータを設定
+        function populateFormFields(data) {
+            if (!data) return;
+            
+            // 基本情報 - survey dataから
+            if (data.fullName) document.getElementById('fullName').value = data.fullName;
+            if (data.furigana) document.getElementById('furigana').value = data.furigana;
+            if (data.birthDate) document.getElementById('birthDate').value = data.birthDate;
+            if (data.gender) document.getElementById('gender').value = data.gender;
+            if (data.pensionNumber) document.getElementById('pensionNumber').value = data.pensionNumber;
+            if (data.postalCode) document.getElementById('postalCode').value = data.postalCode;
+            if (data.address) document.getElementById('address').value = data.address;
+            if (data.phoneNumber) document.getElementById('phoneNumber').value = data.phoneNumber;
+            if (data.email) document.getElementById('email').value = data.email;
+            
+            // Application dataから（フォールバック）
+            if (data.applicantName && !data.fullName) document.getElementById('fullName').value = data.applicantName;
+            if (data.applicantNameKana && !data.furigana) document.getElementById('furigana').value = data.applicantNameKana;
+            
+            // 傷病情報
+            if (data.mainDisease) document.getElementById('mainDisease').value = data.mainDisease;
+            if (data.disabilityDescription && !data.mainDisease) document.getElementById('mainDisease').value = data.disabilityDescription;
+            
+            // 通院履歴
+            if (data.hospitals && data.hospitals.length > 0) {
+                // 既存の病院エントリをクリア（最初の1つは残す）
+                const hospitalEntries = document.getElementById('hospital-entries');
+                const firstEntry = hospitalEntries.querySelector('.hospital-entry');
+                hospitalEntries.innerHTML = '';
+                hospitalEntries.appendChild(firstEntry);
+                
+                // データを設定
+                data.hospitals.forEach((hospital, index) => {
+                    if (index === 0) {
+                        // 最初のエントリに設定
+                        const inputs = firstEntry.querySelectorAll('input');
+                        if (inputs.length >= 2) {
+                            inputs[0].value = hospital.name || '';
+                            inputs[1].value = hospital.startDate || '';
+                        }
+                    } else {
+                        // 追加のエントリを作成
+                        addHospitalEntry();
+                        const allEntries = hospitalEntries.querySelectorAll('.hospital-entry');
+                        const lastEntry = allEntries[allEntries.length - 1];
+                        const inputs = lastEntry.querySelectorAll('input');
+                        if (inputs.length >= 2) {
+                            inputs[0].value = hospital.name || '';
+                            inputs[1].value = hospital.startDate || '';
+                        }
+                    }
+                });
+            }
+        }
+
         function closeSuccessModal() {
             document.getElementById('success-modal').classList.add('hidden');
             // 実際の実装では、管理画面にリダイレクトまたはページを閉じる
+        }
+
+        // 通知表示関数
+        function showNotification(message, type = 'info') {
+            // 既存の通知を削除
+            const existingNotifications = document.querySelectorAll('.notification-toast');
+            existingNotifications.forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification-toast fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white transition-all duration-300 z-50 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' :
+                'bg-blue-500'
+            }`;
+            
+            // アイコンを追加
+            const icon = type === 'success' ? '✅' : 
+                         type === 'error' ? '❌' : 
+                         type === 'warning' ? '⚠️' : 'ℹ️';
+            
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2 text-xl">${icon}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // 警告メッセージは少し長く表示
+            const duration = type === 'warning' ? 5000 : 3000;
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
         }
 
         // 住所検索機能（郵便番号API連携のプレースホルダー）
@@ -646,14 +687,40 @@
             alert('住所検索機能は開発中です。\n実装時は郵便番号APIと連携します。');
         }
 
-        // URLパラメータから申請者情報を取得
-        window.addEventListener('load', function() {
+        // ページ読み込み時の初期化
+        window.addEventListener('load', async function() {
             const urlParams = new URLSearchParams(window.location.search);
             const name = urlParams.get('name');
             const id = urlParams.get('id');
             
+            // URLパラメータから名前を設定
             if (name) {
                 document.getElementById('fullName').value = name;
+            }
+            
+            // 開発環境で認証をスキップ
+            if (typeof DevAuth !== 'undefined') {
+                DevAuth.skipAuth();
+            }
+            
+            // 保存されたデータを読み込み
+            try {
+                const surveyData = await loadSurveyData();
+                
+                // Survey dataがない場合、application dataを試行
+                if (!surveyData && id) {
+                    try {
+                        const applicationResult = await ApplicationAPI.getApplication(id);
+                        if (applicationResult && applicationResult.application) {
+                            populateFormFields(applicationResult.application);
+                            console.log('Application dataから基本情報を読み込みました');
+                        }
+                    } catch (appError) {
+                        console.log('Application data読み込みエラー:', appError);
+                    }
+                }
+            } catch (error) {
+                console.log('データ読み込みエラー（新規作成の場合は正常）:', error);
             }
         });
     </script>

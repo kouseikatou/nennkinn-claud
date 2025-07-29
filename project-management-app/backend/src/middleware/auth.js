@@ -3,6 +3,17 @@ const { User } = require('../models');
 
 const auth = async (req, res, next) => {
   try {
+    // 開発環境でのテストモード対応
+    if (process.env.NODE_ENV === 'development' && req.headers['x-test-mode'] === 'true') {
+      // テストユーザーを作成またはデフォルトユーザーを使用
+      const testUser = await User.findOne({ where: { email: 'admin@test.com' } });
+      if (testUser) {
+        req.user = testUser;
+        req.token = 'test-token';
+        return next();
+      }
+    }
+
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
