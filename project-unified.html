@@ -195,13 +195,13 @@
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             氏名 <span class="text-red-500">*</span>
                                         </label>
-                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="田中太郎">
+                                        <input type="text" id="applicantName" name="applicantName" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="田中太郎">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             フリガナ <span class="text-red-500">*</span>
                                         </label>
-                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="タナカタロウ">
+                                        <input type="text" id="applicantNameKana" name="applicantNameKana" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="タナカタロウ">
                                     </div>
                                 </div>
 
@@ -217,7 +217,7 @@
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             性別
                                         </label>
-                                        <select class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
+                                        <select id="gender" name="gender" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
                                             <option value="">選択してください</option>
                                             <option value="male">男性</option>
                                             <option value="female">女性</option>
@@ -228,7 +228,7 @@
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             生年月日
                                         </label>
-                                        <input type="date" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
+                                        <input type="date" id="birthDate" name="birthDate" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200">
                                     </div>
                                 </div>
 
@@ -238,13 +238,13 @@
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             基礎年金番号 <span class="text-red-500">*</span>
                                         </label>
-                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="1234-567890">
+                                        <input type="text" id="pensionNumber" name="pensionNumber" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="1234-567890">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             マイナンバー <span class="text-red-500">*</span>
                                         </label>
-                                        <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="123456789012" pattern="[0-9]{12}" maxlength="12">
+                                        <input type="text" id="myNumber" name="myNumber" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="123456789012" pattern="[0-9]{12}" maxlength="12">
                                     </div>
                                 </div>
 
@@ -254,13 +254,13 @@
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             電話番号
                                         </label>
-                                        <input type="tel" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="03-1234-5678">
+                                        <input type="tel" id="phoneNumber" name="phoneNumber" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="03-1234-5678">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                             メールアドレス
                                         </label>
-                                        <input type="email" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="example@example.com">
+                                        <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="example@example.com">
                                     </div>
                                 </div>
 
@@ -269,7 +269,7 @@
                                     <label class="block text-sm font-medium text-notion-gray-700 mb-2">
                                         住所
                                     </label>
-                                    <input type="text" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="東京都新宿区西新宿1-1-1">
+                                    <input type="text" id="address" name="address" class="w-full px-4 py-3 border border-notion-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-linear-blue-500 focus:border-transparent outline-none transition-all duration-200" placeholder="東京都新宿区西新宿1-1-1">
                                 </div>
                             </div>
                         </div>
@@ -1556,9 +1556,28 @@ ${data.medication || ''}
             childrenList.appendChild(childItem);
         }
 
+        // 保存処理中フラグ
+        let isSaving = false;
+
         // 申請データを保存する関数
         async function saveApplication() {
+            // 二重送信防止
+            if (isSaving) {
+                console.log('⚠️ 保存処理中です。完了までお待ちください。');
+                showNotification('保存処理中です。完了までお待ちください。', 'warning');
+                return;
+            }
+            
             try {
+                isSaving = true;
+                
+                // 保存ボタンを無効化
+                const saveButtons = document.querySelectorAll('button[onclick*="saveApplication"]');
+                saveButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.textContent = '保存中...';
+                });
+                
                 // Show loading notification
                 showNotification('保存中...', 'info');
                 
@@ -1603,7 +1622,9 @@ ${data.medication || ''}
                 // Display specific error message
                 let errorMsg = '保存中にエラーが発生しました';
                 if (error.message) {
-                    if (error.message.includes('network') || error.message.includes('fetch')) {
+                    if (error.message.includes('429')) {
+                        errorMsg = 'リクエストが多すぎます。しばらく待ってから再度お試しください';
+                    } else if (error.message.includes('network') || error.message.includes('fetch')) {
                         errorMsg = 'ネットワークエラー: サーバーに接続できません';
                     } else if (error.message.includes('401')) {
                         errorMsg = '認証エラー: ログインが必要です';
@@ -1617,6 +1638,14 @@ ${data.medication || ''}
                 }
                 
                 showNotification(errorMsg, 'error');
+            } finally {
+                // 保存処理完了後、フラグをリセットしボタンを有効化
+                isSaving = false;
+                const saveButtons = document.querySelectorAll('button[onclick*="saveApplication"]');
+                saveButtons.forEach(btn => {
+                    btn.disabled = false;
+                    btn.textContent = '保存';
+                });
             }
         }
 
@@ -1629,6 +1658,7 @@ ${data.medication || ''}
                 birthDate: document.querySelectorAll('input[type="date"]')[0]?.value || '',
                 gender: document.querySelectorAll('select')[0]?.value || 'male',
                 pensionNumber: document.querySelector('input[placeholder="1234-567890"]')?.value || '',
+                myNumber: document.querySelector('input[placeholder="123456789012"]')?.value || '',
                 phoneNumber: document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
                 email: document.querySelector('input[placeholder="example@email.com"]')?.value || null,
                 postalCode: document.querySelector('input[placeholder="123-4567"]')?.value || '',
@@ -1643,6 +1673,10 @@ ${data.medication || ''}
                 // Medical information
                 hospitalName: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
                 doctorName: document.querySelector('input[placeholder="田中医師"]')?.value || '',
+                diagnosisDate: document.querySelectorAll('input[type="date"]')[2]?.value || null,
+                
+                // Financial information
+                monthlyIncome: document.querySelector('input[placeholder="0"]')?.value || null,
                 
                 // Additional form fields specific to this form
                 currentSymptoms: document.getElementById('currentSymptoms')?.value || '',
@@ -1727,20 +1761,39 @@ ${data.medication || ''}
 
         // Show notification function
         function showNotification(message, type = 'info') {
+            // 既存の通知を削除
+            const existingNotifications = document.querySelectorAll('.notification-toast');
+            existingNotifications.forEach(n => n.remove());
+            
             const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white transition-all duration-300 z-50 ${
+            notification.className = `notification-toast fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white transition-all duration-300 z-50 ${
                 type === 'success' ? 'bg-green-500' : 
                 type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' :
                 'bg-blue-500'
             }`;
-            notification.textContent = message;
+            
+            // アイコンを追加
+            const icon = type === 'success' ? '✅' : 
+                         type === 'error' ? '❌' : 
+                         type === 'warning' ? '⚠️' : 'ℹ️';
+            
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <span class="mr-2 text-xl">${icon}</span>
+                    <span>${message}</span>
+                </div>
+            `;
             
             document.body.appendChild(notification);
+            
+            // 警告メッセージは少し長く表示
+            const duration = type === 'warning' ? 5000 : 3000;
             
             setTimeout(() => {
                 notification.style.opacity = '0';
                 setTimeout(() => notification.remove(), 300);
-            }, 3000);
+            }, duration);
         }
 
         // 和暦変換機能
@@ -1927,22 +1980,57 @@ ${data.medication || ''}
                 const applicantId = document.getElementById('applicantId');
                 const applicantStatus = document.getElementById('applicantStatus');
                 
-                if (applicantName && data.name) {
-                    applicantName.textContent = data.name;
+                // 名前を設定（applicantNameまたはnameフィールドから）
+                const name = data.applicantName || data.name || '未設定';
+                if (applicantName) {
+                    applicantName.textContent = name;
                 }
                 
-                if (applicantInitial && data.name) {
-                    applicantInitial.textContent = data.name.charAt(0);
+                if (applicantInitial) {
+                    applicantInitial.textContent = name.charAt(0);
                 }
                 
+                // 申請番号を設定（applicationNumberがあればそれを使用）
                 if (applicantId) {
-                    applicantId.textContent = `ID: APP-2024-${String(editId).padStart(3, '0')}`;
+                    if (data.applicationNumber) {
+                        applicantId.textContent = `ID: ${data.applicationNumber}`;
+                    } else {
+                        applicantId.textContent = `ID: APP-2024-${String(editId).padStart(3, '0')}`;
+                    }
                 }
                 
+                // ステータスを設定
                 if (applicantStatus) {
-                    // 障害等級に応じてステータスを設定
-                    let statusText = '審査中';
-                    let statusClass = 'bg-orange-100 text-orange-800';
+                    // ステータスに応じて表示を設定
+                    let statusText = '下書き';
+                    let statusClass = 'bg-gray-100 text-gray-800';
+                    
+                    if (data.status) {
+                        switch (data.status) {
+                            case 'draft':
+                                statusText = '下書き';
+                                statusClass = 'bg-gray-100 text-gray-800';
+                                break;
+                            case 'submitted':
+                                statusText = '提出済み';
+                                statusClass = 'bg-blue-100 text-blue-800';
+                                break;
+                            case 'under_review':
+                                statusText = '審査中';
+                                statusClass = 'bg-yellow-100 text-yellow-800';
+                                break;
+                            case 'approved':
+                                statusText = '承認済み';
+                                statusClass = 'bg-green-100 text-green-800';
+                                break;
+                            case 'rejected':
+                                statusText = '却下';
+                                statusClass = 'bg-red-100 text-red-800';
+                                break;
+                            default:
+                                statusText = data.status;
+                        }
+                    }
                     
                     if (data.grade) {
                         statusText = `${data.grade} 認定済み`;
@@ -2860,13 +2948,21 @@ ${data.medication || ''}
 
         // アンケートリンク生成機能
         function generateSurveyLink() {
-            const surveyUrl = `survey-form.html?id=APP-2024-001&name=田中太郎`;
+            // 現在のapplicationIdを取得
+            const urlParams = new URLSearchParams(window.location.search);
+            const applicationId = urlParams.get('edit') || '1';
+            const applicantName = document.querySelector('input[placeholder="田中太郎"]')?.value || '田中太郎';
+            const surveyUrl = `survey-form.html?id=${applicationId}&name=${encodeURIComponent(applicantName)}`;
             showSurveyModal('申請者基本情報のアンケートリンクを生成しました', surveyUrl);
         }
 
 
         function generatePreApplicationSurveyLink() {
-            const surveyUrl = `survey-pre-application.html?id=APP-2024-001&name=田中太郎`;
+            // 現在のapplicationIdを取得
+            const urlParams = new URLSearchParams(window.location.search);
+            const applicationId = urlParams.get('edit') || '1';
+            const applicantName = document.querySelector('input[placeholder="田中太郎"]')?.value || '未入力';
+            const surveyUrl = `survey-pre-application.html?id=${applicationId}&name=${encodeURIComponent(applicantName)}`;
             showSurveyModal('申請前アンケートリンクを生成しました', surveyUrl);
         }
 

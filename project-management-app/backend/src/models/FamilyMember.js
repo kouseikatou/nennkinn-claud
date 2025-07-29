@@ -38,15 +38,25 @@ const FamilyMember = sequelize.define('FamilyMember', {
   // マイナンバー
   myNumber: {
     type: DataTypes.STRING(12),
+    allowNull: true,
     validate: {
-      len: [12, 12]
+      isValidMyNumber(value) {
+        if (value && value.trim() && value.trim().length > 0 && value.trim().length !== 12) {
+          throw new Error('マイナンバーは12桁である必要があります');
+        }
+      }
     }
   },
   // 基礎年金番号 (配偶者のみ)
   basicPensionNumber: {
     type: DataTypes.STRING(10),
+    allowNull: true,
     validate: {
-      len: [10, 10]
+      isValidPensionNumber(value) {
+        if (value && value.trim() && value.trim().length > 0 && value.trim().length !== 10) {
+          throw new Error('基礎年金番号は10桁である必要があります');
+        }
+      }
     }
   }
 }, {

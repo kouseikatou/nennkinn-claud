@@ -47,6 +47,19 @@ const Application = sequelize.define('Application', {
   postalCode: {
     type: DataTypes.STRING(10)
   },
+  // 基礎年金番号
+  pensionNumber: {
+    type: DataTypes.STRING(20),
+    allowNull: true
+  },
+  // マイナンバー
+  myNumber: {
+    type: DataTypes.STRING(12),
+    allowNull: true,
+    validate: {
+      len: [12, 12]
+    }
+  },
   // Disability Information
   disabilityType: {
     type: DataTypes.ENUM('physical', 'mental', 'intellectual', 'multiple'),

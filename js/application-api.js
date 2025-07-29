@@ -20,14 +20,18 @@ const getAuthHeaders = () => {
     const isDevMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const skipAuth = isDevMode && localStorage.getItem('skipAuth') === 'true';
     
+    console.log('🔧 認証ヘッダー生成:', { isDevMode, skipAuth, skipAuthValue: localStorage.getItem('skipAuth') });
+    
     if (skipAuth) {
         // テストモードヘッダーを追加
         headers['X-Test-Mode'] = 'true';
+        console.log('🔧 テストモードヘッダーを追加');
     } else {
         const token = localStorage.getItem('token');
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
+        console.log('🔧 認証トークン:', token ? 'あり' : 'なし');
     }
     
     return headers;
@@ -63,8 +67,11 @@ const ApplicationAPI = {
     // Get single application
     async getApplication(id) {
         try {
+            const headers = getAuthHeaders();
+            console.log('🔧 getApplication リクエスト:', `${API_BASE_URL}/applications/${id}`, headers);
+            
             const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
-                headers: getAuthHeaders()
+                headers: headers
             });
             
             if (!response.ok) {
@@ -268,15 +275,16 @@ const DevAuth = {
 function collectFormData() {
     const formData = {
         // Basic information
-        applicantName: document.querySelector('input[placeholder="田中太郎"]')?.value || '',
-        applicantNameKana: document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
-        birthDate: document.querySelectorAll('input[type="date"]')[0]?.value || '',
-        gender: document.querySelectorAll('select')[0]?.value || 'male',
-        pensionNumber: document.querySelector('input[placeholder="1234-567890"]')?.value || '',
-        phoneNumber: document.querySelector('input[placeholder="03-1234-5678"]')?.value || document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
-        email: document.querySelector('input[placeholder="taro@example.com"]')?.value || document.querySelector('input[placeholder="example@email.com"]')?.value || null,
+        applicantName: document.getElementById('applicantName')?.value || document.querySelector('input[placeholder="田中太郎"]')?.value || '',
+        applicantNameKana: document.getElementById('applicantNameKana')?.value || document.querySelector('input[placeholder="タナカタロウ"]')?.value || '',
+        birthDate: document.getElementById('birthDate')?.value || document.querySelectorAll('input[type="date"]')[0]?.value || '',
+        gender: document.getElementById('gender')?.value || document.querySelectorAll('select')[0]?.value || 'male',
+        pensionNumber: document.getElementById('pensionNumber')?.value || document.querySelector('input[placeholder="1234-567890"]')?.value || '',
+        myNumber: document.getElementById('myNumber')?.value || document.querySelector('input[placeholder="123456789012"]')?.value || '',
+        phoneNumber: document.getElementById('phoneNumber')?.value || document.querySelector('input[placeholder="03-1234-5678"]')?.value || document.querySelector('input[placeholder="090-1234-5678"]')?.value || '',
+        email: document.getElementById('email')?.value || document.querySelector('input[placeholder="taro@example.com"]')?.value || document.querySelector('input[placeholder="example@email.com"]')?.value || null,
         postalCode: document.querySelector('input[placeholder="123-4567"]')?.value || '',
-        address: document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]')?.value || document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
+        address: document.getElementById('address')?.value || document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]')?.value || document.querySelector('textarea[placeholder="東京都新宿区..."]')?.value || '',
         
         // Disability information - provide defaults for required fields
         disabilityType: document.querySelectorAll('select')[1]?.value || 'mental',
@@ -287,6 +295,10 @@ function collectFormData() {
         // Medical information
         hospitalName: document.querySelector('input[placeholder="○○病院、○○クリニック"]')?.value || '',
         doctorName: document.querySelector('input[placeholder="田中医師"]')?.value || '',
+        diagnosisDate: document.querySelectorAll('input[type="date"]')[2]?.value || null,
+        
+        // Financial information
+        monthlyIncome: document.querySelector('input[placeholder="0"]')?.value || null,
         
         // Family members
         familyMembers: collectFamilyMembers()
@@ -314,11 +326,11 @@ function collectFamilyMembers() {
         if (spouseInputs.length >= 5) {
             familyMembers.push({
                 memberType: 'spouse',
-                name: spouseInputs[0].value,
-                nameKana: spouseInputs[1].value,
-                myNumber: spouseInputs[2].value,
-                basicPensionNumber: spouseInputs[3].value,
-                birthDate: spouseInputs[4].value
+                name: spouseInputs[0].value || '',
+                nameKana: spouseInputs[1].value || '',
+                myNumber: spouseInputs[2].value?.trim() || null,
+                basicPensionNumber: spouseInputs[3].value?.trim() || null,
+                birthDate: spouseInputs[4].value || null
             });
         }
     }
@@ -332,10 +344,10 @@ function collectFamilyMembers() {
         if (inputs.length >= 4) {
             familyMembers.push({
                 memberType: 'child',
-                name: inputs[0].value,
-                nameKana: inputs[1].value,
-                myNumber: inputs[2].value,
-                birthDate: inputs[3].value
+                name: inputs[0].value || '',
+                nameKana: inputs[1].value || '',
+                myNumber: inputs[2].value?.trim() || null,
+                birthDate: inputs[3].value || null
             });
         }
     });
@@ -350,6 +362,8 @@ async function saveApplication() {
         showNotification('保存中...', 'info');
         
         const formData = collectFormData();
+        console.log('🔧 保存するフォームデータ:', formData);
+        
         const urlParams = new URLSearchParams(window.location.search);
         const applicationId = urlParams.get('edit');
         
@@ -408,13 +422,26 @@ async function loadApplication(applicationId) {
         // 開発環境で認証をスキップ
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             DevAuth.skipAuth();
+            console.log('🔧 認証スキップ設定:', localStorage.getItem('skipAuth'));
+            console.log('🔧 APIベースURL:', API_BASE_URL);
         }
         
         const result = await ApplicationAPI.getApplication(applicationId);
         const application = result.application;
         
+        console.log('🔧 読み込んだアプリケーションデータ:', application);
+        
         // Populate form fields
         populateFormFields(application);
+        
+        // デバッグ：フィールドが正しく設定されたか確認
+        setTimeout(() => {
+            console.log('🔧 フィールド設定後の値確認:');
+            console.log('名前:', document.getElementById('applicantName')?.value);
+            console.log('電話番号:', document.getElementById('phoneNumber')?.value);
+            console.log('メール:', document.getElementById('email')?.value);
+            console.log('住所:', document.getElementById('address')?.value);
+        }, 100);
         
         // Populate family members
         if (application.familyMembers && application.familyMembers.length > 0) {
@@ -441,38 +468,45 @@ async function loadApplication(applicationId) {
 
 // Populate form fields
 function populateFormFields(data) {
-    // Basic information
-    const nameInput = document.querySelector('input[placeholder="田中太郎"]');
+    // Basic information - Use ID first, then fallback to placeholder
+    const nameInput = document.getElementById('applicantName') || document.querySelector('input[placeholder="田中太郎"]');
     if (nameInput) nameInput.value = data.applicantName || '';
     
-    const kanaInput = document.querySelector('input[placeholder="タナカタロウ"]');
+    const kanaInput = document.getElementById('applicantNameKana') || document.querySelector('input[placeholder="タナカタロウ"]');
     if (kanaInput) kanaInput.value = data.applicantNameKana || '';
     
-    const birthDateInput = document.querySelectorAll('input[type="date"]')[0];
+    const birthDateInput = document.getElementById('birthDate') || document.querySelectorAll('input[type="date"]')[0];
     if (birthDateInput) birthDateInput.value = data.birthDate || '';
     
-    const genderSelect = document.querySelectorAll('select')[0];
+    const genderSelect = document.getElementById('gender') || document.querySelectorAll('select')[0];
     if (genderSelect) genderSelect.value = data.gender || '';
     
     // 基礎年金番号の追加
-    const pensionNumberInput = document.querySelector('input[placeholder="1234-567890"]');
+    const pensionNumberInput = document.getElementById('pensionNumber') || document.querySelector('input[placeholder="1234-567890"]');
     if (pensionNumberInput) pensionNumberInput.value = data.pensionNumber || '';
     
-    // 電話番号 - プレースホルダーの違いに対応
-    const phoneInput = document.querySelector('input[placeholder="03-1234-5678"]') || 
+    // マイナンバーの追加
+    const myNumberInput = document.getElementById('myNumber') || document.querySelector('input[placeholder="123456789012"]');
+    if (myNumberInput) myNumberInput.value = data.myNumber || '';
+    
+    // 電話番号 - ID属性を優先使用
+    const phoneInput = document.getElementById('phoneNumber') || 
+                      document.querySelector('input[placeholder="03-1234-5678"]') || 
                       document.querySelector('input[placeholder="090-1234-5678"]');
     if (phoneInput) phoneInput.value = data.phoneNumber || '';
     
-    // メールアドレス - プレースホルダーの違いに対応
-    const emailInput = document.querySelector('input[placeholder="taro@example.com"]') || 
+    // メールアドレス - ID属性を優先使用
+    const emailInput = document.getElementById('email') || 
+                      document.querySelector('input[placeholder="taro@example.com"]') || 
                       document.querySelector('input[placeholder="example@email.com"]');
     if (emailInput) emailInput.value = data.email || '';
     
     const postalCodeInput = document.querySelector('input[placeholder="123-4567"]');
     if (postalCodeInput) postalCodeInput.value = data.postalCode || '';
     
-    // 住所 - テキストエリアとinputの両方に対応
-    const addressInput = document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]') || 
+    // 住所 - ID属性を優先使用
+    const addressInput = document.getElementById('address') || 
+                        document.querySelector('input[placeholder="東京都新宿区西新宿1-1-1"]') || 
                         document.querySelector('textarea[placeholder="東京都新宿区..."]');
     if (addressInput) addressInput.value = data.address || '';
     
@@ -495,6 +529,13 @@ function populateFormFields(data) {
     
     const doctorInput = document.querySelector('input[placeholder="田中医師"]');
     if (doctorInput) doctorInput.value = data.doctorName || '';
+    
+    const diagnosisDateInput = document.querySelectorAll('input[type="date"]')[2];
+    if (diagnosisDateInput) diagnosisDateInput.value = data.diagnosisDate || '';
+    
+    // Financial information
+    const monthlyIncomeInput = document.querySelector('input[placeholder="0"]');
+    if (monthlyIncomeInput) monthlyIncomeInput.value = data.monthlyIncome || '';
     
     // Additional fields specific to project-unified.html
     const currentSymptomsInput = document.getElementById('currentSymptoms');

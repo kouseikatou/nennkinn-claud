@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "dev": "./kill-port.sh && nodemon src/index.js",
+    "dev:safe": "./kill-port.sh 3002 && npm run dev",
     "migrate": "node src/utils/migrate.js",
     "seed": "node src/utils/seed.js",
     "test": "jest",

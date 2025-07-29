@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { sequelize } = require('../config/database');
 const { User, Activity } = require('../models');
 const { generateToken } = require('../middleware/auth');
 const logger = require('../utils/logger');
@@ -175,7 +176,7 @@ const authController = {
       const user = await User.findOne({
         where: {
           passwordResetToken: hashedToken,
-          passwordResetExpires: { $gt: new Date() }
+          passwordResetExpires: { [sequelize.Op.gt]: new Date() }
         }
       });
 

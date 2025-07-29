@@ -1,82 +1,5 @@
 // Projects list management
 const ProjectsList = {
-    // Sample data for UI demonstration
-    sampleApplications: [
-        {
-            id: 1,
-            applicantName: '田中太郎',
-            status: 'under_review',
-            disabilityDescription: 'うつ病',
-            applicationType: 'new',
-            onsetDate: '2023-05-10',
-            monthlyAmount: 300000,
-            createdAt: '2024-01-15',
-            assignee: { name: '佐藤花子' },
-            familyMembers: [
-                { memberType: 'spouse', name: '田中花子' },
-                { memberType: 'child', name: '田中一郎' },
-                { memberType: 'child', name: '田中次郎' }
-            ]
-        },
-        {
-            id: 2,
-            applicantName: '山田花子',
-            status: 'approved',
-            disabilityDescription: '統合失調症',
-            applicationType: 'new',
-            onsetDate: '2022-03-15',
-            monthlyAmount: 250000,
-            createdAt: '2023-08-01',
-            assignee: { name: '田中一郎' },
-            familyMembers: []
-        },
-        {
-            id: 3,
-            applicantName: '佐藤一郎',
-            status: 'approved',
-            disabilityDescription: '腰椎椎間板ヘルニア',
-            applicationType: 'renewal',
-            onsetDate: '2021-08-10',
-            monthlyAmount: 400000,
-            createdAt: '2023-06-01',
-            assignee: { name: '山田太郎' },
-            familyMembers: [
-                { memberType: 'spouse', name: '佐藤美香' },
-                { memberType: 'child', name: '佐藤健太' },
-                { memberType: 'child', name: '佐藤美穂' },
-                { memberType: 'child', name: '佐藤大輔' }
-            ]
-        },
-        {
-            id: 4,
-            applicantName: '鈴木次郎',
-            status: 'draft',
-            disabilityDescription: '双極性障害',
-            applicationType: 'new',
-            onsetDate: '2023-12-01',
-            monthlyAmount: 280000,
-            createdAt: '2024-02-10',
-            assignee: { name: '高橋美里' },
-            familyMembers: [
-                { memberType: 'spouse', name: '鈴木恵子' }
-            ]
-        },
-        {
-            id: 5,
-            applicantName: '高橋三郎',
-            status: 'rejected',
-            disabilityDescription: '関節リウマチ',
-            applicationType: 'appeal',
-            onsetDate: '2022-11-20',
-            monthlyAmount: 0,
-            createdAt: '2023-12-15',
-            assignee: { name: '佐藤花子' },
-            familyMembers: [
-                { memberType: 'child', name: '高橋優子' },
-                { memberType: 'child', name: '高橋健一' }
-            ]
-        }
-    ],
 
     // Initialize the projects list
     async init() {
@@ -88,35 +11,40 @@ const ProjectsList = {
         await this.loadProjects();
     },
 
-    // Load projects from API with fallback to sample data
+    // Load projects from API
     async loadProjects(params = {}) {
+        const projectsContainer = document.getElementById('projects-container');
+        if (!projectsContainer) return;
+        
+        // Show loading state
+        projectsContainer.innerHTML = `
+            <div class="p-8 text-center text-notion-gray-500">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-linear-blue-600 mx-auto mb-4"></div>
+                <p>申請データを読み込み中...</p>
+            </div>
+        `;
+        
         try {
-            // Try loading from API first
             const result = await ApplicationAPI.getApplications(params);
             const applications = result.applications || [];
             this.renderProjects(applications);
             console.log('✅ APIからデータを取得しました', applications.length + '件');
         } catch (error) {
-            console.warn('⚠️ API接続に失敗しました。サンプルデータを使用します:', error.message);
-            // Fallback to sample data
-            let filteredApplications = [...this.sampleApplications];
-
-            // Apply search filter
-            if (params.search) {
-                const searchTerm = params.search.toLowerCase();
-                filteredApplications = filteredApplications.filter(app => 
-                    app.applicantName.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            // Apply status filter
-            if (params.status) {
-                filteredApplications = filteredApplications.filter(app => 
-                    app.status === params.status
-                );
-            }
-
-            this.renderProjects(filteredApplications);
+            console.error('❌ API接続に失敗しました:', error.message);
+            projectsContainer.innerHTML = `
+                <div class="p-8 text-center text-notion-gray-500">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <p class="text-lg font-medium text-notion-gray-800 mb-2">データの読み込みに失敗しました</p>
+                    <p class="text-sm text-notion-gray-500 mb-4">${error.message}</p>
+                    <button onclick="ProjectsList.loadProjects()" class="px-4 py-2 bg-linear-blue-600 text-white rounded-lg hover:bg-linear-blue-700 transition-colors">
+                        再試行
+                    </button>
+                </div>
+            `;
         }
     },
 
