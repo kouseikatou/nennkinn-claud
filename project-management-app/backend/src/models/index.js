@@ -5,6 +5,7 @@ const Document = require('./Document');
 const Activity = require('./Activity');
 const Comment = require('./Comment');
 const FamilyMember = require('./FamilyMember');
+const Survey = require('./Survey');
 
 // User associations
 User.hasMany(Application, { as: 'createdApplications', foreignKey: 'createdById' });
@@ -41,6 +42,10 @@ Comment.hasMany(Comment, { as: 'replies', foreignKey: 'parentId' });
 // FamilyMember associations
 FamilyMember.belongsTo(Application, { foreignKey: 'applicationId' });
 
+// Survey associations
+Survey.belongsTo(Application, { foreignKey: 'applicationId' });
+Application.hasMany(Survey, { foreignKey: 'applicationId', as: 'surveys' });
+
 module.exports = {
   sequelize,
   User,
@@ -48,5 +53,6 @@ module.exports = {
   Document,
   Activity,
   Comment,
-  FamilyMember
+  FamilyMember,
+  Survey
 };

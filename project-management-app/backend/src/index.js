@@ -15,6 +15,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const applicationRoutes = require('./routes/application.routes');
 const activityRoutes = require('./routes/activity.routes');
+const surveyRoutes = require('./routes/survey.routes');
 
 const app = express();
 
@@ -61,6 +62,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/activities', activityRoutes);
+app.use('/api/surveys', surveyRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -81,7 +83,8 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       users: '/api/users',
       applications: '/api/applications',
-      activities: '/api/activities'
+      activities: '/api/activities',
+      surveys: '/api/surveys'
     }
   });
 });

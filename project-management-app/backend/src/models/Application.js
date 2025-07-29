@@ -129,6 +129,71 @@ const Application = sequelize.define('Application', {
   notes: {
     type: DataTypes.TEXT
   },
+  // 申請管理情報の追加項目
+  certificateReceived: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: '証書受領'
+  },
+  benefitDecisionDate: {
+    type: DataTypes.DATEONLY,
+    comment: '受給決定日'
+  },
+  firstPaymentDate: {
+    type: DataTypes.DATEONLY,
+    comment: '初回入金日'
+  },
+  certificationDate: {
+    type: DataTypes.DATEONLY,
+    comment: '認定日'
+  },
+  certificationResult: {
+    type: DataTypes.STRING(100),
+    comment: '認定日結果'
+  },
+  currentResult: {
+    type: DataTypes.STRING(100),
+    comment: '現在結果'
+  },
+  nextUpdateDate: {
+    type: DataTypes.DATEONLY,
+    comment: '次回更新日'
+  },
+  updateUnavailable: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: '更新不可者'
+  },
+  invoiceIssued: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: '請求書発行'
+  },
+  invoiceData: {
+    type: DataTypes.TEXT,
+    comment: '請求書データ'
+  },
+  expectedRevenue: {
+    type: DataTypes.DECIMAL(12, 2),
+    comment: '売上見込み'
+  },
+  paymentConfirmed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: '入金チェック'
+  },
+  installmentBalance: {
+    type: DataTypes.DECIMAL(12, 2),
+    comment: '分割残額'
+  },
+  processingFeeAmount: {
+    type: DataTypes.DECIMAL(12, 2),
+    comment: '事務手数料額'
+  },
+  processingFeeReceivedDate: {
+    type: DataTypes.DATEONLY,
+    comment: '事務手数料受領日'
+  },
   // Relationships
   assignedToId: {
     type: DataTypes.INTEGER,

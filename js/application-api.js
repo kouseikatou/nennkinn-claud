@@ -99,6 +99,86 @@ const ApplicationAPI = {
     }
 };
 
+// Survey API service
+const SurveyAPI = {
+    // Save survey data
+    async saveSurvey(applicationId, surveyType, data, status = 'draft') {
+        try {
+            const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ data, status })
+            });
+            
+            if (!response.ok) throw new Error('Failed to save survey');
+            return await response.json();
+        } catch (error) {
+            console.error('Error saving survey:', error);
+            throw error;
+        }
+    },
+
+    // Get survey data
+    async getSurvey(applicationId, surveyType) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (response.status === 404) {
+                // Survey not found, return null
+                return null;
+            }
+            
+            if (!response.ok) throw new Error('Failed to fetch survey');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching survey:', error);
+            throw error;
+        }
+    },
+
+    // Get all surveys for an application
+    async getAllSurveys(applicationId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to fetch surveys');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching surveys:', error);
+            throw error;
+        }
+    },
+
+    // Delete survey
+    async deleteSurvey(applicationId, surveyType) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/surveys/${applicationId}/${surveyType}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to delete survey');
+            return await response.json();
+        } catch (error) {
+            console.error('Error deleting survey:', error);
+            throw error;
+        }
+    }
+};
+
 // Form data collection helper
 function collectFormData() {
     const formData = {
