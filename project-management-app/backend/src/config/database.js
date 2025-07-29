@@ -3,7 +3,20 @@ const logger = require('../utils/logger');
 
 let sequelize;
 
-if (process.env.DB_DIALECT === 'sqlite') {
+// Vercel Postgres環境変数を検出
+if (process.env.POSTGRES_URL) {
+  // Vercel Postgres設定
+  sequelize = new Sequelize(process.env.POSTGRES_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    },
+    logging: (msg) => logger.debug(msg)
+  });
+} else if (process.env.DB_DIALECT === 'sqlite') {
   // SQLite設定 (開発用)
   sequelize = new Sequelize({
     dialect: 'sqlite',

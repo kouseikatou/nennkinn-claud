@@ -40,3 +40,17 @@ ENV/
 
 # Gemini
 .gemini/
+.vercel
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Database
+*.sqlite
+*.db
+database.sqlite
+
+# Uploads
+uploads/
