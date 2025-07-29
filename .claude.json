@@ -16,7 +16,7 @@
     "double-esc": 15,
     "continue": 16
   },
-  "promptQueueUseCount": 27,
+  "promptQueueUseCount": 30,
   "firstStartTime": "2025-07-17T06:51:58.646Z",
   "userID": "f12b283062711cdf4b4062479c7ff42d5b13b3efe3a8025ce8a3200dcf509ca2",
   "projects": {
@@ -81,6 +81,22 @@
     "/home/kouse1113sp": {
       "allowedTools": [],
       "history": [
+        {
+          "display": "Unable to forward your request to a backend\nCouldn't connect to a server on port 8000. Ensure you have selected the correct port with a HTTP server running on it.",
+          "pastedContents": {}
+        },
+        {
+          "display": "http://localhost:8000/project-unified.html?edit=1のような形でデータベースの作成をしてほしい",
+          "pastedContents": {}
+        },
+        {
+          "display": "# 機能開発開始\n\n## 機能名\nデータベースとの連携\n\n## AIへの指示\nこれから新しい機能の開発を始めます。  \n現在の `main` ブランチを最新の状態にした後、この機能のためのブランチを作成してください。  \nブランチ名は `feature/` のプレフィックスを付け、機能名が分かりやすいように英語で命名してください。\n",
+          "pastedContents": {}
+        },
+        {
+          "display": "arigatou ",
+          "pastedContents": {}
+        },
         {
           "display": "もっと詳しく教えて",
           "pastedContents": {}
@@ -493,22 +509,6 @@
         },
         {
           "display": "https://storage.googleapis.com/nennkinn-claude-web/projects.htmlがまだ変更されない",
-          "pastedContents": {}
-        },
-        {
-          "display": "名前    申請後日数（日付）    進捗管理（タブ）    進捗補助（タブ）    請求の種類（タブ）    年金種類（タブ）    申請完了日（日付）    受給決定日（日付）    初回入金日（日付）    証書（ファイル）    認定日結果（タブ）    現在結果（タブ）    売上見込み（金額）    分割残額（金額）    事務手数料額（金額）    請求書発行（チェック）    入金チェック（チェック）    次回更新日（日付）    更新不可者（チェック）    障害者手帳の等級（タブ）    障害者手帳の申請代行希望有無（タブ）    就労支援施設紹介の希望有無（タブ）    グループホームの紹介希望有無（タブ）    傷病名    初診（日付）    初診（文章）    障害認定日（日付）    障害認定日（文章）    基礎年金番号    受給中の制度（タブ）    窓口ヒアリングメモ（文章）    申請者メモ欄（追加メモ欄）    申請担当者（タブ）    年齢    電話番号    メールアドレス    請求者住所    書類送付先住所    参考資料    受診状況等証明書    診断書（認定日）    診断書（現在）\n",
-          "pastedContents": {}
-        },
-        {
-          "display": "案件一覧では下記の情報を追加したい",
-          "pastedContents": {}
-        },
-        {
-          "display": "おけとりあえずはありがとう",
-          "pastedContents": {}
-        },
-        {
-          "display": "それもやって",
           "pastedContents": {}
         }
       ],

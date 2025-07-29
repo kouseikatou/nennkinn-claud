@@ -1,6 +1,57 @@
 // API configuration
 const API_BASE_URL = 'http://localhost:3002/api';
 
+// URL and navigation utilities
+const URLUtils = {
+    // Get current URL parameters
+    getURLParams() {
+        return new URLSearchParams(window.location.search);
+    },
+    
+    // Get application ID from URL
+    getApplicationId() {
+        const params = this.getURLParams();
+        return params.get('edit') || params.get('view');
+    },
+    
+    // Check if in edit mode
+    isEditMode() {
+        return this.getURLParams().get('edit') !== null;
+    },
+    
+    // Check if in view mode
+    isViewMode() {
+        return this.getURLParams().get('view') !== null;
+    },
+    
+    // Generate URLs for application
+    generateURLs(applicationId) {
+        return {
+            edit: `/project-unified.html?edit=${applicationId}`,
+            view: `/project-unified.html?view=${applicationId}`,
+            list: '/projects.html'
+        };
+    },
+    
+    // Navigate to URL
+    navigate(url) {
+        window.location.href = url;
+    },
+    
+    // Update URL without reload
+    updateURL(params) {
+        const url = new URL(window.location);
+        Object.keys(params).forEach(key => {
+            if (params[key] !== null) {
+                url.searchParams.set(key, params[key]);
+            } else {
+                url.searchParams.delete(key);
+            }
+        });
+        window.history.replaceState({}, '', url);
+    }
+};
+
 // Application API service
 const ApplicationAPI = {
     // Get all applications
@@ -92,6 +143,63 @@ const ApplicationAPI = {
             return await response.json();
         } catch (error) {
             console.error('Error deleting application:', error);
+            throw error;
+        }
+    },
+
+    // Get application by application number
+    async getApplicationByNumber(applicationNumber) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/applications/by-number/${applicationNumber}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to fetch application');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching application by number:', error);
+            throw error;
+        }
+    },
+
+    // Quick update for single fields
+    async quickUpdate(id, field, value, version = null) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/applications/${id}/quick-update`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ field, value, version })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to update application');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error quick updating application:', error);
+            throw error;
+        }
+    },
+
+    // Enhanced get application with format option
+    async getApplicationEnhanced(id, format = 'full') {
+        try {
+            const response = await fetch(`${API_BASE_URL}/applications/${id}?format=${format}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to fetch application');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching enhanced application:', error);
             throw error;
         }
     }

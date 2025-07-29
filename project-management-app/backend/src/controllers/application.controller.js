@@ -78,47 +78,141 @@ const applicationController = {
     }
   },
 
-  // Get single application
+  // Get single application with comprehensive data for project-unified.html
   async getApplication(req, res) {
     try {
       const { id } = req.params;
+      const { format } = req.query; // Support different response formats
 
       const application = await Application.findByPk(id, {
         include: [
-          { model: User, as: 'assignee', attributes: ['id', 'name', 'email'] },
-          { model: User, as: 'creator', attributes: ['id', 'name', 'email'] },
-          { model: User, as: 'lastUpdater', attributes: ['id', 'name', 'email'] },
+          { 
+            model: User, 
+            as: 'assignee', 
+            attributes: ['id', 'firstName', 'lastName', 'email'] 
+          },
+          { 
+            model: User, 
+            as: 'creator', 
+            attributes: ['id', 'firstName', 'lastName', 'email'] 
+          },
+          { 
+            model: User, 
+            as: 'lastUpdater', 
+            attributes: ['id', 'firstName', 'lastName', 'email'] 
+          },
           { 
             model: Document, 
             include: [
-              { model: User, as: 'uploader', attributes: ['id', 'name'] },
-              { model: User, as: 'verifier', attributes: ['id', 'name'] }
-            ]
+              { model: User, as: 'uploader', attributes: ['id', 'firstName', 'lastName'] },
+              { model: User, as: 'verifier', attributes: ['id', 'firstName', 'lastName'] }
+            ],
+            order: [['createdAt', 'DESC']]
           },
           {
             model: FamilyMember,
             as: 'familyMembers',
+            where: { isActive: true },
+            required: false,
             order: [['memberType', 'ASC'], ['birthDate', 'ASC']]
+          },
+          {
+            model: Activity,
+            include: [
+              { model: User, attributes: ['id', 'firstName', 'lastName'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: 10
+          },
+          {
+            model: Comment,
+            include: [
+              { model: User, attributes: ['id', 'firstName', 'lastName'] }
+            ],
+            order: [['createdAt', 'DESC']],
+            limit: 5
           }
         ]
       });
 
       if (!application) {
-        return res.status(404).json({ error: 'Application not found' });
+        return res.status(404).json({ 
+          error: 'Application not found',
+          redirectUrl: '/projects.html' // Fallback redirect
+        });
       }
 
       // Check access permission
-      if (req.user.role === 'viewer' || 
-          (req.user.role === 'staff' && 
+      if (req.user && req.user.role === 'viewer' || 
+          (req.user && req.user.role === 'staff' && 
            application.assignedToId !== req.user.id && 
            application.createdById !== req.user.id)) {
-        return res.status(403).json({ error: 'Access denied' });
+        return res.status(403).json({ 
+          error: 'Access denied',
+          redirectUrl: '/projects.html'
+        });
       }
 
-      res.json({ application });
+      // Calculate additional computed fields for UI
+      const enrichedApplication = {
+        ...application.toJSON(),
+        
+        // Calculate age
+        age: application.birthDate ? 
+          Math.floor((new Date() - new Date(application.birthDate)) / (365.25 * 24 * 60 * 60 * 1000)) : null,
+        
+        // Generate status badge info for UI
+        statusBadge: getStatusBadgeInfo(application.status, application.progressStatus),
+        
+        // Generate edit/view URLs for frontend
+        urls: {
+          edit: `/project-unified.html?edit=${application.id}`,
+          view: `/project-unified.html?view=${application.id}`,
+          list: '/projects.html'
+        },
+        
+        // Progress indicators
+        progressInfo: calculateProgressInfo(application),
+        
+        // Financial summary
+        financialSummary: calculateFinancialSummary(application),
+        
+        // Family summary
+        familySummary: calculateFamilySummary(application.familyMembers),
+        
+        // Next action recommendations
+        nextActions: getNextActionRecommendations(application)
+      };
+
+      // Format response based on requested format
+      if (format === 'minimal') {
+        res.json({
+          application: {
+            id: application.id,
+            applicationNumber: application.applicationNumber,
+            applicantName: application.applicantName,
+            status: application.status,
+            progressStatus: application.progressStatus,
+            urls: enrichedApplication.urls
+          }
+        });
+      } else {
+        res.json({ 
+          application: enrichedApplication,
+          meta: {
+            lastModified: application.updatedAt,
+            version: application.version,
+            canEdit: canUserEdit(req.user, application),
+            canDelete: canUserDelete(req.user, application)
+          }
+        });
+      }
     } catch (error) {
       logger.error('Get application error:', error);
-      res.status(500).json({ error: 'Failed to fetch application' });
+      res.status(500).json({ 
+        error: 'Failed to fetch application',
+        redirectUrl: '/projects.html'
+      });
     }
   },
 
@@ -596,7 +690,311 @@ const applicationController = {
     // This would generate a CSV file
     // For now, we'll create a placeholder
     res.status(501).json({ error: 'Export not implemented yet' });
+  },
+
+  // Get application by application number for direct URL access
+  async getApplicationByNumber(req, res) {
+    try {
+      const { applicationNumber } = req.params;
+
+      const application = await Application.findOne({
+        where: { applicationNumber },
+        attributes: ['id', 'applicationNumber', 'applicantName', 'status']
+      });
+
+      if (!application) {
+        return res.status(404).json({ 
+          error: 'Application not found',
+          redirectUrl: '/projects.html'
+        });
+      }
+
+      // Redirect to the proper URL with ID
+      res.json({
+        redirect: true,
+        urls: {
+          edit: `/project-unified.html?edit=${application.id}`,
+          view: `/project-unified.html?view=${application.id}`
+        },
+        application: {
+          id: application.id,
+          applicationNumber: application.applicationNumber,
+          applicantName: application.applicantName,
+          status: application.status
+        }
+      });
+    } catch (error) {
+      logger.error('Get application by number error:', error);
+      res.status(500).json({ 
+        error: 'Failed to fetch application',
+        redirectUrl: '/projects.html'
+      });
+    }
+  },
+
+  // Quick status update for project-unified.html interface
+  async quickUpdate(req, res) {
+    const transaction = await sequelize.transaction();
+
+    try {
+      const { id } = req.params;
+      const { field, value, version } = req.body;
+
+      const application = await Application.findByPk(id);
+      if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+      }
+
+      // Check optimistic locking
+      if (version && application.version !== version) {
+        return res.status(409).json({ 
+          error: 'Data has been modified by another user. Please reload.',
+          currentVersion: application.version
+        });
+      }
+
+      // Validate field update permission
+      const allowedFields = [
+        'progressStatus', 'progressSubStatus', 'daysAfterApplication',
+        'certificateReceived', 'invoiceIssued', 'paymentVerified',
+        'nextRenewalDate', 'renewalNotPossible',
+        'disabilityHandbookApplicationDesired', 'employmentSupportDesired',
+        'expectedRevenue', 'remainingInstallment', 'serviceFee'
+      ];
+
+      if (!allowedFields.includes(field)) {
+        return res.status(400).json({ error: 'Field update not allowed' });
+      }
+
+      const updateData = {
+        [field]: value,
+        lastUpdatedById: req.user.id
+      };
+
+      await application.update(updateData, { transaction });
+
+      // Create activity log
+      await createActivity({
+        applicationId: application.id,
+        userId: req.user.id,
+        activityType: 'updated',
+        description: `Quick update: ${field} changed to ${value}`,
+        metadata: { field, oldValue: application[field], newValue: value },
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent')
+      }, transaction);
+
+      await transaction.commit();
+
+      res.json({
+        message: 'Updated successfully',
+        field,
+        value,
+        version: application.version + 1,
+        updatedAt: new Date()
+      });
+    } catch (error) {
+      await transaction.rollback();
+      logger.error('Quick update error:', error);
+      res.status(500).json({ error: 'Failed to update application' });
+    }
   }
 };
+
+// Helper functions for enhanced application data
+function getStatusBadgeInfo(status, progressStatus) {
+  const statusConfig = {
+    'draft': { color: 'gray', label: '下書き', icon: 'edit' },
+    'submitted': { color: 'blue', label: '提出済み', icon: 'send' },
+    'under_review': { color: 'yellow', label: '審査中', icon: 'clock' },
+    'additional_docs_required': { color: 'orange', label: '追加書類必要', icon: 'file-plus' },
+    'approved': { color: 'green', label: '承認済み', icon: 'check-circle' },
+    'rejected': { color: 'red', label: '却下', icon: 'x-circle' },
+    'withdrawn': { color: 'gray', label: '取下げ', icon: 'minus-circle' }
+  };
+
+  const progressConfig = {
+    'initial_consultation': '初回相談',
+    'document_preparation': '書類準備中',
+    'medical_certificate': '診断書取得中',
+    'before_submission': '提出前',
+    'submitted': '提出済み',
+    'under_review': '審査中',
+    'decision_notification': '決定通知',
+    'payment_received': '入金済み',
+    'completed': '完了'
+  };
+
+  return {
+    status: statusConfig[status] || statusConfig['draft'],
+    progress: progressConfig[progressStatus] || progressStatus,
+    combinedLabel: `${statusConfig[status]?.label || status} - ${progressConfig[progressStatus] || progressStatus}`
+  };
+}
+
+function calculateProgressInfo(application) {
+  const totalSteps = 9; // Based on progressStatus enum
+  const stepOrder = [
+    'initial_consultation', 'document_preparation', 'medical_certificate',
+    'before_submission', 'submitted', 'under_review',
+    'decision_notification', 'payment_received', 'completed'
+  ];
+  
+  const currentStep = stepOrder.indexOf(application.progressStatus) + 1;
+  const progressPercentage = Math.round((currentStep / totalSteps) * 100);
+
+  return {
+    currentStep,
+    totalSteps,
+    progressPercentage,
+    stepName: application.progressStatus,
+    isCompleted: application.progressStatus === 'completed',
+    daysInProgress: application.daysAfterApplication || 0
+  };
+}
+
+function calculateFinancialSummary(application) {
+  const expectedRevenue = parseFloat(application.expectedRevenue) || 0;
+  const remainingInstallment = parseFloat(application.remainingInstallment) || 0;
+  const serviceFee = parseFloat(application.serviceFee) || 0;
+  const monthlyAmount = parseFloat(application.monthlyAmount) || 0;
+
+  return {
+    expectedRevenue,
+    remainingInstallment,
+    serviceFee,
+    monthlyAmount,
+    paidAmount: expectedRevenue - remainingInstallment,
+    paymentProgress: expectedRevenue > 0 ? Math.round(((expectedRevenue - remainingInstallment) / expectedRevenue) * 100) : 0,
+    hasFinancialData: expectedRevenue > 0 || serviceFee > 0 || monthlyAmount > 0
+  };
+}
+
+function calculateFamilySummary(familyMembers) {
+  if (!familyMembers || !Array.isArray(familyMembers)) {
+    return { hasFamily: false, summary: '家族情報なし' };
+  }
+
+  const spouse = familyMembers.find(m => m.memberType === 'spouse' && m.isActive);
+  const children = familyMembers.filter(m => m.memberType === 'child' && m.isActive);
+
+  let summary = '';
+  if (spouse) {
+    summary += `配偶者: ${spouse.name}`;
+  }
+  if (children.length > 0) {
+    if (summary) summary += ', ';
+    summary += `子供: ${children.length}名`;
+  }
+  if (!summary) {
+    summary = '家族情報なし';
+  }
+
+  return {
+    hasFamily: familyMembers.length > 0,
+    summary,
+    spouseCount: spouse ? 1 : 0,
+    childrenCount: children.length,
+    totalMembers: familyMembers.length
+  };
+}
+
+function getNextActionRecommendations(application) {
+  const actions = [];
+
+  // Based on status and progress
+  switch (application.progressStatus) {
+    case 'initial_consultation':
+      actions.push({
+        action: 'schedule_document_review',
+        label: '書類確認のスケジュール設定',
+        priority: 'high',
+        url: `/project-unified.html?edit=${application.id}#documents`
+      });
+      break;
+    
+    case 'document_preparation':
+      actions.push({
+        action: 'check_required_documents',
+        label: '必要書類の確認',
+        priority: 'high',
+        url: `/project-unified.html?edit=${application.id}#documents`
+      });
+      break;
+    
+    case 'medical_certificate':
+      actions.push({
+        action: 'follow_up_medical',
+        label: '医療機関への確認',
+        priority: 'medium',
+        url: `/project-unified.html?edit=${application.id}#medical`
+      });
+      break;
+    
+    case 'submitted':
+      if (!application.certificateReceived) {
+        actions.push({
+          action: 'check_certificate',
+          label: '証書の受領確認',
+          priority: 'medium',
+          url: `/project-unified.html?edit=${application.id}#status`
+        });
+      }
+      break;
+  }
+
+  // Financial actions
+  if (!application.invoiceIssued && application.status === 'approved') {
+    actions.push({
+      action: 'issue_invoice',
+      label: '請求書発行',
+      priority: 'high',
+      url: `/project-unified.html?edit=${application.id}#financial`
+    });
+  }
+
+  if (application.invoiceIssued && !application.paymentVerified) {
+    actions.push({
+      action: 'verify_payment',
+      label: '入金確認',
+      priority: 'high',
+      url: `/project-unified.html?edit=${application.id}#financial`
+    });
+  }
+
+  // Renewal actions
+  if (application.nextRenewalDate) {
+    const renewalDate = new Date(application.nextRenewalDate);
+    const today = new Date();
+    const daysToRenewal = Math.ceil((renewalDate - today) / (1000 * 60 * 60 * 24));
+    
+    if (daysToRenewal <= 90 && daysToRenewal > 0) {
+      actions.push({
+        action: 'prepare_renewal',
+        label: `更新準備 (${daysToRenewal}日後)`,
+        priority: daysToRenewal <= 30 ? 'high' : 'medium',
+        url: `/project-unified.html?edit=${application.id}#renewal`
+      });
+    }
+  }
+
+  return actions.slice(0, 3); // Limit to top 3 actions
+}
+
+function canUserEdit(user, application) {
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+  if (user.role === 'viewer') return false;
+  
+  return application.assignedToId === user.id || application.createdById === user.id;
+}
+
+function canUserDelete(user, application) {
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+  if (user.role === 'viewer' || user.role === 'staff') return false;
+  
+  return application.createdById === user.id && application.status === 'draft';
+}
 
 module.exports = applicationController;

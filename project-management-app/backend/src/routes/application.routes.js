@@ -26,6 +26,9 @@ router.get('/',
 // Get application statistics
 router.get('/statistics', applicationController.getStatistics);
 
+// Get application by number (for direct URL access)
+router.get('/by-number/:applicationNumber', applicationController.getApplicationByNumber);
+
 // Get single application
 router.get('/:id', applicationController.getApplication);
 
@@ -110,6 +113,17 @@ router.delete('/:id',
 router.get('/export/csv',
   authorize('admin', 'staff'),
   applicationController.exportApplications
+);
+
+// Quick update for project-unified.html interface
+router.patch('/:id/quick-update',
+  [
+    body('field').notEmpty().trim(),
+    body('value').exists(),
+    body('version').optional().isInt()
+  ],
+  validate,
+  applicationController.quickUpdate
 );
 
 module.exports = router;
