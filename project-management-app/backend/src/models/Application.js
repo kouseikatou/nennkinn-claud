@@ -225,10 +225,11 @@ const Application = sequelize.define('Application', {
       const date = new Date();
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
+      // SQLiteではYEAR関数の代わりにstrftimeを使用
       const count = await Application.count({
         where: sequelize.where(
-          sequelize.fn('YEAR', sequelize.col('createdAt')),
-          year
+          sequelize.fn('strftime', '%Y', sequelize.col('createdAt')),
+          year.toString()
         )
       });
       application.applicationNumber = `DP${year}${month}${String(count + 1).padStart(5, '0')}`;
