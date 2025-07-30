@@ -22,5 +22,6 @@
     }
   ],
   "buildCommand": "echo 'No build required for static files'",
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "installCommand": "npm install --force"
 }
