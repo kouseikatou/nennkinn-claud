@@ -4,7 +4,7 @@ const path = require('path');
 // Vercel環境での初期化用スクリプト
 async function initVercelDatabase() {
   try {
-    console.log('🚀 Vercel用データベース初期化開始...');
+    // ログを最小限に抑制
     
     // 本番環境でのメモリDBを使用
     process.env.NODE_ENV = 'production';
@@ -16,11 +16,8 @@ async function initVercelDatabase() {
     
     // データベース接続
     await sequelize.authenticate();
-    console.log('✅ データベース接続成功（メモリ内）');
-    
     // テーブル作成
     await sequelize.sync({ force: true });
-    console.log('✅ テーブル作成完了');
     
     // 管理者ユーザー作成
     const adminPassword = await bcrypt.hash('admin123', 10);
@@ -59,14 +56,13 @@ async function initVercelDatabase() {
       lastUpdatedById: admin.id
     });
     
-    console.log('✅ 初期データ作成完了');
-    console.log(`   - 管理者: ${admin.email}`);
-    console.log(`   - 申請: ${application.applicationNumber}`);
+    // 初期化完了
     
     return { admin, application };
     
   } catch (error) {
-    console.error('❌ 初期化エラー:', error);
+    // エラーのみログ出力
+    console.error('Init error:', error.message);
     throw error;
   }
 }

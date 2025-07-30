@@ -42,8 +42,12 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logging middleware
-app.use(morgan('combined', { stream: logger.stream }));
+// Logging middleware (本番では簡略ログ)
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('combined', { stream: logger.stream }));
+} else {
+  app.use(morgan('short')); // 本番では簡略ログ
+}
 
 // Rate limiting
 const limiter = rateLimit({
@@ -120,10 +124,10 @@ const startServer = async () => {
       process.env.DB_STORAGE = ':memory:';
       await sequelize.sync({ force: true });
       
-      // 初期データ作成
+      // 初期データ作成（ログを抑制）
       const initVercelDB = require('../../../scripts/init-vercel-db');
       await initVercelDB();
-      logger.info('Vercel in-memory database initialized.');
+      console.log('Vercel DB initialized'); // 簡略ログ
     } else if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: true }); // テーブル構造を更新（データは保持）
       logger.info('Database models synchronized.');

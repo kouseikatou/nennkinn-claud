@@ -1,0 +1,24 @@
+# 不要なファイルをVercelビルドから除外
+.git/
+.DS_Store
+node_modules/
+*.log
+*.tmp
+.env.development
+.env.local
+
+# 開発用ファイル
+data/development.sqlite
+data/backups/
+test/
+tests/
+*.test.js
+*.spec.js
+
+# ドキュメント
+*.md
+!README.md
+
+# 設定ファイル
+.vscode/
+.idea/

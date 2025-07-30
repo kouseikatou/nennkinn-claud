@@ -60,7 +60,7 @@ if (process.env.VERCEL) {
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: dbPath,
-    logging: console.log, // デバッグ用に console.log に変更
+    logging: process.env.NODE_ENV === 'development' ? console.log : false, // 本番ではログを無効化
     pool: {
       max: 1,
       min: 0,
