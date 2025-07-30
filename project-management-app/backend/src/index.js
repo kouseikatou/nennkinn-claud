@@ -115,9 +115,22 @@ const startServer = async () => {
     logger.info('Database connection has been established successfully.');
 
     // Sync database models
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.VERCEL) {
+      // Vercel環境ではメモリ内DBで初期化
+      process.env.DB_STORAGE = ':memory:';
+      await sequelize.sync({ force: true });
+      
+      // 初期データ作成
+      const initVercelDB = require('../../../scripts/init-vercel-db');
+      await initVercelDB();
+      logger.info('Vercel in-memory database initialized.');
+    } else if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: true }); // テーブル構造を更新（データは保持）
       logger.info('Database models synchronized.');
+    } else {
+      // 本番環境では既存テーブルをそのまま使用
+      await sequelize.sync({ alter: false });
+      logger.info('Database models loaded.');
     }
 
     const server = app.listen(PORT, () => {

@@ -26,8 +26,21 @@ function getDatabasePath() {
   }
 }
 
-// Vercel Postgres環境変数を検出
-if (process.env.POSTGRES_URL) {
+// Vercel環境でのメモリ内DB設定
+if (process.env.VERCEL) {
+  console.log('🌐 Vercel環境でメモリ内DBを使用');
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: ':memory:',
+    logging: false, // Vercelではログを抑制
+    pool: {
+      max: 1,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
+    }
+  });
+} else if (process.env.POSTGRES_URL) {
   // Vercel Postgres設定（オプション）
   sequelize = new Sequelize(process.env.POSTGRES_URL, {
     dialect: 'postgres',

@@ -1,7 +1,8 @@
 {
   "functions": {
     "api/index.js": {
-      "maxDuration": 10
+      "maxDuration": 10,
+      "includeFiles": "data/**"
     }
   },
   "rewrites": [
@@ -9,5 +10,10 @@
       "source": "/api/(.*)",
       "destination": "/api"
     }
-  ]
+  ],
+  "env": {
+    "DB_DIALECT": "sqlite",
+    "DB_STORAGE": "./data/production.sqlite",
+    "NODE_ENV": "production"
+  }
 }
