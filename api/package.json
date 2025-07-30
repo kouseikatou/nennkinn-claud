@@ -1,0 +1,10 @@
+{
+  "name": "nenkin-api",
+  "version": "1.0.0",
+  "description": "年金申請システムのモックAPI",
+  "main": "index.js",
+  "dependencies": {},
+  "engines": {
+    "node": "18.x"
+  }
+}
