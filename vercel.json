@@ -10,6 +10,17 @@
       "destination": "/api"
     }
   ],
+  "headers": [
+    {
+      "source": "/js/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    }
+  ],
   "buildCommand": "echo 'No build required for static files'",
   "outputDirectory": "."
 }
