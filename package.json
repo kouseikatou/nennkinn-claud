@@ -7,7 +7,11 @@
     "dev": "vercel dev",
     "build": "echo 'No build step required'",
     "start": "node api/index.js",
-    "init-data": "node project-management-app/backend/src/scripts/init-data.js"
+    "init-data": "node project-management-app/backend/src/scripts/init-data.js",
+    "setup:prod": "node scripts/prepare-production-db.js",
+    "setup:dev": "cp data/production.sqlite data/development.sqlite 2>/dev/null || npm run setup:prod",
+    "backup": "node scripts/backup-database.js",
+    "db:status": "node scripts/check-database.js"
   },
   "dependencies": {
     "express": "^4.18.2",
