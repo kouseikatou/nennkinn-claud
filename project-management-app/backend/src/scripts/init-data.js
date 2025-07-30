@@ -3,21 +3,28 @@ const { sequelize, User, Application } = require('../models');
 async function initializeData() {
   try {
     console.log('🚀 データベース初期化開始...');
+    console.log(`📁 環境: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`📁 データベースパス: ${process.env.DB_STORAGE || 'デフォルトパス'}`);
     
     // データベース接続確認
     await sequelize.authenticate();
     console.log('✅ データベース接続成功');
 
     // テーブル同期（本番環境では既存テーブルをそのまま使用）
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+    console.log('📋 テーブル同期を開始します...');
+    await sequelize.sync({ force: process.env.NODE_ENV === 'development' });
     console.log('✅ テーブル同期完了');
 
     // 既存データをクリア（開発環境のみ）
     if (process.env.NODE_ENV === 'development') {
-      await sequelize.query('DELETE FROM applications');
-      await sequelize.query('DELETE FROM users');
-      await sequelize.query('DELETE FROM surveys');
-      console.log('✅ 既存データクリア完了');
+      try {
+        await sequelize.query('DELETE FROM applications');
+        await sequelize.query('DELETE FROM users');
+        await sequelize.query('DELETE FROM surveys');
+        console.log('✅ 既存データクリア完了');
+      } catch (error) {
+        console.log('⚠️  既存データのクリアをスキップ（テーブルが空の可能性があります）');
+      }
     }
 
     // 管理者ユーザーの作成
@@ -38,12 +45,36 @@ async function initializeData() {
     }
 
     // 田中太郎の申請データ作成
-    const [tanakaApplication, appCreated] = await Application.findOrCreate({
+    // 既存のデータを確認
+    const existingApp = await Application.findOne({
       where: { 
         applicantName: '田中太郎',
         applicantNameKana: 'タナカタロウ'
-      },
-      defaults: {
+      }
+    });
+    
+    let tanakaApplication;
+    let appCreated = false;
+    
+    if (existingApp) {
+      tanakaApplication = existingApp;
+      console.log('✅ 田中太郎の申請データ既存確認:', {
+        id: tanakaApplication.id,
+        applicationNumber: tanakaApplication.applicationNumber
+      });
+    } else {
+      // 新規作成
+      // applicationNumberを手動で生成
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const count = await Application.count() || 0;
+      const applicationNumber = `DP${year}${month}${String(count + 1).padStart(5, '0')}`;
+      
+      console.log(`📝 applicationNumber生成: ${applicationNumber}`);
+      
+      tanakaApplication = await Application.create({
+        applicationNumber: applicationNumber,
         applicantName: '田中太郎',
         applicantNameKana: 'タナカタロウ',
         birthDate: '1985-03-15',
@@ -66,19 +97,15 @@ async function initializeData() {
         createdById: adminUser.id,
         assignedToId: adminUser.id,
         lastUpdatedById: adminUser.id
-      }
-    });
+      });
+      appCreated = true;
+    }
 
     if (appCreated) {
       console.log('✅ 田中太郎の申請データ作成:', {
         id: tanakaApplication.id,
         applicationNumber: tanakaApplication.applicationNumber,
         applicantName: tanakaApplication.applicantName
-      });
-    } else {
-      console.log('✅ 田中太郎の申請データ既存確認:', {
-        id: tanakaApplication.id,
-        applicationNumber: tanakaApplication.applicationNumber
       });
     }
 

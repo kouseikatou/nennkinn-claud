@@ -47,16 +47,12 @@ if (process.env.POSTGRES_URL) {
   sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: dbPath,
-    logging: (msg) => logger.debug(msg),
+    logging: console.log, // デバッグ用に console.log に変更
     pool: {
       max: 1,
       min: 0,
       acquire: 30000,
       idle: 10000
-    },
-    // SQLite最適化設定
-    dialectOptions: {
-      mode: Sequelize.QueryTypes.SELECT
     }
   });
 }

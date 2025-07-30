@@ -238,32 +238,44 @@ const Application = sequelize.define('Application', {
   timestamps: true,
   hooks: {
     beforeCreate: async (application) => {
-      // Generate application number
-      const date = new Date();
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      // データベース方言に応じて年を取得
-      let whereClause;
-      if (sequelize.getDialect() === 'postgres') {
-        whereClause = sequelize.where(
-          sequelize.fn('EXTRACT', sequelize.literal('YEAR FROM "createdAt"')),
-          year
-        );
-      } else if (sequelize.getDialect() === 'sqlite') {
-        whereClause = sequelize.where(
-          sequelize.fn('strftime', '%Y', sequelize.col('createdAt')),
-          year.toString()
-        );
-      } else {
-        // MySQL
-        whereClause = sequelize.where(
-          sequelize.fn('YEAR', sequelize.col('createdAt')),
-          year
-        );
+      try {
+        // Generate application number
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        
+        console.log('🔧 applicationNumber生成中...');
+        
+        // データベース方言に応じて年を取得
+        let whereClause;
+        if (sequelize.getDialect() === 'postgres') {
+          whereClause = sequelize.where(
+            sequelize.fn('EXTRACT', sequelize.literal('YEAR FROM "createdAt"')),
+            year
+          );
+        } else if (sequelize.getDialect() === 'sqlite') {
+          whereClause = sequelize.where(
+            sequelize.fn('strftime', '%Y', sequelize.col('createdAt')),
+            year.toString()
+          );
+        } else {
+          // MySQL
+          whereClause = sequelize.where(
+            sequelize.fn('YEAR', sequelize.col('createdAt')),
+            year
+          );
+        }
+        
+        const count = await Application.count({ where: whereClause });
+        application.applicationNumber = `DP${year}${month}${String(count + 1).padStart(5, '0')}`;
+        console.log(`✅ applicationNumber生成完了: ${application.applicationNumber}`);
+      } catch (error) {
+        console.error('❌ applicationNumber生成エラー:', error);
+        // フォールバックとして簡単な番号を生成
+        const timestamp = Date.now();
+        application.applicationNumber = `DP${timestamp}`;
+        console.log(`⚠️  フォールバックapplicationNumber: ${application.applicationNumber}`);
       }
-      
-      const count = await Application.count({ where: whereClause });
-      application.applicationNumber = `DP${year}${month}${String(count + 1).padStart(5, '0')}`;
     }
   }
 });

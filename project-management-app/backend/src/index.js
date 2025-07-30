@@ -116,7 +116,7 @@ const startServer = async () => {
 
     // Sync database models
     if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ force: true }); // 強制的に新しいDBを作成
+      await sequelize.sync({ alter: true }); // テーブル構造を更新（データは保持）
       logger.info('Database models synchronized.');
     }
 
