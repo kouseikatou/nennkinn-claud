@@ -1,19 +1,23 @@
 {
+  "buildCommand": "echo 'Static site - no build needed'",
+  "outputDirectory": ".",
   "functions": {
     "api/index.js": {
-      "maxDuration": 10,
-      "includeFiles": "data/**"
+      "maxDuration": 10
     }
   },
   "rewrites": [
     {
       "source": "/api/(.*)",
       "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "env": {
-    "DB_DIALECT": "sqlite",
-    "DB_STORAGE": "./data/production.sqlite",
+    "VERCEL": "1",
     "NODE_ENV": "production"
   }
 }
