@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 データベースデバッグツール - 障害年金管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .log-entry {
+            margin: 4px 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            word-break: break-all;
+        }
+        .log-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .log-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .log-info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .log-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .log-debug { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        
+        .json-viewer {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-connected { background-color: #28a745; }
+        .status-disconnected { background-color: #dc3545; }
+        .status-checking { background-color: #ffc107; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">🔧 データベースデバッグツール</h1>
+            <p class="text-gray-600">APIエンドポイントとデータベース接続の状態を診断します</p>
+        </div>
+
+        <!-- 接続状態 -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 flex items-center">
+                <span id="connectionStatus" class="status-indicator status-checking"></span>
+                接続状態
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-gray-50 p-4 rounded">
+                    <h3 class="font-medium text-gray-700 mb-2">APIサーバー</h3>
+                    <p id="apiStatus" class="text-sm text-gray-600">確認中...</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <h3 class="font-medium text-gray-700 mb-2">データベース</h3>
+                    <p id="dbStatus" class="text-sm text-gray-600">確認中...</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <h3 class="font-medium text-gray-700 mb-2">認証状態</h3>
+                    <p id="authStatus" class="text-sm text-gray-600">確認中...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- テストツール -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">📊 データベーステスト</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <button onclick="testHealthCheck()" 
+                        class="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded transition-colors">
+                    ヘルスチェック
+                </button>
+                <button onclick="testDatabaseConnection()" 
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded transition-colors">
+                    DB接続テスト
+                </button>
+                <button onclick="testApplicationsList()" 
+                        class="bg-purple-500 hover:bg-purple-600 text-white font-medium py-2 px-4 rounded transition-colors">
+                    申請一覧取得
+                </button>
+                <button onclick="testAuthentication()" 
+                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded transition-colors">
+                    認証テスト
+                </button>
+            </div>
+        </div>
+
+        <!-- APIエンドポイント診断 -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">🔍 APIエンドポイント診断</h2>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">ベースURL</label>
+                <input type="text" id="baseUrl" value="https://nennkinn-claud.vercel.app/api" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">エンドポイント</label>
+                    <select id="endpoint" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="/health">GET /health</option>
+                        <option value="/applications">GET /applications</option>
+                        <option value="/applications/1">GET /applications/:id</option>
+                        <option value="/auth/login">POST /auth/login</option>
+                        <option value="/users">GET /users</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">認証トークン</label>
+                    <input type="text" id="authToken" placeholder="Bearer token"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+            <button onclick="testEndpoint()" 
+                    class="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white font-medium py-2 px-6 rounded transition-colors">
+                エンドポイントをテスト
+            </button>
+        </div>
+
+        <!-- ログ表示 -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">📋 デバッグログ</h2>
+                <div class="space-x-2">
+                    <button onclick="exportLogs()" 
+                            class="bg-gray-500 hover:bg-gray-600 text-white font-medium py-1 px-3 rounded text-sm transition-colors">
+                        エクスポート
+                    </button>
+                    <button onclick="clearLogs()" 
+                            class="bg-red-500 hover:bg-red-600 text-white font-medium py-1 px-3 rounded text-sm transition-colors">
+                        クリア
+                    </button>
+                </div>
+            </div>
+            <div id="logContainer" class="bg-gray-50 p-4 rounded-md max-h-96 overflow-y-auto">
+                <div class="log-entry log-info">データベースデバッグツールが起動しました</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- application-api.jsを読み込む -->
+    <script src="js/application-api.js"></script>
+    
+    <script>
+        // グローバル変数
+        let logs = [];
+        
+        // ログ関数
+        function log(message, type = 'info', data = null) {
+            const timestamp = new Date().toLocaleTimeString('ja-JP');
+            const logEntry = {
+                timestamp,
+                message,
+                type,
+                data
+            };
+            logs.push(logEntry);
+            
+            const container = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            
+            let content = `[${timestamp}] ${message}`;
+            entry.textContent = content;
+            
+            if (data) {
+                const dataView = document.createElement('div');
+                dataView.className = 'json-viewer';
+                const pre = document.createElement('pre');
+                pre.textContent = JSON.stringify(data, null, 2);
+                dataView.appendChild(pre);
+                entry.appendChild(dataView);
+            }
+            
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ログクリア
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logContainer').innerHTML = 
+                '<div class="log-entry log-info">ログをクリアしました</div>';
+        }
+
+        // ログエクスポート
+        function exportLogs() {
+            const logText = logs.map(log => 
+                `[${log.timestamp}] [${log.type.toUpperCase()}] ${log.message}${log.data ? '\n' + JSON.stringify(log.data, null, 2) : ''}`
+            ).join('\n\n');
+            
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `db-debug-${new Date().toISOString()}.log`;
+            a.click();
+        }
+
+        // 接続状態を更新
+        function updateConnectionStatus(status) {
+            const indicator = document.getElementById('connectionStatus');
+            indicator.className = `status-indicator status-${status}`;
+        }
+
+        // ヘルスチェック
+        async function testHealthCheck() {
+            log('🏥 ヘルスチェックを実行中...', 'info');
+            updateConnectionStatus('checking');
+            
+            try {
+                const baseUrl = document.getElementById('baseUrl').value;
+                const response = await fetch(`${baseUrl}/health`);
+                const data = await response.text();
+                
+                let jsonData;
+                try {
+                    jsonData = JSON.parse(data);
+                } catch {
+                    jsonData = data;
+                }
+                
+                if (response.ok) {
+                    log('✅ ヘルスチェック成功', 'success', jsonData);
+                    document.getElementById('apiStatus').textContent = '正常動作中';
+                    updateConnectionStatus('connected');
+                } else {
+                    log(`❌ ヘルスチェック失敗 (${response.status})`, 'error', jsonData);
+                    document.getElementById('apiStatus').textContent = `エラー (${response.status})`;
+                    updateConnectionStatus('disconnected');
+                }
+            } catch (error) {
+                log(`💥 ネットワークエラー: ${error.message}`, 'error');
+                document.getElementById('apiStatus').textContent = '接続失敗';
+                updateConnectionStatus('disconnected');
+            }
+        }
+
+        // データベース接続テスト
+        async function testDatabaseConnection() {
+            log('🗄️ データベース接続をテスト中...', 'info');
+            
+            try {
+                // ApplicationAPIが利用可能か確認
+                if (typeof ApplicationAPI !== 'undefined') {
+                    const result = await ApplicationAPI.getApplications({ limit: 1 });
+                    log('✅ データベース接続成功', 'success', result);
+                    document.getElementById('dbStatus').textContent = '接続済み';
+                } else {
+                    log('⚠️ ApplicationAPIが読み込まれていません', 'warning');
+                    document.getElementById('dbStatus').textContent = 'API未読み込み';
+                }
+            } catch (error) {
+                log(`❌ データベース接続エラー: ${error.message}`, 'error', error);
+                document.getElementById('dbStatus').textContent = '接続エラー';
+            }
+        }
+
+        // 申請一覧テスト
+        async function testApplicationsList() {
+            log('📋 申請一覧を取得中...', 'info');
+            
+            try {
+                const baseUrl = document.getElementById('baseUrl').value;
+                const token = document.getElementById('authToken').value;
+                
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (token) {
+                    headers['Authorization'] = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+                }
+                
+                const response = await fetch(`${baseUrl}/applications?limit=5`, { headers });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ 申請一覧取得成功 (${data.applications?.length || 0}件)`, 'success', data);
+                } else {
+                    log(`❌ 申請一覧取得失敗 (${response.status})`, 'error', data);
+                }
+            } catch (error) {
+                log(`💥 申請一覧取得エラー: ${error.message}`, 'error');
+            }
+        }
+
+        // 認証テスト
+        async function testAuthentication() {
+            log('🔐 認証をテスト中...', 'info');
+            
+            try {
+                const baseUrl = document.getElementById('baseUrl').value;
+                const response = await fetch(`${baseUrl}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@disability-pension.jp',
+                        password: 'admin123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('✅ 認証成功', 'success', data);
+                    document.getElementById('authStatus').textContent = 'ログイン可能';
+                    if (data.token) {
+                        document.getElementById('authToken').value = data.token;
+                        log('🎫 トークンを自動設定しました', 'info');
+                    }
+                } else {
+                    log(`❌ 認証失敗 (${response.status})`, 'error', data);
+                    document.getElementById('authStatus').textContent = '認証エラー';
+                }
+            } catch (error) {
+                log(`💥 認証エラー: ${error.message}`, 'error');
+                document.getElementById('authStatus').textContent = '接続エラー';
+            }
+        }
+
+        // 任意のエンドポイントをテスト
+        async function testEndpoint() {
+            const baseUrl = document.getElementById('baseUrl').value;
+            const endpoint = document.getElementById('endpoint').value;
+            const token = document.getElementById('authToken').value;
+            
+            log(`🚀 エンドポイントテスト: ${endpoint}`, 'info');
+            
+            try {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                if (token) {
+                    headers['Authorization'] = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+                }
+                
+                let options = { headers };
+                
+                if (endpoint === '/auth/login') {
+                    options.method = 'POST';
+                    options.body = JSON.stringify({
+                        email: 'admin@disability-pension.jp',
+                        password: 'admin123'
+                    });
+                }
+                
+                const response = await fetch(`${baseUrl}${endpoint}`, options);
+                const data = await response.text();
+                
+                let jsonData;
+                try {
+                    jsonData = JSON.parse(data);
+                } catch {
+                    jsonData = data;
+                }
+                
+                if (response.ok) {
+                    log(`✅ リクエスト成功 (${response.status})`, 'success', jsonData);
+                } else {
+                    log(`❌ リクエスト失敗 (${response.status})`, 'error', jsonData);
+                }
+            } catch (error) {
+                log(`💥 リクエストエラー: ${error.message}`, 'error');
+            }
+        }
+
+        // ページロード時の初期化
+        document.addEventListener('DOMContentLoaded', async function() {
+            log('🔧 データベースデバッグツールを初期化中...', 'info');
+            
+            // 自動的にヘルスチェックを実行
+            await testHealthCheck();
+            
+            // ApplicationAPIの状態を確認
+            if (typeof ApplicationAPI !== 'undefined') {
+                log('✅ ApplicationAPIが読み込まれました', 'success');
+                log('📍 API設定:', 'debug', {
+                    baseURL: ApplicationAPI.getBaseURL ? ApplicationAPI.getBaseURL() : 'N/A'
+                });
+            } else {
+                log('⚠️ ApplicationAPIが見つかりません', 'warning');
+                log('💡 js/application-api.jsファイルが正しく読み込まれているか確認してください', 'info');
+            }
+            
+            // コンソールエラーを捕捉
+            window.addEventListener('error', function(event) {
+                log(`🐛 JavaScriptエラー: ${event.message}`, 'error', {
+                    filename: event.filename,
+                    line: event.lineno,
+                    column: event.colno,
+                    error: event.error?.stack
+                });
+            });
+        });
+    </script>
+</body>
+</html>
