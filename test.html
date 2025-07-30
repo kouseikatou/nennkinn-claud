@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 API テストツール - 障害年金管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .log-entry {
+            margin: 4px 0;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .log-success { background-color: #d4edda; color: #155724; }
+        .log-error { background-color: #f8d7da; color: #721c24; }
+        .log-info { background-color: #d1ecf1; color: #0c5460; }
+        .log-warning { background-color: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">🧪 API テストツール</h1>
+        
+        <!-- API設定 -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">🔧 API設定</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">ベースURL</label>
+                    <input type="text" id="baseUrl" value="https://nennkinn-claud.vercel.app/api" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">認証トークン</label>
+                    <input type="text" id="authToken" placeholder="Bearer token（オプション）"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+        </div>
+
+        <!-- クイックテスト -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">⚡ クイックテスト</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="testHealthCheck()" 
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    ヘルスチェック
+                </button>
+                <button onclick="testLogin()" 
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    ログインテスト
+                </button>
+                <button onclick="testApplications()" 
+                        class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
+                    申請データ取得
+                </button>
+            </div>
+        </div>
+
+        <!-- カスタムリクエスト -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">🛠️ カスタムリクエスト</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">メソッド</label>
+                    <select id="method" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">エンドポイント</label>
+                    <input type="text" id="endpoint" placeholder="/applications" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">リクエストボディ（JSON）</label>
+                <textarea id="requestBody" rows="4" placeholder='{"key": "value"}'
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"></textarea>
+            </div>
+            <button onclick="sendCustomRequest()" 
+                    class="bg-gray-600 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded">
+                リクエスト送信
+            </button>
+        </div>
+
+        <!-- ログ表示 -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">📋 ログ</h2>
+                <button onclick="clearLogs()" 
+                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded text-sm">
+                    クリア
+                </button>
+            </div>
+            <div id="logContainer" class="bg-gray-50 p-4 rounded-md max-h-96 overflow-y-auto">
+                <div class="log-entry log-info">APIテストツールが準備完了しました。</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ログ出力関数
+        function log(message, type = 'info') {
+            const container = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${timestamp}] ${message}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = 
+                '<div class="log-entry log-info">ログをクリアしました。</div>';
+        }
+
+        // API呼び出し関数
+        async function makeRequest(method, endpoint, body = null) {
+            const baseUrl = document.getElementById('baseUrl').value;
+            const authToken = document.getElementById('authToken').value;
+            
+            const url = `${baseUrl}${endpoint}`;
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            };
+
+            if (authToken) {
+                options.headers['Authorization'] = `Bearer ${authToken}`;
+            }
+
+            if (body && method !== 'GET') {
+                options.body = JSON.stringify(body);
+            }
+
+            log(`🚀 ${method} ${url}`, 'info');
+            
+            try {
+                const response = await fetch(url, options);
+                const responseText = await response.text();
+                
+                let responseData;
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch {
+                    responseData = responseText;
+                }
+
+                if (response.ok) {
+                    log(`✅ ${response.status} - ${JSON.stringify(responseData, null, 2)}`, 'success');
+                } else {
+                    log(`❌ ${response.status} ${response.statusText} - ${JSON.stringify(responseData, null, 2)}`, 'error');
+                }
+
+                return { response, data: responseData };
+            } catch (error) {
+                log(`💥 ネットワークエラー: ${error.message}`, 'error');
+                return { error };
+            }
+        }
+
+        // テスト関数
+        async function testHealthCheck() {
+            log('🏥 ヘルスチェックを実行中...', 'info');
+            await makeRequest('GET', '/health');
+        }
+
+        async function testLogin() {
+            log('🔐 ログインテストを実行中...', 'info');
+            const credentials = {
+                email: 'admin@disability-pension.jp',
+                password: 'admin123'
+            };
+            const result = await makeRequest('POST', '/auth/login', credentials);
+            
+            if (result.data && result.data.token) {
+                document.getElementById('authToken').value = result.data.token;
+                log('🎉 トークンを自動設定しました', 'success');
+            }
+        }
+
+        async function testApplications() {
+            log('📋 申請データ取得テストを実行中...', 'info');
+            await makeRequest('GET', '/applications?limit=3');
+        }
+
+        async function sendCustomRequest() {
+            const method = document.getElementById('method').value;
+            const endpoint = document.getElementById('endpoint').value;
+            const bodyText = document.getElementById('requestBody').value;
+
+            let body = null;
+            if (bodyText.trim()) {
+                try {
+                    body = JSON.parse(bodyText);
+                } catch (error) {
+                    log(`❌ JSONパースエラー: ${error.message}`, 'error');
+                    return;
+                }
+            }
+
+            await makeRequest(method, endpoint, body);
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🔧 APIテストツールを初期化しました', 'info');
+            
+            // Enter キーでリクエスト送信
+            document.getElementById('endpoint').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendCustomRequest();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -12,10 +12,6 @@
       "destination": "/api"
     },
     {
-      "source": "/tests/(.*)",
-      "destination": "/tests/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
