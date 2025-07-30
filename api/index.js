@@ -125,6 +125,8 @@ module.exports = async (req, res) => {
   }
 
   try {
+    console.log(`[${new Date().toISOString()}] ${method} ${path}`);
+    
     // ルーティング
     
     // 認証エンドポイント
@@ -313,10 +315,12 @@ module.exports = async (req, res) => {
     return res.status(404).json({ error: 'Endpoint not found' });
 
   } catch (error) {
-    console.error('API Error:', error);
+    console.error(`[${new Date().toISOString()}] API Error on ${method} ${path}:`, error);
+    console.error('Stack trace:', error.stack);
     return res.status(500).json({ 
       error: 'Internal server error',
-      message: error.message 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
