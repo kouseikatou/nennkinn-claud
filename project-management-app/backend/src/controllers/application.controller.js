@@ -55,8 +55,8 @@ const applicationController = {
       const { count, rows: applications } = await Application.findAndCountAll({
         where,
         include: [
-          { model: User, as: 'assignee', attributes: ['id', 'name', 'email'] },
-          { model: User, as: 'creator', attributes: ['id', 'name', 'email'] }
+          { model: User, as: 'assignee', attributes: ['id', 'name', 'email'], required: false },
+          { model: User, as: 'creator', attributes: ['id', 'name', 'email'], required: false }
         ],
         limit: parseInt(limit),
         offset,

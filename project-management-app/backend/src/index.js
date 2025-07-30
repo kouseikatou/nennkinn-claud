@@ -120,19 +120,58 @@ const startServer = async () => {
 
     // Sync database models
     if (process.env.VERCEL) {
-      // Vercel環境ではメモリ内DBで初期化
-      process.env.DB_STORAGE = ':memory:';
-      await sequelize.sync({ force: true });
-      
-      // 初期データ作成（ログを抑制）
-      const initVercelDB = require('../../../scripts/init-vercel-db');
-      await initVercelDB();
-      console.log('Vercel DB initialized'); // 簡略ログ
+      // Vercel環境ではグローバルメモリ内DBを初期化
+      if (!global.vercelDbInitialized) {
+        await sequelize.sync({ force: true });
+        
+        // 初期データ作成
+        const bcrypt = require('bcryptjs');
+        const { User, Application } = require('./models');
+        
+        // 管理者ユーザー作成
+        const adminPassword = await bcrypt.hash('admin123', 10);
+        const admin = await User.create({
+          name: 'システム管理者',
+          email: 'admin@disability-pension.jp',
+          password: adminPassword,
+          role: 'admin',
+          isActive: true
+        });
+        
+        // サンプル申請データ作成
+        await Application.create({
+          applicationNumber: 'APP-2024-0001',
+          applicantName: '田中太郎',
+          applicantNameKana: 'タナカタロウ',
+          birthDate: '1985-03-15',
+          gender: 'male',
+          phoneNumber: '090-1234-5678',
+          email: 'tanaka@example.com',
+          address: '東京都新宿区西新宿1-1-1',
+          postalCode: '160-0023',
+          disabilityType: 'mental',
+          disabilityGrade: 2,
+          disabilityDescription: 'うつ病による精神障害',
+          onsetDate: '2020-06-01',
+          applicationType: 'new',
+          status: 'submitted',
+          hospitalName: '東京医療センター',
+          doctorName: '山田医師',
+          diagnosisDate: '2020-06-01',
+          monthlyIncome: 200000,
+          hasOtherPension: false,
+          createdById: admin.id,
+          assignedToId: admin.id,
+          lastUpdatedById: admin.id
+        });
+        
+        global.vercelDbInitialized = true;
+        console.log('Vercel DB initialized');
+      }
     } else if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: true }); // テーブル構造を更新（データは保持）
+      await sequelize.sync({ alter: true });
       logger.info('Database models synchronized.');
     } else {
-      // 本番環境では既存テーブルをそのまま使用
       await sequelize.sync({ alter: false });
       logger.info('Database models loaded.');
     }
