@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vercel dev",
     "build": "echo 'No build step required'",
-    "start": "node api/index.js",
-    "init-data": "node project-management-app/backend/src/scripts/init-data.js"
+    "start": "node api/index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

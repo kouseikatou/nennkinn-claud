@@ -1,4 +1,4 @@
-// Vercel Functions メインエントリーポイント - MySQL版
+// Vercel Functions メインエントリーポイント - PostgreSQL (Neon) 版
 const { sequelize, testConnection } = require('./db/config');
 const { Application, User } = require('./db/models');
 const initDatabase = require('./db/init');
