@@ -77,6 +77,32 @@ const setCorsHeaders = (res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Test-Mode');
 };
 
+// リクエストボディをパースする関数
+const parseBody = async (req) => {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        if (body.trim() === '') {
+          resolve({});
+        } else {
+          resolve(JSON.parse(body));
+        }
+      } catch (e) {
+        console.error('JSON parse error:', e.message);
+        resolve({});
+      }
+    });
+    req.on('error', (err) => {
+      console.error('Request error:', err);
+      resolve({});
+    });
+  });
+};
+
 module.exports = async (req, res) => {
   // CORSヘッダーを設定
   setCorsHeaders(res);
@@ -87,7 +113,24 @@ module.exports = async (req, res) => {
   }
 
   const { url, method } = req;
-  const path = url.split('?')[0];
+  let path, query;
+  
+  try {
+    const urlObj = new URL(url, `http://${req.headers.host || 'localhost'}`);
+    path = urlObj.pathname;
+    query = Object.fromEntries(urlObj.searchParams);
+  } catch (e) {
+    // URLパースに失敗した場合のフォールバック
+    path = url.split('?')[0];
+    query = {};
+  }
+  
+  req.query = query;
+
+  // POSTやPUTリクエストの場合、ボディをパース
+  if (method === 'POST' || method === 'PUT') {
+    req.body = await parseBody(req);
+  }
 
   try {
     // ルーティング
@@ -155,7 +198,8 @@ module.exports = async (req, res) => {
 
     // 申請書詳細取得
     if (path.match(/^\/api\/applications\/\d+$/) && method === 'GET') {
-      const id = parseInt(path.split('/').pop());
+      const pathParts = path.split('/');
+      const id = parseInt(pathParts[pathParts.length - 1]);
       const application = applications.find(app => app.id === id);
       
       if (application) {
@@ -167,7 +211,8 @@ module.exports = async (req, res) => {
 
     // 申請書更新
     if (path.match(/^\/api\/applications\/\d+$/) && method === 'PUT') {
-      const id = parseInt(path.split('/').pop());
+      const pathParts = path.split('/');
+      const id = parseInt(pathParts[pathParts.length - 1]);
       const index = applications.findIndex(app => app.id === id);
       
       if (index !== -1) {
@@ -185,7 +230,8 @@ module.exports = async (req, res) => {
 
     // 申請書削除
     if (path.match(/^\/api\/applications\/\d+$/) && method === 'DELETE') {
-      const id = parseInt(path.split('/').pop());
+      const pathParts = path.split('/');
+      const id = parseInt(pathParts[pathParts.length - 1]);
       const index = applications.findIndex(app => app.id === id);
       
       if (index !== -1) {
@@ -198,11 +244,12 @@ module.exports = async (req, res) => {
 
     // ステータス更新
     if (path.match(/^\/api\/applications\/\d+\/status$/) && method === 'POST') {
-      const id = parseInt(path.split('/')[3]);
+      const pathParts = path.split('/');
+      const id = parseInt(pathParts[pathParts.length - 2]); // "status"の前の部分
       const index = applications.findIndex(app => app.id === id);
       
       if (index !== -1) {
-        const { status, reason } = req.body;
+        const { status, reason } = req.body || {};
         applications[index] = {
           ...applications[index],
           status,
