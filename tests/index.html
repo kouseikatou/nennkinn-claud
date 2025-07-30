@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テストツール - 障害年金管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">🧪 テストツール</h1>
+        <p class="text-gray-600 mb-8">障害年金管理システムのAPIとシステム機能をテストするためのツール集です。</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- APIテストツール -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-semibold ml-3">APIテストツール</h2>
+                </div>
+                <p class="text-gray-600 mb-4">APIエンドポイントの総合テスト。認証、データ取得、カスタムリクエストに対応。</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">ヘルスチェック</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">認証テスト</span>
+                    <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">データ取得</span>
+                </div>
+                <a href="pages/api-test.html" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    テスト開始
+                </a>
+            </div>
+
+            <!-- DB接続テスト -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-semibold ml-3">DB接続テスト</h2>
+                </div>
+                <p class="text-gray-600 mb-4">データベース接続の確認とSQL実行テスト。</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">接続確認</span>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">SQL実行</span>
+                </div>
+                <a href="pages/test-db-connection.html" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    テスト開始
+                </a>
+            </div>
+
+            <!-- テストデータ作成 -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-center mb-4">
+                    <div class="bg-orange-100 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-semibold ml-3">テストデータ作成</h2>
+                </div>
+                <p class="text-gray-600 mb-4">テスト用のサンプルデータ作成と初期データセットアップ。</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">サンプルデータ</span>
+                    <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">初期化</span>
+                </div>
+                <a href="pages/create-test-data.html" class="inline-block bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+                    作成開始
+                </a>
+            </div>
+
+            <!-- 旧APIテスト -->
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow opacity-75">
+                <div class="flex items-center mb-4">
+                    <div class="bg-gray-100 p-3 rounded-full">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-semibold ml-3">旧APIテスト</h2>
+                </div>
+                <p class="text-gray-600 mb-4">従来のAPIテストページ。基本的なAPI呼び出し機能。</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">レガシー</span>
+                </div>
+                <a href="pages/test-api.html" class="inline-block bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    テスト開始
+                </a>
+            </div>
+        </div>
+
+        <!-- システム情報 -->
+        <div class="mt-8 bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4">📋 システム情報</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <strong>API ベースURL:</strong><br>
+                    <code class="bg-gray-100 px-2 py-1 rounded">https://nennkinn-claud.vercel.app/api</code>
+                </div>
+                <div>
+                    <strong>テスト管理者アカウント:</strong><br>
+                    <code class="bg-gray-100 px-2 py-1 rounded">admin@disability-pension.jp / admin123</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- フッター -->
+        <div class="mt-8 text-center text-gray-500 text-sm">
+            <p>障害年金管理システム - テストツール v1.0</p>
+            <p class="mt-2">
+                <a href="../index.html" class="text-blue-500 hover:text-blue-700">メインシステムに戻る</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
