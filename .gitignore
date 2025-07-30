@@ -47,10 +47,13 @@ ENV/
 .env.local
 .env.production
 
-# Database
+# Database (dataフォルダ内の本番DBは除外しない)
 *.sqlite
 *.db
 database.sqlite
+!data/production.sqlite
+data/development.sqlite
+data/backups/
 
 # Uploads
 uploads/

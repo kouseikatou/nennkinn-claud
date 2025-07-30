@@ -1,0 +1,105 @@
+{
+  "sessionId": "session-1753872679360-eymfu03p0",
+  "checkpointId": "checkpoint-1753872709363-c3rycj385",
+  "checkpointName": "auto-save-1753872709363",
+  "timestamp": "2025-07-30T10:51:49.366Z",
+  "data": {
+    "timestamp": "2025-07-30T10:51:49.363Z",
+    "changeCount": 7,
+    "changesByType": {
+      "swarm_created": [
+        {
+          "type": "swarm_created",
+          "data": {
+            "swarmId": "swarm-1753872679358-y2boklsbv",
+            "swarmName": "swarm-1753872530687",
+            "objective": "backed-create",
+            "workerCount": 8
+          },
+          "timestamp": "2025-07-30T10:51:19.361Z"
+        }
+      ],
+      "agent_activity": [
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753872679358-y2boklsbv-0",
+            "activity": "spawned",
+            "data": {
+              "type": "coder",
+              "name": "Coder Worker 1"
+            }
+          },
+          "timestamp": "2025-07-30T10:51:19.363Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753872679358-y2boklsbv-1",
+            "activity": "spawned",
+            "data": {
+              "type": "analyst",
+              "name": "Analyst Worker 2"
+            }
+          },
+          "timestamp": "2025-07-30T10:51:19.363Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753872679358-y2boklsbv-2",
+            "activity": "spawned",
+            "data": {
+              "type": "tester",
+              "name": "Tester Worker 3"
+            }
+          },
+          "timestamp": "2025-07-30T10:51:19.363Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753872679358-y2boklsbv-3",
+            "activity": "spawned",
+            "data": {
+              "type": "architect",
+              "name": "Architect Worker 4"
+            }
+          },
+          "timestamp": "2025-07-30T10:51:19.363Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753872679358-y2boklsbv-4",
+            "activity": "spawned",
+            "data": {
+              "type": "reviewer",
+              "name": "Reviewer Worker 5"
+            }
+          },
+          "timestamp": "2025-07-30T10:51:19.363Z"
+        },
+        {
+          "type": "agent_activity",
+          "data": {
+            "agentId": "worker-swarm-1753872679358-y2boklsbv-5",
+            "activity": "spawned",
+            "data": {
+              "type": "documenter",
+              "name": "Documenter Worker 6"
+            }
+          },
+          "timestamp": "2025-07-30T10:51:19.363Z"
+        }
+      ]
+    },
+    "statistics": {
+      "tasksProcessed": 0,
+      "tasksCompleted": 0,
+      "memoryUpdates": 0,
+      "agentActivities": 6,
+      "consensusDecisions": 0
+    }
+  }
+}

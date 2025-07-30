@@ -1,0 +1,2 @@
+# Git LFS設定
+data/*.sqlite filter=lfs diff=lfs merge=lfs -text
